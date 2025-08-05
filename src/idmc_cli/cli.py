@@ -1,4 +1,5 @@
 import click
+import json
 from idmc_cli.config import config
 from idmc_cli.api import api
 
@@ -40,9 +41,10 @@ def configure():
 
 
 @main.command('login')
-def login():
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+def login(debug):
     """Used to login to Informatica Cloud and return the login details."""
-    click.echo(api.login())
+    click.echo(json.dumps(api.login(debug)))
 
 ###################################
 # User commands section
@@ -56,9 +58,10 @@ def users():
 @users.command('get')
 @click.option('--id', 'id', default=None, required=False, type=click.STRING, help='(Optional) Filter by user id. Use this option or the --username option.')
 @click.option('--username', 'username', default=None, required=False, type=click.STRING, help='(Optional) Filter by user name. Use this option or the --id option.')
-def getUsers(id, username):
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+def getUsers(id, username, debug):
     """Returns users"""
-    click.echo(api.getUsers(id, username))
+    click.echo(json.dumps(api.getUsers(id, username, debug)))
 
 @users.command('create')
 @click.option('--name', 'name', default=None, required=True, type=click.STRING, help='Informatica Intelligent Cloud Services user name.')
@@ -77,10 +80,21 @@ def getUsers(id, username):
 @click.option('--roleNames', 'roleNames', default=None, required=False, type=click.STRING, help='(Optional) Required when no group IDs are included. Comma separated list of Names for the roles to assign to the user.')
 @click.option('--groupIds', 'groupIds', default=None, required=False, type=click.STRING, help='(Optional) Required when no role IDs are included. Comma separated list of IDs for the user groups to assign to the user.')
 @click.option('--groupNames', 'groupNames', default=None, required=False, type=click.STRING, help='(Optional) Required when no role IDs are included. Comma separated list of Names for the user groups to assign to the user.')
-def createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames):
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+def createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames, debug):
     """Used to create new users"""
     #click.echo(roleNames)
-    click.echo(api.createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames))
+    click.echo(json.dumps(api.createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames, debug)))
+
+@users.command('addRoles')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --username.')
+@click.option('--username', 'username', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --id.')
+@click.option('--roleIds', 'roleIds', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --roleNames.')
+@click.option('--roleNames', 'roleNames', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --roleIds.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+def addUserRoles(id, username, roleIds, roleNames, debug):
+    """Adds role assignments to a user"""
+    click.echo(json.dumps(api.addUserRoles(id, username, roleIds, roleNames, debug)))
 
 ###################################
 # User Groups commands section
@@ -94,9 +108,10 @@ def usergroups():
 @usergroups.command('get')
 @click.option('--id', 'id', default=None, required=False, type=click.STRING, help='(Optional) Filter by user group id. Use this option or the --username option.')
 @click.option('--name', 'name', default=None, required=False, type=click.STRING, help='(Optional) Filter by user group name. Use this option or the --id option.')
-def getUserGroups(id, name):
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+def getUserGroups(id, name, debug):
     """Returns user groups"""
-    click.echo(api.getUserGroups(id, name))
+    click.echo(json.dumps(api.getUserGroups(id, name, debug)))
 
 ###################################
 # Role commands section
@@ -111,9 +126,10 @@ def roles():
 @click.option('--id', 'id', default=None, required=False, type=click.STRING, help='Filter by role id.')
 @click.option('--name', 'name', default=None, required=False, type=click.STRING, help='Filter by role name.')
 @click.option('--expand', 'expand', default=None, required=False, type=click.BOOL, help='Expand role privileges.')
-def getRoles(id, name, expand):
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+def getRoles(id, name, expand, debug):
     """Returns roles"""
-    click.echo(api.getRoles(id, name, expand))
+    click.echo(json.dumps(api.getRoles(id, name, expand, debug)))
 
 
 if __name__ == '__main__':
