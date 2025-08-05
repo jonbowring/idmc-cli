@@ -7,9 +7,11 @@ def main():
     """Informatica Cloud CLI Utility"""
     pass
 
+###################################
+# Admin commands section
+###################################
 
-
-@main.command()
+@main.command('configure')
 def configure():
     """Used to configure the global parameters for the CLI."""
 
@@ -37,37 +39,81 @@ def configure():
 
 
 
-@main.command()
+@main.command('login')
 def login():
     """Used to login to Informatica Cloud and return the login details."""
     click.echo(api.login())
 
+###################################
 # User commands section
+###################################
 
 @main.group()
 def users():
     """User management commands."""
     pass
 
-@users.command()
-@click.option('--id', default=None, required=False, help='(Optional) Filter by user id. Use this option or the --username option.')
-@click.option('--username', default=None, required=False, help='(Optional) Filter by user name. Use this option or the --id option.')
-def get(id, username):
+@users.command('get')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='(Optional) Filter by user id. Use this option or the --username option.')
+@click.option('--username', 'username', default=None, required=False, type=click.STRING, help='(Optional) Filter by user name. Use this option or the --id option.')
+def getUsers(id, username):
     """Returns users"""
     click.echo(api.getUsers(id, username))
 
+@users.command('create')
+@click.option('--name', 'name', default=None, required=True, type=click.STRING, help='Informatica Intelligent Cloud Services user name.')
+@click.option('--firstName', 'firstName', default=None, required=True, type=click.STRING, help='First name for the user account.')
+@click.option('--lastName', 'lastName', default=None, required=True, type=click.STRING, help='Last name for the user account.')
+@click.option('--password', 'password', default=None, required=False, type=click.STRING, help='(Optional) Informatica Intelligent Cloud Services password. If password is empty, the user receives an activation email. Maximum length is 255 characters.')
+@click.option('--description', 'description', default=None, required=False, type=click.STRING, help='(Optional) Description of the user.')
+@click.option('--email', 'email', default=None, required=True, type=click.STRING, help='Email address for the user.')
+@click.option('--title', 'title', default=None, required=False, type=click.STRING, help='(Optional) Job title of the user.')
+@click.option('--phone', 'phone', default=None, required=False, type=click.STRING, help='(Optional) Phone number for the user.')
+@click.option('--forcePasswordChange', 'forcePasswordChange', default=True, required=False, type=click.BOOL, help='(Optional) Determines whether the user must reset the password after the user logs in for the first time.')
+@click.option('--maxLoginAttempts', 'maxLoginAttempts', default=None, required=False, type=click.INT, help='(Optional) Number of times a user can attempt to log in before the account is locked.')
+@click.option('--authentication', 'authentication', default=None, required=False, type=click.INT, help='(Optional) Determines whether the user accesses Informatica Intelligent Cloud Services through single sign-in (SAML). Use one of the following values: 0 (Native), 1 (SAML).')
+@click.option('--aliasName', 'aliasName', default=None, required=False, type=click.STRING, help='(Optional) Required when authentication is not 0. The user identifier or user name in the 3rd party system.')
+@click.option('--roleIds', 'roleIds', default=None, required=False, type=click.STRING, help='(Optional) Required when no group IDs are included. Comma separated list of IDs for the roles to assign to the user.')
+@click.option('--roleNames', 'roleNames', default=None, required=False, type=click.STRING, help='(Optional) Required when no group IDs are included. Comma separated list of Names for the roles to assign to the user.')
+@click.option('--groupIds', 'groupIds', default=None, required=False, type=click.STRING, help='(Optional) Required when no role IDs are included. Comma separated list of IDs for the user groups to assign to the user.')
+@click.option('--groupNames', 'groupNames', default=None, required=False, type=click.STRING, help='(Optional) Required when no role IDs are included. Comma separated list of Names for the user groups to assign to the user.')
+def createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames):
+    """Used to create new users"""
+    #click.echo(roleNames)
+    click.echo(api.createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames))
 
+###################################
+# User Groups commands section
+###################################
+
+@main.group()
+def usergroups():
+    """User group management commands."""
+    pass
+
+@usergroups.command('get')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='(Optional) Filter by user group id. Use this option or the --username option.')
+@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='(Optional) Filter by user group name. Use this option or the --id option.')
+def getUserGroups(id, name):
+    """Returns user groups"""
+    click.echo(api.getUserGroups(id, name))
+
+###################################
 # Role commands section
+###################################
 
 @main.group()
 def roles():
     """Role management commands."""
     pass
 
-@roles.command()
-def get():
+@roles.command('get')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='Filter by role id.')
+@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='Filter by role name.')
+@click.option('--expand', 'expand', default=None, required=False, type=click.BOOL, help='Expand role privileges.')
+def getRoles(id, name, expand):
     """Returns roles"""
-    click.echo("Getting a role")
+    click.echo(api.getRoles(id, name, expand))
 
 
 if __name__ == '__main__':
