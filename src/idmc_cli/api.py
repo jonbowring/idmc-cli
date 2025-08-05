@@ -9,10 +9,15 @@ class InformaticaCloudAPI:
         self.password = config.get("password")
         self.session_id = config.get("sessionId")
         self.max_attempts = config.get("maxAttempts")
+        self.page_size = config.get("pageSize")
 
 
     def login(self):
         """This function logs in to IDMC"""
+
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
         
         # Execute the API call
         url = f'https://{ self.region }.informaticacloud.com/saas/public/core/v3/login'
@@ -29,11 +34,14 @@ class InformaticaCloudAPI:
         return resp
     
     
-    def getUsers(self):
-        """This function returns IDMC users""" 
-        resp = ''
+    def getUsers(self, id=None, username=None):
+        """This function returns IDMC users"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
         attempts = 0
-        limit = 1
         skip = 0
         pages = []
         
@@ -42,7 +50,11 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            params = { 'limit': limit, 'skip': skip }
+            params = { 'limit': self.page_size, 'skip': skip }
+            if id:
+                params['q'] = f'userId=={ id }'
+            elif username:
+                params['q'] = f'userName=={ username }'
             r = requests.get(url, headers=headers, params=params)
             resp = r.json()
 
@@ -58,11 +70,10 @@ class InformaticaCloudAPI:
             # If there is still some data then continue onto the next page
             elif len(resp) > 0:
                 pages.append(resp)
-                skip = skip + limit
+                skip = skip + self.page_size
                 continue
             # Break when there are no pages left
             else:
-                pages.append(resp)
                 break
         
         return pages

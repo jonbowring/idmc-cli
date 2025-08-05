@@ -50,9 +50,11 @@ def users():
     pass
 
 @users.command()
-def get():
+@click.option('--id', default=None, required=False, help='(Optional) Filter by user id. Use this option or the --username option.')
+@click.option('--username', default=None, required=False, help='(Optional) Filter by user name. Use this option or the --id option.')
+def get(id, username):
     """Returns users"""
-    click.echo(api.getUsers())
+    click.echo(api.getUsers(id, username))
 
 
 # Role commands section

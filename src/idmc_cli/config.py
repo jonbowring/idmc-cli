@@ -13,7 +13,8 @@ DEFAULT_CONFIG = {
     "password": None,
     "key": None,
     "sessionId": None,
-    "maxAttempts": 5
+    "maxAttempts": 5,
+    "pageSize": 100
 }
 
 class Config:
