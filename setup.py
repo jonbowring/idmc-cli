@@ -8,10 +8,11 @@ setup(
     install_requires=[
         'click',
         'requests',
+        'cryptography'
     ],
     entry_points={
         'console_scripts': [
-            'idmc-cli = idmc_cli.cli:main',
+            'idmc = idmc_cli.cli:main',
         ],
     },
     author='Jonathon Bowring',

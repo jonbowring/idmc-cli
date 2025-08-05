@@ -1,0 +1,23 @@
+[
+    { "region": "usw1", "pod": "dmr-us" },
+    { "region": "na1", "pod": "dm-us" },
+    { "region": "use1", "pod": "dm3-us" },
+    { "region": "na2", "pod": "dm-us" },
+    { "region": "usw3", "pod": "dm-us" },
+    { "region": "use4", "pod": "dm-us" },
+    { "region": "usw5", "pod": "dm-us" },
+    { "region": "use6", "pod": "dm-us" },
+    { "region": "usw1", "pod": "dm1-us" },
+    { "region": "usw3", "pod": "dm1-us" },
+    { "region": "usw1", "pod": "dm2-us" },
+    { "region": "nac1", "pod": "dm-na" },
+    { "region": "cac2", "pod": "dm1-ca" },
+    { "region": "apse1", "pod": "dm-ap" },
+    { "region": "apse1", "pod": "dm1-apse" },
+    { "region": "apne1", "pod": "dm1-ap" },
+    { "region": "apne2", "pod": "dm-apne" },
+    { "region": "apauc1", "pod": "dm1-apau" },
+    { "region": "emw1", "pod": "dm-em" },
+    { "region": "emc1", "pod": "dm1-em" },
+    { "region": "uk1", "pod": "dm-uk" }
+]

@@ -1,3 +1,6 @@
+# IDMC files to be ignored
+config/config.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
