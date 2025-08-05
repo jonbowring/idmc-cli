@@ -11,7 +11,9 @@ DEFAULT_CONFIG = {
     "region": None,
     "username": None,
     "password": None,
-    "key": None
+    "key": None,
+    "sessionId": None,
+    "maxAttempts": 5
 }
 
 class Config:
