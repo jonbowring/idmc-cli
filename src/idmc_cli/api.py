@@ -17,8 +17,9 @@ class InformaticaCloudAPI:
     # Admin section
     #############################
 
-    def debugRequest(self, r):
+    def debugRequest(self, r, attempts=0):
         print('\n')
+        print('Attempts: ' + str(attempts))
         print('Method: ' + r.request.method)
         print('Headers: ' + str(r.request.headers))
         print('URL: ' + r.request.url)
@@ -44,7 +45,13 @@ class InformaticaCloudAPI:
         if debug:
             self.debugRequest(r)
 
-        resp = r.json()
+        if r.status_code != 200:
+            resp = {
+                'status': r.status_code,
+                'text': r.text
+            }
+        else:
+            resp = r.json()
         
         # Save the session ID
         session_id = resp['userInfo']['sessionId']
@@ -81,7 +88,7 @@ class InformaticaCloudAPI:
             r = requests.get(url, headers=headers, params=params)
 
             if debug:
-                self.debugRequest(r)
+                self.debugRequest(r, attempts)
 
             resp = r.json()
 
@@ -175,7 +182,7 @@ class InformaticaCloudAPI:
             r = requests.post(url, headers=headers, json=data)
 
             if debug:
-                self.debugRequest(r)
+                self.debugRequest(r, attempts)
 
             resp = r.json()
 
@@ -226,7 +233,7 @@ class InformaticaCloudAPI:
             r = requests.put(url, headers=headers, json=data)
             
             if debug:
-                self.debugRequest(r)
+                self.debugRequest(r, attempts)
             
             # Check for expired session token
             if r.status_code == 401 and attempts <= self.max_attempts:
@@ -272,7 +279,7 @@ class InformaticaCloudAPI:
             r = requests.get(url, headers=headers, params=params)
 
             if debug:
-                self.debugRequest(r)
+                self.debugRequest(r, attempts)
 
             resp = r.json()
             
@@ -318,12 +325,13 @@ class InformaticaCloudAPI:
             r = requests.get(url, headers=headers, params=params)
 
             if debug:
-                self.debugRequest(r)
+                self.debugRequest(r, attempts)
 
             resp = r.json()
 
             # Check for expired session token
             if r.status_code == 401 and attempts <= self.max_attempts:
+                print('Trying to login...')
                 self.login()
                 attempts = attempts + 1
                 continue
