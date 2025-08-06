@@ -209,6 +209,21 @@ def getUserGroups(name, description, roleIds, roleNames, userIds, userNames, deb
         click.echo(json.dumps(api.createUserGroup(name, description, roleIds, roleNames, userIds, userNames, debug), indent=4))
     else:    
         click.echo(json.dumps(api.createUserGroup(name, description, roleIds, roleNames, userIds, userNames, debug)))
+
+
+@usergroups.command('addRoles')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --groupname.')
+@click.option('--groupname', 'groupname', default=None, required=False, type=click.STRING, help='ID of user group to be updated. Must specify this option or --id.')
+@click.option('--roleIds', 'roleIds', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --roleNames.')
+@click.option('--roleNames', 'roleNames', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --roleIds.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def addUserGroupRoles(id, groupname, roleIds, roleNames, debug, pretty):
+    """Adds role assignments to a user group"""
+    if pretty:
+        click.echo(json.dumps(api.addUserGroupRoles(id, groupname, roleIds, roleNames, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.addUserGroupRoles(id, groupname, roleIds, roleNames, debug)))
     
 
 ###################################
