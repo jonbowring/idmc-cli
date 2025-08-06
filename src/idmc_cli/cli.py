@@ -222,6 +222,23 @@ def getRoles(id, name, expand, debug, pretty=0):
     """Returns roles"""
     click.echo(json.dumps(api.getRoles(id=id, name=name, expand=expand, debug=debug), indent=pretty))
 
+###################################
+# Privileges commands section
+###################################
+
+@main.group('privileges')
+def privileges():
+    """Privilege management commands."""
+    pass
+
+@privileges.command('get')
+@click.option('--all', 'all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If included will return a full list of privileges, even those that are disabled or unassigned.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def getPrivileges(all, debug, pretty=0):
+    """Returns roles"""
+    click.echo(json.dumps(api.getPrivileges(all=all, debug=debug), indent=pretty))
+
 
 if __name__ == '__main__':
     main()
