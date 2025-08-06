@@ -70,6 +70,19 @@ def getUsers(id, username, debug, pretty):
         click.echo(json.dumps(api.getUsers(id, username, debug), indent=4))
     else:    
         click.echo(json.dumps(api.getUsers(id, username, debug)))
+
+
+@users.command('delete')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='User id to be deleted. Use this option or the --username option.')
+@click.option('--username', 'username', default=None, required=False, type=click.STRING, help='User name to be deleted. Use this option or the --id option.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def deleteUser(id, username, debug, pretty):
+    """Deletes a user"""
+    if pretty:
+        click.echo(json.dumps(api.deleteUser(id, username, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.deleteUser(id, username, debug)))
     
 
 @users.command('create')
