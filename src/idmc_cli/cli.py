@@ -42,9 +42,13 @@ def configure():
 
 @main.command('login')
 @click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-def login(debug):
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def login(debug, pretty):
     """Used to login to Informatica Cloud and return the login details."""
-    click.echo(json.dumps(api.login(debug)))
+    if pretty:
+        click.echo(json.dumps(api.login(debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.login(debug)))
 
 ###################################
 # User commands section
@@ -59,9 +63,14 @@ def users():
 @click.option('--id', 'id', default=None, required=False, type=click.STRING, help='(Optional) Filter by user id. Use this option or the --username option.')
 @click.option('--username', 'username', default=None, required=False, type=click.STRING, help='(Optional) Filter by user name. Use this option or the --id option.')
 @click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-def getUsers(id, username, debug):
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def getUsers(id, username, debug, pretty):
     """Returns users"""
-    click.echo(json.dumps(api.getUsers(id, username, debug)))
+    if pretty:
+        click.echo(json.dumps(api.getUsers(id, username, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.getUsers(id, username, debug)))
+    
 
 @users.command('create')
 @click.option('--name', 'name', default=None, required=True, type=click.STRING, help='Informatica Intelligent Cloud Services user name.')
@@ -81,10 +90,14 @@ def getUsers(id, username, debug):
 @click.option('--groupIds', 'groupIds', default=None, required=False, type=click.STRING, help='(Optional) Required when no role IDs are included. Comma separated list of IDs for the user groups to assign to the user.')
 @click.option('--groupNames', 'groupNames', default=None, required=False, type=click.STRING, help='(Optional) Required when no role IDs are included. Comma separated list of Names for the user groups to assign to the user.')
 @click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-def createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames, debug):
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames, debug, pretty):
     """Used to create new users"""
-    #click.echo(roleNames)
-    click.echo(json.dumps(api.createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames, debug)))
+    if pretty:
+        click.echo(json.dumps(api.createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames, debug)))
+    
 
 @users.command('addRoles')
 @click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --username.')
@@ -92,9 +105,14 @@ def createUser(name, firstName, lastName, email, password, description, title, p
 @click.option('--roleIds', 'roleIds', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --roleNames.')
 @click.option('--roleNames', 'roleNames', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --roleIds.')
 @click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-def addUserRoles(id, username, roleIds, roleNames, debug):
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def addUserRoles(id, username, roleIds, roleNames, debug, pretty):
     """Adds role assignments to a user"""
-    click.echo(json.dumps(api.addUserRoles(id, username, roleIds, roleNames, debug)))
+    if pretty:
+        click.echo(json.dumps(api.addUserRoles(id, username, roleIds, roleNames, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.addUserRoles(id, username, roleIds, roleNames, debug)))
+    
 
 ###################################
 # User Groups commands section
@@ -109,9 +127,14 @@ def usergroups():
 @click.option('--id', 'id', default=None, required=False, type=click.STRING, help='(Optional) Filter by user group id. Use this option or the --username option.')
 @click.option('--name', 'name', default=None, required=False, type=click.STRING, help='(Optional) Filter by user group name. Use this option or the --id option.')
 @click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-def getUserGroups(id, name, debug):
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def getUserGroups(id, name, debug, pretty):
     """Returns user groups"""
-    click.echo(json.dumps(api.getUserGroups(id, name, debug)))
+    if pretty:
+        click.echo(json.dumps(api.getUserGroups(id, name, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.getUserGroups(id, name, debug)))
+    
 
 ###################################
 # Role commands section
@@ -125,11 +148,15 @@ def roles():
 @roles.command('get')
 @click.option('--id', 'id', default=None, required=False, type=click.STRING, help='Filter by role id.')
 @click.option('--name', 'name', default=None, required=False, type=click.STRING, help='Filter by role name.')
-@click.option('--expand', 'expand', default=None, required=False, type=click.BOOL, help='Expand role privileges.')
+@click.option('--expand', 'expand', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='Expand role privileges.')
 @click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-def getRoles(id, name, expand, debug):
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def getRoles(id, name, expand, debug, pretty):
     """Returns roles"""
-    click.echo(json.dumps(api.getRoles(id, name, expand, debug)))
+    if pretty:
+        click.echo(json.dumps(api.getRoles(id, name, expand, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.getRoles(id, name, expand, debug)))
 
 
 if __name__ == '__main__':
