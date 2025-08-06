@@ -45,7 +45,7 @@ class InformaticaCloudAPI:
         if debug:
             self.debugRequest(r)
 
-        if r.status_code != 200:
+        if r.status_code < 200 or r.status_code > 299:
             resp = {
                 'status': r.status_code,
                 'text': r.text
@@ -90,8 +90,6 @@ class InformaticaCloudAPI:
             if debug:
                 self.debugRequest(r, attempts)
 
-            resp = r.json()
-
             # Check for expired session token
             if r.status_code == 401 and attempts <= self.max_attempts:
                 self.login()
@@ -99,10 +97,22 @@ class InformaticaCloudAPI:
                 continue
             # Abort after the maximum number of attempts
             elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
                 pages.append(resp)
                 break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
             # If there is still some data then continue onto the next page
-            elif len(resp) > 0:
+            elif len(r.json()) > 0:
+                resp = r.json()
                 pages.append(resp)
                 skip = skip + self.page_size
                 continue
@@ -184,14 +194,27 @@ class InformaticaCloudAPI:
             if debug:
                 self.debugRequest(r, attempts)
 
-            resp = r.json()
-
             # Check for expired session token
             if r.status_code == 401 and attempts <= self.max_attempts:
                 self.login()
                 attempts = attempts + 1
                 continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
             else:
+                resp = r.json()
                 break
         
         return resp
@@ -208,7 +231,7 @@ class InformaticaCloudAPI:
         
         # Lookup the user id if needed
         if username:
-            id = self.getUsers(id=id)[0][0]['id']
+            id = self.getUsers(username=username)[0][0]['id']
         
         # Lookup the role ids if needed
         if roleIds:
@@ -240,6 +263,20 @@ class InformaticaCloudAPI:
                 self.login()
                 attempts = attempts + 1
                 continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
             elif r.status_code == 204:
                 resp = { 'message': 'User updated' }
                 break
@@ -280,8 +317,6 @@ class InformaticaCloudAPI:
 
             if debug:
                 self.debugRequest(r, attempts)
-
-            resp = r.json()
             
             # Check for expired session token
             if r.status_code == 401 and attempts <= self.max_attempts:
@@ -290,9 +325,21 @@ class InformaticaCloudAPI:
                 continue
             # Abort after the maximum number of attempts
             elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
                 break
             # Break when there are no pages left
             else:
+                resp = r.json()
                 break
         
         return resp
@@ -327,20 +374,29 @@ class InformaticaCloudAPI:
             if debug:
                 self.debugRequest(r, attempts)
 
-            resp = r.json()
-
             # Check for expired session token
             if r.status_code == 401 and attempts <= self.max_attempts:
-                print('Trying to login...')
                 self.login()
                 attempts = attempts + 1
                 continue
             # Abort after the maximum number of attempts
             elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
                 pages.append(resp)
                 break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
             # If there is still some data then continue onto the next page
-            elif len(resp) > 0:
+            elif len(r.json()) > 0:
+                resp = r.json()
                 pages.append(resp)
                 skip = skip + self.page_size
                 continue
