@@ -45,7 +45,7 @@ def configure():
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def login(debug, pretty=0):
     """Used to login to Informatica Cloud and return the login details."""
-    click.echo(json.dumps(api.login(debug), indent=pretty))
+    click.echo(json.dumps(api.login(debug=debug), indent=pretty))
 
 ###################################
 # User commands section
@@ -63,7 +63,7 @@ def users():
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def getUsers(id, username, debug, pretty=0):
     """Returns users"""
-    click.echo(json.dumps(api.getUsers(id, username, debug), indent=pretty))
+    click.echo(json.dumps(api.getUsers(id=id, username=username, debug=debug), indent=pretty))
 
 
 @users.command('delete')
@@ -73,7 +73,7 @@ def getUsers(id, username, debug, pretty=0):
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def deleteUser(id, username, debug, pretty=0):
     """Deletes a user"""
-    click.echo(json.dumps(api.deleteUser(id, username, debug), indent=pretty))
+    click.echo(json.dumps(api.deleteUser(id=id, username=username, debug=debug), indent=pretty))
     
 
 @users.command('create')
@@ -97,7 +97,7 @@ def deleteUser(id, username, debug, pretty=0):
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames, debug, pretty=0):
     """Used to create new users"""
-    click.echo(json.dumps(api.createUser(name, firstName, lastName, email, password, description, title, phone, forcePasswordChange, maxLoginAttempts, authentication, aliasName, roleIds, roleNames, groupIds, groupNames, debug), indent=pretty))
+    click.echo(json.dumps(api.createUser(name=name, firstName=firstName, lastName=lastName, email=email, password=password, description=description, title=title, phone=phone, forcePasswordChange=forcePasswordChange, maxLoginAttempts=maxLoginAttempts, authentication=authentication, aliasName=aliasName, roleIds=roleIds, roleNames=roleNames, groupIds=groupIds, groupNames=groupNames, debug=debug), indent=pretty))
     
 
 @users.command('addRoles')
@@ -109,7 +109,7 @@ def createUser(name, firstName, lastName, email, password, description, title, p
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def addUserRoles(id, username, roleIds, roleNames, debug, pretty=0):
     """Adds role assignments to a user"""
-    click.echo(json.dumps(api.addUserRoles(id, username, roleIds, roleNames, debug), indent=pretty))
+    click.echo(json.dumps(api.addUserRoles(id=id, username=username, roleIds=roleIds, roleNames=roleNames, debug=debug), indent=pretty))
 
 
 @users.command('removeRoles')
@@ -121,7 +121,7 @@ def addUserRoles(id, username, roleIds, roleNames, debug, pretty=0):
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def removeUserRoles(id, username, roleIds, roleNames, debug, pretty=0):
     """Removes role assignments from a user"""
-    click.echo(json.dumps(api.removeUserRoles(id, username, roleIds, roleNames, debug), indent=pretty))
+    click.echo(json.dumps(api.removeUserRoles(id=id, username=username, roleIds=roleIds, roleNames=roleNames, debug=debug), indent=pretty))
 
 
 @users.command('addGroups')
@@ -133,7 +133,7 @@ def removeUserRoles(id, username, roleIds, roleNames, debug, pretty=0):
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def addUserGroups(id, username, groupIds, groupNames, debug, pretty=0):
     """Adds group assignments to a user"""
-    click.echo(json.dumps(api.addUserGroups(id, username, groupIds, groupNames, debug), indent=pretty))
+    click.echo(json.dumps(api.addUserGroups(id=id, username=username, groupIds=groupIds, groupNames=groupNames, debug=debug), indent=pretty))
 
 
 @users.command('removeGroups')
@@ -145,7 +145,7 @@ def addUserGroups(id, username, groupIds, groupNames, debug, pretty=0):
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def removeUserGroups(id, username, groupIds, groupNames, debug, pretty=0):
     """Removes group assignments from a user"""
-    click.echo(json.dumps(api.removeUserGroups(id, username, groupIds, groupNames, debug), indent=pretty))
+    click.echo(json.dumps(api.removeUserGroups(id=id, username=username, groupIds=groupIds, groupNames=groupNames, debug=debug), indent=pretty))
     
 
 ###################################
@@ -164,7 +164,7 @@ def userGroups():
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def getUserGroups(id, name, debug, pretty=0):
     """Returns user groups"""
-    click.echo(json.dumps(api.getUserGroups(id, name, debug), indent=pretty))
+    click.echo(json.dumps(api.getUserGroups(id=id, name=name, debug=debug), indent=pretty))
 
 
 @userGroups.command('create')
@@ -178,7 +178,7 @@ def getUserGroups(id, name, debug, pretty=0):
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def createUserGroup(name, description, roleIds, roleNames, userIds, userNames, debug, pretty=0):
     """Creates a new user group"""
-    click.echo(json.dumps(api.createUserGroup(name, description, roleIds, roleNames, userIds, userNames, debug), indent=pretty))
+    click.echo(json.dumps(api.createUserGroup(name=name, description=description, roleIds=roleIds, roleNames=roleNames, userIds=userIds, userNames=userNames, debug=debug), indent=pretty))
 
 
 @userGroups.command('addRoles')
@@ -190,7 +190,7 @@ def createUserGroup(name, description, roleIds, roleNames, userIds, userNames, d
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def addUserGroupRoles(id, groupname, roleIds, roleNames, debug, pretty=0):
     """Adds role assignments to a user group"""
-    click.echo(json.dumps(api.addUserGroupRoles(id, groupname, roleIds, roleNames, debug), indent=pretty))
+    click.echo(json.dumps(api.addUserGroupRoles(id=id, groupname=groupname, roleIds=roleIds, roleNames=roleNames, debug=debug), indent=pretty))
 
 
 @userGroups.command('delete')
@@ -200,7 +200,7 @@ def addUserGroupRoles(id, groupname, roleIds, roleNames, debug, pretty=0):
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def deleteUserGroup(id, name, debug, pretty=0):
     """Deletes a user group"""
-    click.echo(json.dumps(api.deleteUserGroup(id, name, debug), indent=pretty))
+    click.echo(json.dumps(api.deleteUserGroup(id=id, name=name, debug=debug), indent=pretty))
     
 
 ###################################
@@ -220,7 +220,7 @@ def roles():
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def getRoles(id, name, expand, debug, pretty=0):
     """Returns roles"""
-    click.echo(json.dumps(api.getRoles(id, name, expand, debug), indent=pretty))
+    click.echo(json.dumps(api.getRoles(id=id, name=name, expand=expand, debug=debug), indent=pretty))
 
 
 if __name__ == '__main__':
