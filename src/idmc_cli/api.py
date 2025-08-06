@@ -740,6 +740,99 @@ class InformaticaCloudAPI:
                 break
         
         return pages
+    
+
+
+    def createUserGroup(self, name, description, roleIds=None, roleNames=None, userIds=None, userNames=None, debug=False):
+        """This function creates a new user group"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the role ids if needed
+        if roleNames:
+            roleIds = []
+            roles = roleNames.split(',')
+            for role in roles:
+                lookup = self.getRoles(name=role, debug=debug)
+                try:
+                    roleId = lookup[0]['id']
+                    roleIds.append(roleId)
+                except Exception as e:
+                    return {
+                        'status': 500,
+                        'text': f'Unable to find role for id { role }'
+                    }
+        elif roleIds:
+            roleIds = roleIds.split(',')
+        
+        # Lookup the user ids if needed
+        if userNames:
+            userIds = []
+            users = userNames.split(',')
+            for user in users:
+                lookup = self.getUsers(username=user, debug=debug)
+                try:
+                    userId = lookup[0][0]['id']
+                    userIds.append(userId)
+                except Exception as e:
+                    return {
+                        'status': 500,
+                        'text': f'Unable to find user id for { user }'
+                    }
+        elif userIds:
+            userIds = userIds.split(',')
+
+        while True:
+        
+            # Prepare the mandatory fields
+            data = {
+                'name': name,
+                'roles': roleIds
+            }
+
+            # Prepare the optional fields
+            if description:
+                data['description'] = description
+            if userIds:
+                data['users'] = userIds
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/userGroups'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.post(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
 
 # Expose the class as a variable
 api = InformaticaCloudAPI()
