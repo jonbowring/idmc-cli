@@ -192,6 +192,23 @@ def getUserGroups(id, name, debug, pretty):
         click.echo(json.dumps(api.getUserGroups(id, name, debug), indent=4))
     else:    
         click.echo(json.dumps(api.getUserGroups(id, name, debug)))
+
+
+@usergroups.command('create')
+@click.option('--name', 'name', default=None, required=True, type=click.STRING, help='Name of the new user group.')
+@click.option('--description', 'description', default=None, required=False, type=click.STRING, help='Description of the new user group.')
+@click.option('--roleIds', 'roleIds', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to the new user group. Either this or the --roleNames group is required.')
+@click.option('--roleNames', 'roleNames', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to the new user group. Either this or the --roleIds group is required.')
+@click.option('--userIds', 'userIds', default=None, required=False, type=click.STRING, help='Comma separated list of user ids to be added to the new user group.  Use this option or the --userNames option.')
+@click.option('--userNames', 'userNames', default=None, required=False, type=click.STRING, help='Comma separated list of user names to be added to the new user group. Use this option or the --userIds option.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def getUserGroups(name, description, roleIds, roleNames, userIds, userNames, debug, pretty):
+    """Creates a new user group"""
+    if pretty:
+        click.echo(json.dumps(api.createUserGroup(name, description, roleIds, roleNames, userIds, userNames, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.createUserGroup(name, description, roleIds, roleNames, userIds, userNames, debug)))
     
 
 ###################################
