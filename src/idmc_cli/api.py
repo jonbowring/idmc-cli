@@ -233,6 +233,8 @@ class InformaticaCloudAPI:
         
         return resp
     
+
+
     def addUserRoles(self, id, username, roleIds, roleNames, debug=False):
         """This function adds roles to a user"""
         
@@ -280,6 +282,88 @@ class InformaticaCloudAPI:
             
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users/{ quote( id ) }/addRoles'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.put(url, headers=headers, json=data)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            elif r.status_code == 204:
+                resp = { 'message': 'User updated' }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def removeUserRoles(self, id, username, roleIds, roleNames, debug=False):
+        """This function removes roles from a user"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the user id if needed
+        if username:
+            lookup = self.getUsers(username=username, debug=debug)
+            try:
+                id = lookup[0][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find user for id { role }'
+                    }
+        
+        # Lookup the role ids if needed
+        if roleIds:
+            roleNames = []
+            roles = roleIds.split(',')
+            for role in roles:
+                lookup = self.getRoles(id=role, debug=debug)
+                try:
+                    roleName = lookup[0]['roleName']
+                    roleNames.append(roleName)
+                except Exception as e:
+                    return {
+                        'status': 500,
+                        'text': f'Unable to find role for id { role }'
+                    }
+        elif roleNames:
+            roleNames = roleNames.split(',')
+
+        while True:
+        
+            # Prepare the mandatory fields
+            data = {
+                'roles': roleNames
+            }
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users/{ quote( id ) }/removeRoles'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
             r = requests.put(url, headers=headers, json=data)
             
@@ -395,7 +479,90 @@ class InformaticaCloudAPI:
                 break
         
         return resp
-    
+
+
+
+    def removeUserGroups(self, id, username, groupIds, groupNames, debug=False):
+        """This function removes groups from a user"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the user id if needed
+        if username:
+            lookup = self.getUsers(username=username, debug=debug)
+            try:
+                id = lookup[0][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find user id for { username }'
+                    }
+        
+        # Lookup the group ids if needed
+        if groupIds:
+            groupNames = []
+            groups = groupIds.split(',')
+            for group in groups:
+                lookup = self.getUserGroups(id=group, debug=debug)
+                try:
+                    groupName = lookup[0][0]['userGroupName']
+                    groupNames.append(groupName)
+                except Exception as e:
+                    return {
+                        'status': 500,
+                        'text': f'Unable to find group for id { group }'
+                    }
+        elif groupNames:
+            groupNames = groupNames.split(',')
+
+        while True:
+        
+            # Prepare the mandatory fields
+            data = {
+                'groups': groupNames
+            }
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users/{ quote( id ) }/removeGroups'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.put(url, headers=headers, json=data)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            elif r.status_code == 204:
+                resp = { 'message': 'User updated' }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+
 
     #############################
     # Roles section

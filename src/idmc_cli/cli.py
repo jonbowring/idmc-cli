@@ -114,6 +114,21 @@ def addUserRoles(id, username, roleIds, roleNames, debug, pretty):
         click.echo(json.dumps(api.addUserRoles(id, username, roleIds, roleNames, debug)))
 
 
+@users.command('removeRoles')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --username.')
+@click.option('--username', 'username', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --id.')
+@click.option('--roleIds', 'roleIds', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --roleNames.')
+@click.option('--roleNames', 'roleNames', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --roleIds.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def removeUserRoles(id, username, roleIds, roleNames, debug, pretty):
+    """Removes role assignments from a user"""
+    if pretty:
+        click.echo(json.dumps(api.removeUserRoles(id, username, roleIds, roleNames, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.removeUserRoles(id, username, roleIds, roleNames, debug)))
+
+
 @users.command('addGroups')
 @click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --username.')
 @click.option('--username', 'username', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --id.')
@@ -127,6 +142,21 @@ def addUserGroups(id, username, groupIds, groupNames, debug, pretty):
         click.echo(json.dumps(api.addUserGroups(id, username, groupIds, groupNames, debug), indent=4))
     else:    
         click.echo(json.dumps(api.addUserGroups(id, username, groupIds, groupNames, debug)))
+
+
+@users.command('removeGroups')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --username.')
+@click.option('--username', 'username', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --id.')
+@click.option('--groupIds', 'groupIds', default=None, required=False, type=click.STRING, help='Comma separated list of group ids to be added to user. Must specify this option or --groupNames.')
+@click.option('--groupNames', 'groupNames', default=None, required=False, type=click.STRING, help='Comma separated list of group names to be added to user. Must specify this option or --groupIds.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def removeUserGroups(id, username, groupIds, groupNames, debug, pretty):
+    """Removes group assignments from a user"""
+    if pretty:
+        click.echo(json.dumps(api.removeUserGroups(id, username, groupIds, groupNames, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.removeUserGroups(id, username, groupIds, groupNames, debug)))
     
 
 ###################################
