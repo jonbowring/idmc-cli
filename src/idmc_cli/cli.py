@@ -222,6 +222,19 @@ def getRoles(id, name, expand, debug, pretty=0):
     """Returns roles"""
     click.echo(json.dumps(api.getRoles(id=id, name=name, expand=expand, debug=debug), indent=pretty))
 
+@roles.command('create')
+@click.option('--name', 'name', default=None, required=True, type=click.STRING, help='Filter by role name.')
+@click.option('--description', 'description', default=None, required=False, type=click.STRING, help='Description of the new role.')
+@click.option('--privilegeIds', 'privilegeIds', default=None, required=False, type=click.STRING, help='Comma separated list of privilege IDs for the new role. Must include this option or the --privilegeNames option.')
+@click.option('--privilegeNames', 'privilegeNames', default=None, required=False, type=click.STRING, help='Comma separated list of privilege names for the new role. Must include this option or the --privilegeIds option.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def createRole(name, description, privilegeIds, privilegeNames, debug, pretty=0):
+    """Creates a new role"""
+    click.echo(json.dumps(api.createRole(name=name, description=description, privilegeIds=privilegeIds, privilegeNames=privilegeNames, debug=debug), indent=pretty))
+
+
+
 ###################################
 # Privileges commands section
 ###################################
