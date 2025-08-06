@@ -123,6 +123,64 @@ class InformaticaCloudAPI:
         return pages
     
 
+    def deleteUser(self, id=None, username=None, debug=False):
+        """This function deletes an IDMC user"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the user id if needed
+        if username:
+            lookup = self.getUsers(username=username, debug=debug)
+            try:
+                id = lookup[0][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find user for id { username }'
+                }
+        
+        attempts = 0
+        
+        while True:
+        
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users/{ quote(id) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.delete(url, headers=headers)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            elif r.status_code == 204:
+                resp = { 'message': 'User deleted' }
+                break
+            # Break when there are no pages left
+            else:
+                break
+        
+        return resp
+
 
     def createUser(self, name, firstName, lastName, email, password=None, description=None, title=None, phone=None, forcePasswordChange=None, maxLoginAttempts=None, authentication=None, aliasName=None, roleIds=None, roleNames=None, groupIds=None, groupNames=None, debug=False):
         """This function creates a new user"""
@@ -253,7 +311,7 @@ class InformaticaCloudAPI:
             except Exception as e:
                 return {
                         'status': 500,
-                        'text': f'Unable to find user for id { role }'
+                        'text': f'Unable to find user for id { username }'
                     }
         
         # Lookup the role ids if needed
