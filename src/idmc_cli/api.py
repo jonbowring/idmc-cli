@@ -139,8 +139,15 @@ class InformaticaCloudAPI:
             roleIds = []
             roles = roleNames.split(',')
             for role in roles:
-                roleId = self.getRoles(name=role)[0]['id']
-                roleIds.append(roleId)
+                lookup = self.getRoles(name=role)
+                try:
+                    roleId = lookup[0]['id']
+                    roleIds.append(roleId)
+                except Exception as e:
+                    return {
+                        'status': 500,
+                        'text': f'Unable to find role for id { role }'
+                    }
         elif roleIds:
             roleIds = roleIds.split(',')
         
@@ -149,8 +156,15 @@ class InformaticaCloudAPI:
             groupIds = []
             groups = groupNames.split(',')
             for group in groups:
-                groupId = self.getUserGroups(name=group)[0][0]['id']
-                groupIds.append(groupId)
+                lookup = self.getUserGroups(name=group)
+                try:
+                    groupId = lookup[0][0]['id']
+                    groupIds.append(groupId)
+                except Exception as e:
+                    return {
+                        'status': 500,
+                        'text': f'Unable to find group id for { group }'
+                    }
         elif groupIds:
             groupIds = groupIds.split(',')
 
@@ -231,15 +245,29 @@ class InformaticaCloudAPI:
         
         # Lookup the user id if needed
         if username:
-            id = self.getUsers(username=username)[0][0]['id']
+            lookup = self.getUsers(username=username)
+            try:
+                id = lookup[0][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find user for id { role }'
+                    }
         
         # Lookup the role ids if needed
         if roleIds:
             roleNames = []
             roles = roleIds.split(',')
             for role in roles:
-                roleName = self.getRoles(id=role)[0]['roleName']
-                roleNames.append(roleName)
+                lookup = self.getRoles(id=role)
+                try:
+                    roleName = lookup[0]['roleName']
+                    roleNames.append(roleName)
+                except Exception as e:
+                    return {
+                        'status': 500,
+                        'text': f'Unable to find role for id { role }'
+                    }
         elif roleNames:
             roleNames = roleNames.split(',')
 
