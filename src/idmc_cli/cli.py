@@ -203,7 +203,7 @@ def getUserGroups(id, name, debug, pretty):
 @click.option('--userNames', 'userNames', default=None, required=False, type=click.STRING, help='Comma separated list of user names to be added to the new user group. Use this option or the --userIds option.')
 @click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
 @click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
-def getUserGroups(name, description, roleIds, roleNames, userIds, userNames, debug, pretty):
+def createUserGroup(name, description, roleIds, roleNames, userIds, userNames, debug, pretty):
     """Creates a new user group"""
     if pretty:
         click.echo(json.dumps(api.createUserGroup(name, description, roleIds, roleNames, userIds, userNames, debug), indent=4))
@@ -224,6 +224,19 @@ def addUserGroupRoles(id, groupname, roleIds, roleNames, debug, pretty):
         click.echo(json.dumps(api.addUserGroupRoles(id, groupname, roleIds, roleNames, debug), indent=4))
     else:    
         click.echo(json.dumps(api.addUserGroupRoles(id, groupname, roleIds, roleNames, debug)))
+
+
+@usergroups.command('delete')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='User group id to be deleted. Use this option or the --name option.')
+@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='User group name to be deleted. Use this option or the --id option.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will pretty print the returned JSON.')
+def deleteUserGroup(id, name, debug, pretty):
+    """Deletes a user group"""
+    if pretty:
+        click.echo(json.dumps(api.deleteUserGroup(id, name, debug), indent=4))
+    else:    
+        click.echo(json.dumps(api.deleteUserGroup(id, name, debug)))
     
 
 ###################################
