@@ -24,8 +24,8 @@ def configure():
     # Get and set the password
     password = config.get("password")
     if password:
-        password = '************' + password[-3:]
-    password = input(f"Password [{ password }]: ") or password
+        masked = '************' + password[-3:]
+    password = input(f"Password [{ masked }]: ") or password
     config.set("password", password)
 
     # Get and set the pod

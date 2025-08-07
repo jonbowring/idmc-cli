@@ -53,10 +53,10 @@ class InformaticaCloudAPI:
         else:
             resp = r.json()
         
-        # Save the session ID
-        session_id = resp['userInfo']['sessionId']
-        self.session_id = session_id
-        config.set('sessionId', session_id)
+            # Save the session ID
+            session_id = resp['userInfo']['sessionId']
+            self.session_id = session_id
+            config.set('sessionId', session_id)
 
         return resp
     
