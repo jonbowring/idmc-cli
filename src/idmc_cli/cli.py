@@ -234,8 +234,8 @@ def createRole(name, description, privilegeIds, privilegeNames, debug, pretty=0)
     click.echo(json.dumps(api.createRole(name=name, description=description, privilegeIds=privilegeIds, privilegeNames=privilegeNames, debug=debug), indent=pretty))
 
 @roles.command('addRolePrivileges')
-@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --name.')
-@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='ID of user group to be updated. Must specify this option or --id.')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID of role to be updated. Must specify this option or --name.')
+@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='Name of role to be updated. Must specify this option or --id.')
 @click.option('--privilegeIds', 'privilegeIds', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --privilegeNames.')
 @click.option('--privilegeNames', 'privilegeNames', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --privilegeIds.')
 @click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
@@ -243,6 +243,18 @@ def createRole(name, description, privilegeIds, privilegeNames, debug, pretty=0)
 def addRolePrivileges(id, name, privilegeIds, privilegeNames, debug, pretty=0):
     """Adds privilege assignments to a role"""
     click.echo(json.dumps(api.addRolePrivileges(id=id, name=name, privilegeIds=privilegeIds, privilegeNames=privilegeNames, debug=debug), indent=pretty))
+
+
+@roles.command('removeRolePrivileges')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID of role to be updated. Must specify this option or --name.')
+@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='Name of role to be updated. Must specify this option or --id.')
+@click.option('--privilegeIds', 'privilegeIds', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --privilegeNames.')
+@click.option('--privilegeNames', 'privilegeNames', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --privilegeIds.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def removeRolePrivileges(id, name, privilegeIds, privilegeNames, debug, pretty=0):
+    """Remove privilege assignments from a role"""
+    click.echo(json.dumps(api.removeRolePrivileges(id=id, name=name, privilegeIds=privilegeIds, privilegeNames=privilegeNames, debug=debug), indent=pretty))
 
 
 
