@@ -257,6 +257,16 @@ def removeRolePrivileges(id, name, privilegeIds, privilegeNames, debug, pretty=0
     click.echo(json.dumps(api.removeRolePrivileges(id=id, name=name, privilegeIds=privilegeIds, privilegeNames=privilegeNames, debug=debug), indent=pretty))
 
 
+@roles.command('delete')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='Role id to be deleted. Use this option or the --name option.')
+@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='Role name to be deleted. Use this option or the --id option.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def deleteRole(id, name, debug, pretty=0):
+    """Deletes a role"""
+    click.echo(json.dumps(api.deleteRole(id=id, name=name, debug=debug), indent=pretty))
+
+
 
 ###################################
 # Privileges commands section
