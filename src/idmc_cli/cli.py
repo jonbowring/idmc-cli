@@ -25,6 +25,8 @@ def configure():
     password = config.get("password")
     if password:
         masked = '************' + password[-3:]
+    else:
+        masked = None
     password = input(f"Password [{ masked }]: ") or password
     config.set("password", password)
 
@@ -284,6 +286,42 @@ def privileges():
 def getPrivileges(all, debug, pretty=0):
     """Returns roles"""
     click.echo(json.dumps(api.getPrivileges(all=all, debug=debug), indent=pretty))
+
+###################################
+# Role commands section
+###################################
+
+@main.group('lookup')
+def lookup():
+    """Lookup objects."""
+    pass
+
+@lookup.command('object')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='Global unique identifier for the object. Required if object path and type not included. ')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Full path of the object including project, folder, and object name. Required with type if object ID not included.')
+@click.option('--type', 'type', default=None, required=False, type=click.STRING, help='Type of object. Required with path if object ID not included.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def lookupObject(id, path, type, debug, pretty=0):
+    """Lookup a single object"""
+    click.echo(json.dumps(api.lookupObject(id=id, path=path, type=type, debug=debug), indent=pretty))
+
+@lookup.command('objects')
+@click.option('--body', 'body', default=None, required=False, type=click.STRING, help='JSON payload containing the search conditions for the objects.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def lookupObjects(body, debug, pretty=0):
+    """Lookup multiple objects"""
+    print(body)
+    click.echo(json.dumps(api.lookupObjects(body=body, debug=debug), indent=pretty))
+
+@lookup.command('test')
+@click.option('--body', 'body', default=None, required=False, help='JSON payload containing the search conditions for the objects.')
+def test(body):
+    """Testing JSON string escaping"""
+    print(body)
+    print(type(body))
+    click.echo(body)
 
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from cryptography.fernet import Fernet
 
-CONFIG_DIR = Path('./config')
+CONFIG_DIR = Path.home() / '.idmc-cli'
 CONFIG_FILE = CONFIG_DIR / 'config.json'
 
 DEFAULT_CONFIG = {
