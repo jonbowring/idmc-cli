@@ -384,6 +384,14 @@ def createProject(id, name, path, description, debug, pretty=0):
     """Updates a project"""
     click.echo(json.dumps(api.updateProject(id=id, path=path, name=name, description=description, debug=debug), indent=pretty))
 
+@projects.command('delete')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID for the project to be deleted. Use this option or --path.')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Path of the project to be deleted. Use this option or --id.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def deleteProject(id, path, debug, pretty=0):
+    """Deletes a project"""
+    click.echo(json.dumps(api.deleteProject(id=id, path=path, debug=debug), indent=pretty))
 
 if __name__ == '__main__':
     main()
