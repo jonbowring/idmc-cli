@@ -424,5 +424,14 @@ def createProject(id, name, path, description, debug, pretty=0):
     """Updates a folder"""
     click.echo(json.dumps(api.updateFolder(id=id, path=path, name=name, description=description, debug=debug), indent=pretty))
 
+@folders.command('delete')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID for the folder to be deleted. Use this option or --path.')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Path of the folder to be deleted. Use this option or --id.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def deleteFolder(id, path, debug, pretty=0):
+    """Deletes a folder"""
+    click.echo(json.dumps(api.deleteFolder(id=id, path=path, debug=debug), indent=pretty))
+
 if __name__ == '__main__':
     main()
