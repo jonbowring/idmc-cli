@@ -355,5 +355,24 @@ def tagObject(id, path, type, body, tags, debug, pretty=0):
         click.echo(json.dumps(api.untagObject(id=id, path=path, type=type, tags=tags, debug=debug), indent=pretty))
 
 
+###################################
+# Project commands section
+###################################
+
+@main.group('projects')
+def projects():
+    """Project management commands."""
+    pass
+
+@projects.command('create')
+@click.option('--name', 'name', default=None, required=True, type=click.STRING, help='Name for the new project.')
+@click.option('--description', 'description', default=None, required=False, type=click.STRING, help='Description of the new project.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def createProject(name, description, debug, pretty=0):
+    """Creates a project"""
+    click.echo(json.dumps(api.createProject(name=name, description=description, debug=False), indent=pretty))
+
+
 if __name__ == '__main__':
     main()
