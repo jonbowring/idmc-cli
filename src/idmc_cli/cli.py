@@ -371,7 +371,18 @@ def projects():
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def createProject(name, description, debug, pretty=0):
     """Creates a project"""
-    click.echo(json.dumps(api.createProject(name=name, description=description, debug=False), indent=pretty))
+    click.echo(json.dumps(api.createProject(name=name, description=description, debug=debug), indent=pretty))
+
+@projects.command('update')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID for the project to be updated. Use this option or --path.')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Path of the project to be updated. Use this option or --id.')
+@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='New name for the project.')
+@click.option('--description', 'description', default=None, required=False, type=click.STRING, help='New description for the project.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def createProject(id, name, path, description, debug, pretty=0):
+    """Updates a project"""
+    click.echo(json.dumps(api.updateProject(id=id, path=path, name=name, description=description, debug=debug), indent=pretty))
 
 
 if __name__ == '__main__':
