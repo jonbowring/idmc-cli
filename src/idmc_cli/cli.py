@@ -355,5 +355,83 @@ def tagObject(id, path, type, body, tags, debug, pretty=0):
         click.echo(json.dumps(api.untagObject(id=id, path=path, type=type, tags=tags, debug=debug), indent=pretty))
 
 
+###################################
+# Project commands section
+###################################
+
+@main.group('projects')
+def projects():
+    """Project management commands."""
+    pass
+
+@projects.command('create')
+@click.option('--name', 'name', default=None, required=True, type=click.STRING, help='Name for the new project.')
+@click.option('--description', 'description', default=None, required=False, type=click.STRING, help='Description of the new project.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def createProject(name, description, debug, pretty=0):
+    """Creates a project"""
+    click.echo(json.dumps(api.createProject(name=name, description=description, debug=debug), indent=pretty))
+
+@projects.command('update')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID for the project to be updated. Use this option or --path.')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Path of the project to be updated. Use this option or --id.')
+@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='New name for the project.')
+@click.option('--description', 'description', default=None, required=False, type=click.STRING, help='New description for the project.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def createProject(id, name, path, description, debug, pretty=0):
+    """Updates a project"""
+    click.echo(json.dumps(api.updateProject(id=id, path=path, name=name, description=description, debug=debug), indent=pretty))
+
+@projects.command('delete')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID for the project to be deleted. Use this option or --path.')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Path of the project to be deleted. Use this option or --id.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def deleteProject(id, path, debug, pretty=0):
+    """Deletes a project"""
+    click.echo(json.dumps(api.deleteProject(id=id, path=path, debug=debug), indent=pretty))
+
+###################################
+# Folder commands section
+###################################
+
+@main.group('folders')
+def folders():
+    """Folder management commands."""
+    pass
+
+@folders.command('create')
+@click.option('--projectId', 'projectId', default=None, required=False, type=click.STRING, help='ID for the parent project. Use this option or --projectName.')
+@click.option('--projectName', 'projectName', default=None, required=False, type=click.STRING, help='Name for the parent project. Use this option or --projectId.')
+@click.option('--name', 'name', default=None, required=True, type=click.STRING, help='Name for the new project.')
+@click.option('--description', 'description', default=None, required=False, type=click.STRING, help='Description of the new project.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def createFolder(projectId, projectName, name, description, debug, pretty=0):
+    """Creates a folder"""
+    click.echo(json.dumps(api.createFolder(projectId=projectId, projectName=projectName, name=name, description=description, debug=debug), indent=pretty))
+
+@folders.command('update')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID for the folder to be updated. Use this option or --path.')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Path of the folder to be updated. Use this option or --id.')
+@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='New name for the folder.')
+@click.option('--description', 'description', default=None, required=False, type=click.STRING, help='New description for the folder.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def createProject(id, name, path, description, debug, pretty=0):
+    """Updates a folder"""
+    click.echo(json.dumps(api.updateFolder(id=id, path=path, name=name, description=description, debug=debug), indent=pretty))
+
+@folders.command('delete')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID for the folder to be deleted. Use this option or --path.')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Path of the folder to be deleted. Use this option or --id.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def deleteFolder(id, path, debug, pretty=0):
+    """Deletes a folder"""
+    click.echo(json.dumps(api.deleteFolder(id=id, path=path, debug=debug), indent=pretty))
+
 if __name__ == '__main__':
     main()

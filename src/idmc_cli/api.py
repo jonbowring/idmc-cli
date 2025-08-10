@@ -1731,5 +1731,389 @@ class InformaticaCloudAPI:
         return resp
     
 
+    #############################
+    # Projects section
+    #############################
+    
+    def createProject(self, name, description, debug=False):
+        """This function creates a new project"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+
+        while True:
+        
+            # Prepare the mandatory fields
+            data = {
+                'name': name
+            }
+
+            # Prepare the optional fields
+            if description:
+                data['description'] = description
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/projects'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.post(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def updateProject(self, id, path, name, description=None, debug=False):
+        """This function is used to update a project"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the project id if needed
+        if path:
+            lookup = self.lookupObject(path=path, type='PROJECT', debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type PROJECT'
+                    }
+
+        while True:
+        
+            # Prepare the update fields
+            data = {}
+            if name:
+                data['name'] = name
+            if description:
+                data['description'] = description
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/projects/{ quote( id ) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.patch(url, headers=headers, json=data)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            elif r.status_code == 204:
+                resp = { 'message': 'Project updated' }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def deleteProject(self, id, path, debug=False):
+        """This function is used to delete a project"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the project id if needed
+        if path:
+            lookup = self.lookupObject(path=path, type='PROJECT', debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type PROJECT'
+                    }
+
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/projects/{ quote( id ) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.delete(url, headers=headers)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            elif r.status_code == 204:
+                resp = { 'message': 'Project deleted' }
+                break
+            else:
+                break
+        
+        return resp
+    
+
+    #############################
+    # Folders section
+    #############################
+    
+    def createFolder(self, projectId, projectName, name, description, debug=False):
+        """This function creates a new folder"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the project id if needed
+        if projectName:
+            lookup = self.lookupObject(path=projectName, type='PROJECT', debug=debug)
+            try:
+                projectId = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { projectName } and type PROJECT'
+                    }
+        
+        resp = ''
+        attempts = 0
+
+        while True:
+        
+            # Prepare the mandatory fields
+            data = {
+                'name': name
+            }
+
+            # Prepare the optional fields
+            if description:
+                data['description'] = description
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/projects/{ projectId }/folders'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.post(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+    def updateFolder(self, id, path, name, description, debug=False):
+        """This function is used to update a folder"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the folder id if needed
+        if path:
+        
+            # Get the folder ID
+            lookup = self.lookupObject(path=path, type='FOLDER', debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type FOLDER'
+                    }
+
+
+        while True:
+        
+            # Prepare the update fields
+            data = {}
+            if name:
+                data['name'] = name
+            if description:
+                data['description'] = description
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/folders/{ quote( id ) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.patch(url, headers=headers, json=data)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            elif r.status_code == 204:
+                resp = { 'message': 'Folder updated' }
+                break
+            else:
+                break
+        
+        return resp
+    
+
+    def deleteFolder(self, id, path, debug=False):
+        """This function is used to delete a folder"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the folder id if needed
+        if path:
+        
+            # Get the folder ID
+            lookup = self.lookupObject(path=path, type='FOLDER', debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type FOLDER'
+                    }
+
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/folders/{ quote( id ) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.delete(url, headers=headers)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            elif r.status_code == 204:
+                resp = { 'message': 'Folder deleted' }
+                break
+            else:
+                break
+        
+        return resp
+    
+
 # Expose the class as a variable
 api = InformaticaCloudAPI()
