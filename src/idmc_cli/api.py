@@ -1995,20 +1995,9 @@ class InformaticaCloudAPI:
         resp = ''
         attempts = 0
         
-        # Lookup the project and folder id if needed
+        # Lookup the folder id if needed
         if path:
-            crumbs = path.split('/')
-            
-            # Get the project ID
-            lookup = self.lookupObject(path=crumbs[0], type='PROJECT', debug=debug)
-            try:
-                projectId = lookup['objects'][0]['id']
-            except Exception as e:
-                return {
-                        'status': 500,
-                        'text': f'Unable to find object id for path { crumbs[0] } and type PROJECT'
-                    }
-            
+        
             # Get the folder ID
             lookup = self.lookupObject(path=path, type='FOLDER', debug=debug)
             try:
@@ -2018,24 +2007,7 @@ class InformaticaCloudAPI:
                         'status': 500,
                         'text': f'Unable to find object id for path { path } and type FOLDER'
                     }
-        elif id:
-            # Lookup the project id for the folder
-            lookup = self.lookupObject(id=id, debug=debug)
-            try:
-                projectName = lookup['objects'][0]['path'].split('/')[0]
-                lookup = self.lookupObject(path=projectName, type='PROJECT', debug=debug)
-                try:
-                    projectId = lookup['objects'][0]['id']
-                except Exception as e:
-                    return {
-                            'status': 500,
-                            'text': f'Unable to find object id for path { projectName } and type PROJECT'
-                    }
-            except Exception as e:
-                return {
-                        'status': 500,
-                        'text': f'Unable to find object id for path { id } and type FOLDER'
-                    }
+
 
         while True:
         
@@ -2047,7 +2019,7 @@ class InformaticaCloudAPI:
                 data['description'] = description
             
             # Execute the API call
-            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/projects/{ quote( projectId ) }/folders/{ quote( id ) }'
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/folders/{ quote( id ) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
             r = requests.patch(url, headers=headers, json=data)
             
