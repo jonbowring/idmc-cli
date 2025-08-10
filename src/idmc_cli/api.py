@@ -1985,6 +1985,102 @@ class InformaticaCloudAPI:
         
         return resp
     
+    def updateFolder(self, id, path, name, description, debug=False):
+        """This function is used to update a folder"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the project and folder id if needed
+        if path:
+            crumbs = path.split('/')
+            
+            # Get the project ID
+            lookup = self.lookupObject(path=crumbs[0], type='PROJECT', debug=debug)
+            try:
+                projectId = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { crumbs[0] } and type PROJECT'
+                    }
+            
+            # Get the folder ID
+            lookup = self.lookupObject(path=path, type='FOLDER', debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type FOLDER'
+                    }
+        elif id:
+            # Lookup the project id for the folder
+            lookup = self.lookupObject(id=id, debug=debug)
+            try:
+                projectName = lookup['objects'][0]['path'].split('/')[0]
+                lookup = self.lookupObject(path=projectName, type='PROJECT', debug=debug)
+                try:
+                    projectId = lookup['objects'][0]['id']
+                except Exception as e:
+                    return {
+                            'status': 500,
+                            'text': f'Unable to find object id for path { projectName } and type PROJECT'
+                    }
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { id } and type FOLDER'
+                    }
+
+        while True:
+        
+            # Prepare the update fields
+            data = {}
+            if name:
+                data['name'] = name
+            if description:
+                data['description'] = description
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/projects/{ quote( projectId ) }/folders/{ quote( id ) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.patch(url, headers=headers, json=data)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            elif r.status_code == 204:
+                resp = { 'message': 'Folder updated' }
+                break
+            else:
+                break
+        
+        return resp
+    
 
 # Expose the class as a variable
 api = InformaticaCloudAPI()

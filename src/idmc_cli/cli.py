@@ -413,5 +413,16 @@ def createFolder(projectId, projectName, name, description, debug, pretty=0):
     """Creates a folder"""
     click.echo(json.dumps(api.createFolder(projectId=projectId, projectName=projectName, name=name, description=description, debug=debug), indent=pretty))
 
+@folders.command('update')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='ID for the folder to be updated. Use this option or --path.')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Path of the folder to be updated. Use this option or --id.')
+@click.option('--name', 'name', default=None, required=False, type=click.STRING, help='New name for the folder.')
+@click.option('--description', 'description', default=None, required=False, type=click.STRING, help='New description for the folder.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def createProject(id, name, path, description, debug, pretty=0):
+    """Updates a folder"""
+    click.echo(json.dumps(api.updateFolder(id=id, path=path, name=name, description=description, debug=debug), indent=pretty))
+
 if __name__ == '__main__':
     main()
