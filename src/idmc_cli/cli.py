@@ -288,7 +288,7 @@ def getPrivileges(all, debug, pretty=0):
     click.echo(json.dumps(api.getPrivileges(all=all, debug=debug), indent=pretty))
 
 ###################################
-# Role commands section
+# Lookup commands section
 ###################################
 
 @main.group('lookup')
@@ -312,16 +312,47 @@ def lookupObject(id, path, type, debug, pretty=0):
 @click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
 def lookupObjects(body, debug, pretty=0):
     """Lookup multiple objects"""
-    print(body)
     click.echo(json.dumps(api.lookupObjects(body=body, debug=debug), indent=pretty))
 
-@lookup.command('test')
-@click.option('--body', 'body', default=None, required=False, help='JSON payload containing the search conditions for the objects.')
-def test(body):
-    """Testing JSON string escaping"""
-    print(body)
-    print(type(body))
-    click.echo(body)
+###################################
+# Object commands section
+###################################
+
+@main.group('objects')
+def objects():
+    """Object management commands."""
+    pass
+
+@objects.command('addTags')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='Global unique identifier for the object. Required if object path and type not included. ')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Full path of the object including project, folder, and object name. Required with type if object ID not included.')
+@click.option('--type', 'type', default=None, required=False, type=click.STRING, help='Type of object. Required with path if object ID not included.')
+@click.option('--body', 'body', default=None, required=False, type=click.STRING, help='If tagging multiple objects, use this property to include the JSON body. Only use this if not using --id, --path, --type or --tags options.')
+@click.option('--tags', 'tags', default=None, required=False, type=click.STRING, help='Comma separated list of tags to be added to the object.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def tagObject(id, path, type, body, tags, debug, pretty=0):
+    """Adds one or more tags to an object"""
+    if body:
+        click.echo(json.dumps(api.tagObjects(body=body, debug=debug), indent=pretty))
+    else:
+        click.echo(json.dumps(api.tagObject(id=id, path=path, type=type, tags=tags, debug=debug), indent=pretty))
+
+
+@objects.command('removeTags')
+@click.option('--id', 'id', default=None, required=False, type=click.STRING, help='Global unique identifier for the object. Required if object path and type not included. ')
+@click.option('--path', 'path', default=None, required=False, type=click.STRING, help='Full path of the object including project, folder, and object name. Required with type if object ID not included.')
+@click.option('--type', 'type', default=None, required=False, type=click.STRING, help='Type of object. Required with path if object ID not included.')
+@click.option('--body', 'body', default=None, required=False, type=click.STRING, help='If tagging multiple objects, use this property to include the JSON body. Only use this if not using --id, --path, --type or --tags options.')
+@click.option('--tags', 'tags', default=None, required=False, type=click.STRING, help='Comma separated list of tags to be removed from the object.')
+@click.option('--debug', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
+@click.option('--pretty', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+def tagObject(id, path, type, body, tags, debug, pretty=0):
+    """Removes one or more tags from an object"""
+    if body:
+        click.echo(json.dumps(api.untagObjects(body=body, debug=debug), indent=pretty))
+    else:
+        click.echo(json.dumps(api.untagObject(id=id, path=path, type=type, tags=tags, debug=debug), indent=pretty))
 
 
 if __name__ == '__main__':
