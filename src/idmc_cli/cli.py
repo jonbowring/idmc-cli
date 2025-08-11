@@ -1,6 +1,7 @@
 import click
 import json
 from idmc_cli.config import config
+from idmc_cli.i18n import i18n
 from idmc_cli.api import api
 
 @click.group()
@@ -43,8 +44,8 @@ def configure():
 
 
 @main.command('login')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def login(debug, pretty=0):
     """Used to login to Informatica Cloud and return the login details."""
     click.echo(json.dumps(api.login(debug=debug), indent=pretty))
@@ -59,92 +60,92 @@ def users():
     pass
 
 @users.command('get')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='(Optional) Filter by user id. Use this option or the --username option.')
-@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help='(Optional) Filter by user name. Use this option or the --id option.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'get', 'id'))
+@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'get', 'username'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def getUsers(id, username, debug, pretty=0):
     """Returns users"""
     click.echo(json.dumps(api.getUsers(id=id, username=username, debug=debug), indent=pretty))
 
 
 @users.command('delete')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='User id to be deleted. Use this option or the --username option.')
-@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help='User name to be deleted. Use this option or the --id option.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'delete', 'id'))
+@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'delete', 'username'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def deleteUser(id, username, debug, pretty=0):
     """Deletes a user"""
     click.echo(json.dumps(api.deleteUser(id=id, username=username, debug=debug), indent=pretty))
     
 
 @users.command('create')
-@click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help='Informatica Intelligent Cloud Services user name.')
-@click.option('--first-name', '-f', 'first_name', default=None, required=True, type=click.STRING, help='First name for the user account.')
-@click.option('--last-name', '-l', 'last_name', default=None, required=True, type=click.STRING, help='Last name for the user account.')
-@click.option('--password', '-p', 'password', default=None, required=False, type=click.STRING, help='(Optional) Informatica Intelligent Cloud Services password. If password is empty, the user receives an activation email. Maximum length is 255 characters.')
-@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help='(Optional) Description of the user.')
-@click.option('--email', '-e', 'email', default=None, required=True, type=click.STRING, help='Email address for the user.')
-@click.option('--title', '-t', 'title', default=None, required=False, type=click.STRING, help='(Optional) Job title of the user.')
-@click.option('--phone', '-ph', 'phone', default=None, required=False, type=click.STRING, help='(Optional) Phone number for the user.')
-@click.option('--force-password-change', '-fp', 'force_password_change', default=True, required=False, type=click.BOOL, help='(Optional) Determines whether the user must reset the password after the user logs in for the first time.')
-@click.option('--max-login-attempts', '-ml', 'max_login_attempts', default=None, required=False, type=click.INT, help='(Optional) Number of times a user can attempt to log in before the account is locked.')
-@click.option('--authentication', '-a', 'authentication', default=None, required=False, type=click.INT, help='(Optional) Determines whether the user accesses Informatica Intelligent Cloud Services through single sign-in (SAML). Use one of the following values: 0 (Native), 1 (SAML).')
-@click.option('--alias-name', '-an', 'alias_name', default=None, required=False, type=click.STRING, help='(Optional) Required when authentication is not 0. The user identifier or user name in the 3rd party system.')
-@click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help='(Optional) Required when no group IDs are included. Comma separated list of IDs for the roles to assign to the user.')
-@click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help='(Optional) Required when no group IDs are included. Comma separated list of Names for the roles to assign to the user.')
-@click.option('--group-ids', '-gi', 'group_ids', default=None, required=False, type=click.STRING, help='(Optional) Required when no role IDs are included. Comma separated list of IDs for the user groups to assign to the user.')
-@click.option('--group-names', '-gn', 'group_names', default=None, required=False, type=click.STRING, help='(Optional) Required when no role IDs are included. Comma separated list of Names for the user groups to assign to the user.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'name'))
+@click.option('--first-name', '-f', 'first_name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'first_name'))
+@click.option('--last-name', '-l', 'last_name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'last_name'))
+@click.option('--password', '-p', 'password', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'password'))
+@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'description'))
+@click.option('--email', '-e', 'email', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'email'))
+@click.option('--title', '-t', 'title', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'title'))
+@click.option('--phone', '-ph', 'phone', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'phone'))
+@click.option('--force-password-change', '-fp', 'force_password_change', default=True, required=False, type=click.BOOL, help=i18n.getHelpOption('users', 'create', 'force_password_change'))
+@click.option('--max-login-attempts', '-ml', 'max_login_attempts', default=None, required=False, type=click.INT, help=i18n.getHelpOption('users', 'create', 'max_login_attempts'))
+@click.option('--authentication', '-a', 'authentication', default=None, required=False, type=click.INT, help=i18n.getHelpOption('users', 'create', 'authentication'))
+@click.option('--alias-name', '-an', 'alias_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'alias_name'))
+@click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'role_ids'))
+@click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'role_names'))
+@click.option('--group-ids', '-gi', 'group_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'group_ids'))
+@click.option('--group-names', '-gn', 'group_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'group_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def createUser(name, first_name, last_name, email, password, description, title, phone, force_password_change, max_login_attempts, authentication, alias_name, role_ids, role_names, group_ids, group_names, debug, pretty=0):
     """Used to create new users"""
     click.echo(json.dumps(api.createUser(name=name, firstName=first_name, lastName=last_name, email=email, password=password, description=description, title=title, phone=phone, forcePasswordChange=force_password_change, maxLoginAttempts=max_login_attempts, authentication=authentication, aliasName=alias_name, roleIds=role_ids, roleNames=role_names, groupIds=group_ids, groupNames=group_names, debug=debug), indent=pretty))
     
 
 @users.command('add-roles')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --username.')
-@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --id.')
-@click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --roleNames.')
-@click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --roleIds.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-roles', 'id'))
+@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-roles', 'username'))
+@click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-roles', 'role_ids'))
+@click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-roles', 'role_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def addUserRoles(id, username, roleIds, roleNames, debug, pretty=0):
     """Adds role assignments to a user"""
     click.echo(json.dumps(api.addUserRoles(id=id, username=username, roleIds=roleIds, roleNames=roleNames, debug=debug), indent=pretty))
 
 
 @users.command('remove-roles')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --username.')
-@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --id.')
-@click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --roleNames.')
-@click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --roleIds.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-roles', 'id'))
+@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-roles', 'username'))
+@click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-roles', 'role_ids'))
+@click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-roles', 'role_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def removeUserRoles(id, username, role_ids, role_names, debug, pretty=0):
     """Removes role assignments from a user"""
     click.echo(json.dumps(api.removeUserRoles(id=id, username=username, roleIds=role_ids, roleNames=role_names, debug=debug), indent=pretty))
 
 
 @users.command('add-groups')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --username.')
-@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --id.')
-@click.option('--group-ids', '-gi', 'group_ids', default=None, required=False, type=click.STRING, help='Comma separated list of group ids to be added to user. Must specify this option or --group-names.')
-@click.option('--group-names', '-gn', 'group_names', default=None, required=False, type=click.STRING, help='Comma separated list of group names to be added to user. Must specify this option or --group-ids.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-groups', 'id'))
+@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-groups', 'username'))
+@click.option('--group-ids', '-gi', 'group_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-groups', 'group_ids'))
+@click.option('--group-names', '-gn', 'group_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-groups', 'group_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def addUserGroups(id, username, group_ids, group_names, debug, pretty=0):
     """Adds group assignments to a user"""
     click.echo(json.dumps(api.addUserGroups(id=id, username=username, groupIds=group_ids, groupNames=group_names, debug=debug), indent=pretty))
 
 
 @users.command('remove-groups')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --username.')
-@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --id.')
-@click.option('--group-ids', '-gi', 'group_ids', default=None, required=False, type=click.STRING, help='Comma separated list of group ids to be added to user. Must specify this option or --group-names.')
-@click.option('--group-names', '-gn', 'group_names', default=None, required=False, type=click.STRING, help='Comma separated list of group names to be added to user. Must specify this option or --group-ids.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-groups', 'id'))
+@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-groups', 'username'))
+@click.option('--group-ids', '-gi', 'group_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-groups', 'group_ids'))
+@click.option('--group-names', '-gn', 'group_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-groups', 'group_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def removeUserGroups(id, username, group_ids, group_names, debug, pretty=0):
     """Removes group assignments from a user"""
     click.echo(json.dumps(api.removeUserGroups(id=id, username=username, groupIds=group_ids, groupNames=group_names, debug=debug), indent=pretty))
@@ -160,46 +161,46 @@ def userGroups():
     pass
 
 @userGroups.command('get')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='(Optional) Filter by user group id. Use this option or the --username option.')
-@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help='(Optional) Filter by user group name. Use this option or the --id option.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'get', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'get', 'name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def getUserGroups(id, name, debug, pretty=0):
     """Returns user groups"""
     click.echo(json.dumps(api.getUserGroups(id=id, name=name, debug=debug), indent=pretty))
 
 
 @userGroups.command('create')
-@click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help='Name of the new user group.')
-@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help='Description of the new user group.')
-@click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to the new user group. Either this or the --role-names group is required.')
-@click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to the new user group. Either this or the --role-ids group is required.')
-@click.option('--user-ids', '-ui', 'user_ids', default=None, required=False, type=click.STRING, help='Comma separated list of user ids to be added to the new user group.  Use this option or the --user-names option.')
-@click.option('--user-names', '-un', 'user_names', default=None, required=False, type=click.STRING, help='Comma separated list of user names to be added to the new user group. Use this option or the --user-ids option.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('user-groups', 'create', 'name'))
+@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'create', 'description'))
+@click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'create', 'role_ids'))
+@click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'create', 'role_names'))
+@click.option('--user-ids', '-ui', 'user_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'create', 'user_ids'))
+@click.option('--user-names', '-un', 'user_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'create', 'user_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def createUserGroup(name, description, role_ids, role_names, user_ids, user_names, debug, pretty=0):
     """Creates a new user group"""
     click.echo(json.dumps(api.createUserGroup(name=name, description=description, roleIds=role_ids, roleNames=role_names, userIds=user_ids, userNames=user_names, debug=debug), indent=pretty))
 
 
 @userGroups.command('add-roles')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID of user to be updated. Must specify this option or --group-name.')
-@click.option('--group-name', '-gn', 'group_name', default=None, required=False, type=click.STRING, help='ID of user group to be updated. Must specify this option or --id.')
-@click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --role-names.')
-@click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --role-ids.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'add-roles', 'id'))
+@click.option('--group-name', '-gn', 'group_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'add-roles', 'group_name'))
+@click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'add-roles', 'role_ids'))
+@click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'add-roles', 'role_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def addUserGroupRoles(id, group_name, role_ids, role_names, debug, pretty=0):
     """Adds role assignments to a user group"""
     click.echo(json.dumps(api.addUserGroupRoles(id=id, groupname=group_name, roleIds=role_ids, roleNames=role_names, debug=debug), indent=pretty))
 
 
 @userGroups.command('delete')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='User group id to be deleted. Use this option or the --name option.')
-@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help='User group name to be deleted. Use this option or the --id option.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'delete', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'delete', 'name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def deleteUserGroup(id, name, debug, pretty=0):
     """Deletes a user group"""
     click.echo(json.dumps(api.deleteUserGroup(id=id, name=name, debug=debug), indent=pretty))
@@ -215,55 +216,55 @@ def roles():
     pass
 
 @roles.command('get')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='Filter by role id.')
-@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help='Filter by role name.')
-@click.option('--expand', '-e', 'expand', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='Expand role privileges.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'get', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'get', 'name'))
+@click.option('--expand', '-e', 'expand', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('roles', 'get', 'expand'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def getRoles(id, name, expand, debug, pretty=0):
     """Returns roles"""
     click.echo(json.dumps(api.getRoles(id=id, name=name, expand=expand, debug=debug), indent=pretty))
 
 @roles.command('create')
-@click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help='Filter by role name.')
-@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help='Description of the new role.')
-@click.option('--privilege-ids', '-pi', 'privilege_ids', default=None, required=False, type=click.STRING, help='Comma separated list of privilege IDs for the new role. Must include this option or the --privilege-names option.')
-@click.option('--privilege-names', '-pn', 'privilege_names', default=None, required=False, type=click.STRING, help='Comma separated list of privilege names for the new role. Must include this option or the --privilege-ids option.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('roles', 'create', 'name'))
+@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'create', 'description'))
+@click.option('--privilege-ids', '-pi', 'privilege_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'create', 'privilege_ids'))
+@click.option('--privilege-names', '-pn', 'privilege_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'create', 'privilege_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def createRole(name, description, privilege_ids, privilege_names, debug, pretty=0):
     """Creates a new role"""
     click.echo(json.dumps(api.createRole(name=name, description=description, privilegeIds=privilege_ids, privilegeNames=privilege_names, debug=debug), indent=pretty))
 
 @roles.command('add-privileges')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID of role to be updated. Must specify this option or --name.')
-@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help='Name of role to be updated. Must specify this option or --id.')
-@click.option('--privilege-ids', '-pi', 'privilege_ids', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --privilege-names.')
-@click.option('--privilege-names', '-pn', 'privilege_names', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --privilege-ids.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'add-privileges', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'add-privileges', 'name'))
+@click.option('--privilege-ids', '-pi', 'privilege_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'add-privileges', 'privilege_ids'))
+@click.option('--privilege-names', '-pn', 'privilege_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'add-privileges', 'privilege_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def addRolePrivileges(id, name, privilege_ids, privilege_names, debug, pretty=0):
     """Adds privilege assignments to a role"""
     click.echo(json.dumps(api.addRolePrivileges(id=id, name=name, privilegeIds=privilege_ids, privilegeNames=privilege_names, debug=debug), indent=pretty))
 
 
 @roles.command('remove-privileges')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID of role to be updated. Must specify this option or --name.')
-@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help='Name of role to be updated. Must specify this option or --id.')
-@click.option('--privilege-ids', '-pi', 'privilege_ids', default=None, required=False, type=click.STRING, help='Comma separated list of role ids to be added to user. Must specify this option or --privilege-names.')
-@click.option('--privilege-names', '-pn', 'privilege_names', default=None, required=False, type=click.STRING, help='Comma separated list of role names to be added to user. Must specify this option or --privilege-ids.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'remove-privileges', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'remove-privileges', 'name'))
+@click.option('--privilege-ids', '-pi', 'privilege_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'remove-privileges', 'privilege_ids'))
+@click.option('--privilege-names', '-pn', 'privilege_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'remove-privileges', 'privilege_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def removeRolePrivileges(id, name, privilege_ids, privilege_names, debug, pretty=0):
     """Remove privilege assignments from a role"""
     click.echo(json.dumps(api.removeRolePrivileges(id=id, name=name, privilegeIds=privilege_ids, privilegeNames=privilege_names, debug=debug), indent=pretty))
 
 
 @roles.command('delete')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='Role id to be deleted. Use this option or the --name option.')
-@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help='Role name to be deleted. Use this option or the --id option.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'delete', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'delete', 'name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def deleteRole(id, name, debug, pretty=0):
     """Deletes a role"""
     click.echo(json.dumps(api.deleteRole(id=id, name=name, debug=debug), indent=pretty))
@@ -280,9 +281,9 @@ def privileges():
     pass
 
 @privileges.command('get')
-@click.option('--all', 'all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If included will return a full list of privileges, even those that are disabled or unassigned.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--all', 'all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('privileges', 'get', 'all'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def getPrivileges(all, debug, pretty=0):
     """Returns privileges"""
     click.echo(json.dumps(api.getPrivileges(all=all, debug=debug), indent=pretty))
@@ -297,19 +298,19 @@ def lookup():
     pass
 
 @lookup.command('object')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='Global unique identifier for the object. Required if object path and type not included. ')
-@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help='Full path of the object including project, folder, and object name. Required with type if object ID not included.')
-@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help='Type of object. Required with path if object ID not included.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('lookup', 'object', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('lookup', 'object', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('lookup', 'object', 'type'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def lookupObject(id, path, type, debug, pretty=0):
     """Lookup a single object"""
     click.echo(json.dumps(api.lookupObject(id=id, path=path, type=type, debug=debug), indent=pretty))
 
 @lookup.command('objects')
-@click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help='JSON payload containing the search conditions for the objects.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('lookup', 'objects', 'body'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def lookupObjects(body, debug, pretty=0):
     """Lookup multiple objects"""
     click.echo(json.dumps(api.lookupObjects(body=body, debug=debug), indent=pretty))
@@ -324,13 +325,13 @@ def objects():
     pass
 
 @objects.command('add-tags')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='Global unique identifier for the object. Required if object path and type not included. ')
-@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help='Full path of the object including project, folder, and object name. Required with type if object ID not included.')
-@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help='Type of object. Required with path if object ID not included.')
-@click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help='If tagging multiple objects, use this property to include the JSON body. Only use this if not using --id, --path, --type or --tags options.')
-@click.option('--tags', '-T', 'tags', default=None, required=False, type=click.STRING, help='Comma separated list of tags to be added to the object.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'type'))
+@click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'body'))
+@click.option('--tags', '-T', 'tags', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'tags'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def tagObject(id, path, type, body, tags, debug, pretty=0):
     """Adds one or more tags to an object"""
     if body:
@@ -340,13 +341,13 @@ def tagObject(id, path, type, body, tags, debug, pretty=0):
 
 
 @objects.command('remove-tags')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='Global unique identifier for the object. Required if object path and type not included. ')
-@click.option('--path', '-p' 'path', default=None, required=False, type=click.STRING, help='Full path of the object including project, folder, and object name. Required with type if object ID not included.')
-@click.option('--type', '-t' 'type', default=None, required=False, type=click.STRING, help='Type of object. Required with path if object ID not included.')
-@click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help='If tagging multiple objects, use this property to include the JSON body. Only use this if not using --id, --path, --type or --tags options.')
-@click.option('--tags', '-T', 'tags', default=None, required=False, type=click.STRING, help='Comma separated list of tags to be removed from the object.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'id'))
+@click.option('--path', '-p' 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'path'))
+@click.option('--type', '-t' 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'type'))
+@click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'body'))
+@click.option('--tags', '-T', 'tags', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'tags'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def tagObject(id, path, type, body, tags, debug, pretty=0):
     """Removes one or more tags from an object"""
     if body:
@@ -365,30 +366,30 @@ def projects():
     pass
 
 @projects.command('create')
-@click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help='Name for the new project.')
-@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help='Description of the new project.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('projects', 'create', 'name'))
+@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'create', 'description'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def createProject(name, description, debug, pretty=0):
     """Creates a project"""
     click.echo(json.dumps(api.createProject(name=name, description=description, debug=debug), indent=pretty))
 
 @projects.command('update')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID for the project to be updated. Use this option or --path.')
-@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help='Path of the project to be updated. Use this option or --id.')
-@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help='New name for the project.')
-@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help='New description for the project.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'update', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'update', 'path'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'update', 'name'))
+@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'update', 'description'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def createProject(id, name, path, description, debug, pretty=0):
     """Updates a project"""
     click.echo(json.dumps(api.updateProject(id=id, path=path, name=name, description=description, debug=debug), indent=pretty))
 
 @projects.command('delete')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID for the project to be deleted. Use this option or --path.')
-@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help='Path of the project to be deleted. Use this option or --id.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'delete', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'delete', 'path'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def deleteProject(id, path, debug, pretty=0):
     """Deletes a project"""
     click.echo(json.dumps(api.deleteProject(id=id, path=path, debug=debug), indent=pretty))
@@ -403,32 +404,32 @@ def folders():
     pass
 
 @folders.command('create')
-@click.option('--project-id', '-pi', 'project_id', default=None, required=False, type=click.STRING, help='ID for the parent project. Use this option or --project_name.')
-@click.option('--project-name', '-pn', 'project_name', default=None, required=False, type=click.STRING, help='Name for the parent project. Use this option or --project-id.')
-@click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help='Name for the new project.')
-@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help='Description of the new project.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--project-id', '-pi', 'project_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'create', 'project_id'))
+@click.option('--project-name', '-pn', 'project_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'create', 'project_name'))
+@click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('folders', 'create', 'name'))
+@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'create', 'description'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def createFolder(project_id, project_name, name, description, debug, pretty=0):
     """Creates a folder"""
     click.echo(json.dumps(api.createFolder(projectId=project_id, projectName=project_name, name=name, description=description, debug=debug), indent=pretty))
 
 @folders.command('update')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID for the folder to be updated. Use this option or --path.')
-@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help='Path of the folder to be updated. Use this option or --id.')
-@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help='New name for the folder.')
-@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help='New description for the folder.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'update', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'update', 'path'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'update', 'name'))
+@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'update', 'description'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def createProject(id, name, path, description, debug, pretty=0):
     """Updates a folder"""
     click.echo(json.dumps(api.updateFolder(id=id, path=path, name=name, description=description, debug=debug), indent=pretty))
 
 @folders.command('delete')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help='ID for the folder to be deleted. Use this option or --path.')
-@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help='Path of the folder to be deleted. Use this option or --id.')
-@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help='If true, will print the API request details to console.')
-@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help='If true, will pretty print the returned JSON.')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'delete', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'delete', 'path'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def deleteFolder(id, path, debug, pretty=0):
     """Deletes a folder"""
     click.echo(json.dumps(api.deleteFolder(id=id, path=path, debug=debug), indent=pretty))

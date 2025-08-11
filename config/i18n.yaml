@@ -1,0 +1,197 @@
+english:
+  help:
+    common:
+      options:
+        debug: If true, will print the API request details to console.
+        pretty: If true, will pretty print the returned JSON.
+    
+    users:
+      get:
+        options:
+          id: (Optional) Filter by user id. Use this option or the --username option.
+          username: (Optional) Filter by user name. Use this option or the --id option.
+      
+      delete:
+        options:
+          id: User id to be deleted. Use this option or the --username option.
+          username: User name to be deleted. Use this option or the --id option.
+
+      create:
+        options:
+          name: Informatica Intelligent Cloud Services user name.
+          first_name: First name for the user account.
+          last_name: Last name for the user account.
+          password: Informatica Intelligent Cloud Services password. If password is empty, the user receives an activation email. Maximum length is 255 characters.
+          description: Description of the user.
+          email: Email address for the user.
+          title: Job title of the user.
+          phone: Phone number for the user.
+          force_password_change: Determines whether the user must reset the password after the user logs in for the first time.
+          max_login_attempts: Number of times a user can attempt to log in before the account is locked.
+          authentication: "Determines whether the user accesses Informatica Intelligent Cloud Services through single sign-in (SAML). Use one of the following values: 0 (Native), 1 (SAML)."
+          alias_name: Required when authentication is not 0. The user identifier or user name in the 3rd party system.
+          role_ids: Required when no group IDs are included. Comma separated list of IDs for the roles to assign to the user.
+          role_names: Required when no group IDs are included. Comma separated list of Names for the roles to assign to the user.
+          group_ids: Required when no role IDs are included. Comma separated list of IDs for the user groups to assign to the user.
+          group_names: Required when no role IDs are included. Comma separated list of Names for the user groups to assign to the user.
+
+      add-roles:
+        options:
+          id: ID of user to be updated. Must specify this option or --username.
+          username: ID of user to be updated. Must specify this option or --id.
+          role_ids: Comma separated list of role ids to be added to user. Must specify this option or --roleNames.
+          role_names: Comma separated list of role names to be added to user. Must specify this option or --roleIds.
+
+      remove-roles:
+        options:
+          id: ID of user to be updated. Must specify this option or --username.
+          username: Username to be updated. Must specify this option or --id.
+          role_ids: Comma separated list of role ids to be added to user. Must specify this option or --roleNames.
+          role_names: Comma separated list of role names to be added to user. Must specify this option or --roleIds.
+
+      add-groups:
+        options:
+          id: ID of user to be updated. Must specify this option or --username.
+          username: Username to be updated. Must specify this option or --id.
+          group_ids: Comma separated list of group ids to be added to user. Must specify this option or --group-names.
+          group_names: Comma separated list of group names to be added to user. Must specify this option or --group-ids.
+
+      remove-groups:
+        options:
+          id: ID of user to be updated. Must specify this option or --username.
+          username: Username to be updated. Must specify this option or --id.
+          group_ids: Comma separated list of group ids to be removed from the user. Must specify this option or --group-names.
+          group_names: Comma separated list of group names to be removed from the user. Must specify this option or --group-ids.
+
+    user-groups:
+      get:
+        options:
+          id: Filter by user group id. Use this option or the --username option.
+          name: Filter by user group name. Use this option or the --id option.
+
+      create:
+        options:
+          name: Name of the new user group.
+          description: Description of the new user group.
+          role_ids: Comma separated list of role ids to be added to the new user group. Either this or the --role-names group is required.
+          role_names: Comma separated list of role names to be added to the new user group. Either this or the --role-ids group is required.
+          user_ids: Comma separated list of user ids to be added to the new user group.  Use this option or the --user-names option.
+          user_names: Comma separated list of user names to be added to the new user group. Use this option or the --user-ids option.
+      
+      add-roles:
+        options:
+          id: ID of user group to be updated. Must specify this option or --group-name.
+          group_name: Name of user group to be updated. Must specify this option or --id.
+          role_ids: Comma separated list of role ids to be added to user. Must specify this option or --role-names.
+          role_names: Comma separated list of role names to be added to user. Must specify this option or --role-ids.
+
+      delete:
+        options:
+          id: User group id to be deleted. Use this option or the --name option.
+          name: User group name to be deleted. Use this option or the --id option.
+
+    roles:
+      get:
+        options:
+          id: Filter by role id.
+          name: Filter by role name.
+          expand: Expand role privileges.
+
+      create:
+        options:
+          name: Name for new role.
+          description: Description of the new role.
+          privilege_ids: Comma separated list of privilege IDs for the new role. Must include this option or the --privilege-names option.
+          privilege_names: Comma separated list of privilege names for the new role. Must include this option or the --privilege-ids option.
+
+      add-privileges:
+        options:
+          id: ID of role to be updated. Must specify this option or --name.
+          name: Name of role to be updated. Must specify this option or --id.
+          privilege_ids: Comma separated list of privilege ids to be added to user. Must specify this option or --privilege-names.
+          privilege_names: Comma separated list of privilege names to be added to user. Must specify this option or --privilege-ids.
+
+      remove-privileges:
+        options:
+          id: ID of role to be updated. Must specify this option or --name.
+          name: Name of role to be updated. Must specify this option or --id.
+          privilege_ids: Comma separated list of privilege ids to be removed from user. Must specify this option or --privilege-names.
+          privilege_names: Comma separated list of privilege names to be removed from user. Must specify this option or --privilege-ids.
+
+      delete:
+        options:
+          id: Role id to be deleted. Use this option or the --name option.
+          name: Role name to be deleted. Use this option or the --id option.
+
+    privileges:
+      get:
+        options:
+          all: If included will return a full list of privileges, even those that are disabled or unassigned.
+
+    lookup:
+      object:
+        options:
+          id: Global unique identifier for the object. Required if object path and type not included.
+          path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
+          type: Type of object. Required with path if object ID not included.
+
+      objects:
+        options:
+          body: JSON payload containing the search conditions for the objects.
+
+    objects:
+      add-tags:
+        options:
+          id: Global unique identifier for the object. Required if object path and type not included.
+          path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
+          type: Type of object. Required with path if object ID not included.
+          body: If tagging multiple objects, use this property to include the JSON body. Only use this if not using --id, --path, --type or --tags options.
+          tags: Comma separated list of tags to be added to the object.
+
+      remove-tags:
+        options:
+          id: Global unique identifier for the object. Required if object path and type not included.
+          path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
+          type: Type of object. Required with path if object ID not included.
+          body: If removing tags from multiple objects, use this property to include the JSON body. Only use this if not using --id, --path, --type or --tags options.
+          tags: Comma separated list of tags to be removed from the object.
+
+    projects:
+      create:
+        options:
+          name: Name for the new project.
+          description: Description of the new project.
+
+      update:
+        options:
+          id: ID for the project to be updated. Use this option or --path.
+          path: Path of the project to be updated. Use this option or --id.
+          name: New name for the project.
+          description: New description for the project.
+
+      delete:
+        options:
+          id: ID for the project to be deleted. Use this option or --path.
+          path: Path of the project to be deleted. Use this option or --id.
+
+    folders:
+      create:
+        options:
+          project_id: ID for the parent project. Use this option or --project_name.
+          project_name: Name for the parent project. Use this option or --project-id.
+          name: Name for the new folder
+          description: Description for the new folder
+
+      update:
+        options:
+          id: ID for the folder to be updated. Use this option or --path.
+          path: Path of the folder to be updated. Use this option or --id.
+          name: New name for the folder.
+          description: New description for the folder.
+
+      delete:
+        options:
+          id: ID for the folder to be deleted. Use this option or --path.
+          path: Path of the folder to be deleted. Use this option or --id.
+
+
