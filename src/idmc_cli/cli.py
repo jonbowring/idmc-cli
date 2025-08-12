@@ -461,5 +461,13 @@ def checkInObject(summary, description, id, path, type, include_container, body,
     else:
         click.echo(json.dumps(api.checkInObject(summary=summary, description=description, id=id, path=path, type=type, includeContainer=include_container, debug=debug), indent=pretty))
 
+@sourceControl.command('status')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'status', 'id'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getSourceStatus(id, debug, pretty=0):
+    """Gets the status of a source control action"""
+    click.echo(json.dumps(api.getSourceStatus(id=id, debug=debug), indent=pretty))
+
 if __name__ == '__main__':
     main()
