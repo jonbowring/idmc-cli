@@ -457,7 +457,7 @@ def sourceControl():
 def checkInObject(summary, description, id, path, type, include_container, body, debug, pretty=0):
     """Checks in one or more tags to an object"""
     if body:
-        click.echo(json.dumps(api.tagObjects(body=body, debug=debug), indent=pretty))
+        click.echo(json.dumps(api.checkInObjects(summary=summary, description=description, body=body, debug=debug), indent=pretty))
     else:
         click.echo(json.dumps(api.checkInObject(summary=summary, description=description, id=id, path=path, type=type, includeContainer=include_container, debug=debug), indent=pretty))
 
