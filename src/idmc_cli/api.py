@@ -1436,7 +1436,7 @@ class InformaticaCloudAPI:
         return resp
     
     #############################
-    # Objects section
+    # Tags section
     #############################
 
     def tagObject(self, id, path, type, tags, debug=False):
@@ -2110,6 +2110,84 @@ class InformaticaCloudAPI:
                 resp = { 'message': 'Folder deleted' }
                 break
             else:
+                break
+        
+        return resp
+    
+
+    #############################
+    # Source control section
+    #############################
+
+    def checkInObject(self, summary, description, id, path, type, includeContainer, debug=False):
+        """This function is used to check an object into a git repository"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+
+        # Lookup the object id if needed
+        if path and type:
+            lookup = self.lookupObject(path=path, type=type, debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type { type }'
+                }
+        
+        while True:
+        
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/checkin'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            
+            # Include the mandatory fields
+            data = {
+                'objects': [
+                    {
+                        'id': id
+                    }
+                ],
+                'summary': summary
+            }
+
+            # Include the optional fields if needed
+            if description:
+                data['description'] = description
+            if includeContainer:
+                data['objects'][0]['includeContainerAssets'] = includeContainer
+
+            r = requests.post(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Return the response
+            else:
+                resp = r.json()
                 break
         
         return resp
