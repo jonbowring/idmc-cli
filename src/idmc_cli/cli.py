@@ -469,5 +469,14 @@ def getSourceStatus(id, debug, pretty=0):
     """Gets the status of a source control action"""
     click.echo(json.dumps(api.getSourceStatus(id=id, debug=debug), indent=pretty))
 
+@sourceControl.command('repo-details')
+@click.option('--project-ids', '-i', 'project_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'repo-details', 'project_ids'))
+@click.option('--project-names', '-n', 'project_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'repo-details', 'project_names'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getSourceStatus(project_ids, project_names, debug, pretty=0):
+    """Gets the source control repository details"""
+    click.echo(json.dumps(api.getRepoConnection(projectIds=project_ids, projectNames=project_names, debug=debug), indent=pretty))
+
 if __name__ == '__main__':
     main()

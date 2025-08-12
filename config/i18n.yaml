@@ -208,3 +208,8 @@ english:
       status:
         options:
           id: ID of the source control action.
+
+      repo-details:
+        options:
+          project_ids: Comma separated list of project id's to return the repository details for. Required if --project-names is not used.
+          project_names: Comma separated list of project names to return the repository details for. Required if --project-ids is not used.
