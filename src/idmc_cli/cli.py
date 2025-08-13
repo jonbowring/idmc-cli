@@ -572,5 +572,27 @@ def compareVersions(id, path, type, old_version, new_version, format, debug, pre
     else:
         click.echo(api.compareVersions(id=id, path=path, type=type, oldVersion=old_version, newVersion=new_version, format=format, debug=debug))
 
+###################################
+# Log commands section
+###################################
+
+@main.group('logs')
+def logs():
+    """Log commands."""
+    pass
+
+@logs.command('security')
+@click.option('--category', '-c', 'category', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'security', 'category'))
+@click.option('--actor', '-a', 'actor', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'security', 'actor'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'security', 'name'))
+@click.option('--from', '-f', 'time_from', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'security', 'time_from'))
+@click.option('--to', '-t', 'time_to', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'security', 'time_to'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getSecurityLogs(category, actor, name, time_from, time_to, debug, pretty=0):
+    """Gets the security logs"""
+    click.echo(json.dumps(api.getSecurityLogs(category=category, actor=actor, name=name, time_from=time_from, time_to=time_to, debug=debug), indent=pretty))
+        
+
 if __name__ == '__main__':
     main()

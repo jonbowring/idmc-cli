@@ -1,5 +1,6 @@
 import requests
 import json
+from datetime import datetime, timezone, timedelta
 from urllib.parse import quote
 from idmc_cli.config import config
 
@@ -3092,6 +3093,81 @@ class InformaticaCloudAPI:
                 break
         
         return resp
+    
+    #############################
+    # Logs section
+    #############################
+
+    def getSecurityLogs(self, category, actor, name, time_from='1970-01-01T00:00:01.000Z', time_to='9999-31-12T00:00:01.000Z', debug=False):
+        """This function returns the git history for an asset"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        now = datetime.now(timezone.utc)
+        past = now - timedelta(days=14)
+        if time_to is None:
+            time_to = now.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+        if time_from is None:
+            time_from = past.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+        
+        attempts = 0
+        skip = 0
+        pages = []
+        
+        while True:
+        
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/securityLog'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+
+            # Initialise the query
+            params = { 'limit': self.page_size, 'skip': skip, 'q': f'entryTime>="{ time_from }" and entryTime<="{ time_to }"' }
+            if category:
+                params['q'] += f';actionCategory=="{ category }"'
+            if actor:
+                params['q'] += f';actor=="{ actor }"'
+            if name:
+                params['q'] += f';objectName=="{ name }"'
+
+            r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                pages.append(resp)
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                pages.append(resp)
+                break
+            # If there is still some data then continue onto the next page
+            elif len(r.json()['entries']) > 0:
+                resp = r.json()
+                pages.append(resp)
+                skip += self.page_size
+                continue
+            # Break when there are no pages left
+            else:
+                break
+        
+        return pages
 
     
 
