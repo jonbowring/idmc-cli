@@ -489,6 +489,16 @@ def getCommitHistory(id, path, type, branch, debug, pretty=0):
     """Gets the commit history for an asset"""
     click.echo(json.dumps(api.getCommitHistory(id=id, path=path, type=type, branch=branch, debug=debug), indent=pretty))
 
+@sourceControl.command('commit-details')
+@click.option('--hash', '-h', 'hash', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-details', 'hash'))
+@click.option('--search-all', '-s', 'search_all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('source-control', 'commit-details', 'search_all'))
+@click.option('--repo-id', '-r', 'repo_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-details', 'repo_id'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getCommitDetails(hash, search_all, repo_id, debug, pretty=0):
+    """Gets the details for a commit"""
+    click.echo(json.dumps(api.getCommitDetails(hash=hash, searchAllRepos=search_all, repoId=repo_id, debug=debug), indent=pretty))
+
 @sourceControl.command('compare-versions')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'compare-versions', 'path'))
