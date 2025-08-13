@@ -230,6 +230,13 @@ english:
           hash: Unique commit hash to pull.
           relax_validation: The objectSpecification objects are ignored if the sources don't exist in the assets that are included in the pull.
 
+      pull-commit-hash:
+        options:
+          hash: Unique commit hash to pull.
+          search: Flag to search project-level repositories if the commit hash wasn't found for the global repository.
+          repo_id: Connection ID of the project-level repository to search. If not specified, the global repository is searched.
+          relax_validation: The objectSpecification objects are ignored if the sources don't exist in the assets that are included in the pull.
+
       status:
         options:
           id: ID of the source control action.
