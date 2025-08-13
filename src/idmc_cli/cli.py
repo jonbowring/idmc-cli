@@ -462,11 +462,11 @@ def checkInObject(summary, description, id, path, type, include_container, body,
         click.echo(json.dumps(api.checkInObject(summary=summary, description=description, id=id, path=path, type=type, includeContainer=include_container, debug=debug), indent=pretty))
 
 @sourceControl.command('check-out')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-in', 'id'))
-@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-in', 'path'))
-@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-in', 'type'))
-@click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-in', 'body'))
-@click.option('--include-container', '-I', 'include_container', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('source-control', 'check-in', 'include_container'))
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-out', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-out', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-out', 'type'))
+@click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-out', 'body'))
+@click.option('--include-container', '-I', 'include_container', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('source-control', 'check-out', 'include_container'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def checkOutObject(id, path, type, include_container, body, debug, pretty=0):
@@ -475,6 +475,21 @@ def checkOutObject(id, path, type, include_container, body, debug, pretty=0):
         click.echo(json.dumps(api.checkOutObjects(body=body, debug=debug), indent=pretty))
     else:
         click.echo(json.dumps(api.checkOutObject(id=id, path=path, type=type, includeContainer=include_container, debug=debug), indent=pretty))
+
+@sourceControl.command('undo-check-out')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'undo-check-out', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'undo-check-out', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'undo-check-out', 'type'))
+@click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'undo-check-out', 'body'))
+@click.option('--include-container', '-I', 'include_container', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('source-control', 'undo-check-out', 'include_container'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def undoCheckOutObject(id, path, type, include_container, body, debug, pretty=0):
+    """Undo check out for one or more objects"""
+    if body:
+        click.echo(json.dumps(api.undoCheckOutObjects(body=body, debug=debug), indent=pretty))
+    else:
+        click.echo(json.dumps(api.undoCheckOutObject(id=id, path=path, type=type, includeContainer=include_container, debug=debug), indent=pretty))
 
 @sourceControl.command('status')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'status', 'id'))

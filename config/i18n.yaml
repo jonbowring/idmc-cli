@@ -211,7 +211,15 @@ english:
           path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
           type: Type of object. Required with path if object ID not included.
           body: If checking out multiple objects, use this property to include the JSON body. Only use this if not using --id, --path or --type.
-          include_container: Whether all objects in a project or folder are included in the check-in.
+          include_container: Whether all objects in a project or folder are included in the check-out.
+
+      undo-check-out:
+        options:
+          id: Global unique identifier for the object. Required if object path and type not included.
+          path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
+          type: Type of object. Required with path if object ID not included.
+          body: If undoing check out multiple objects, use this property to include the JSON body. Only use this if not using --id, --path or --type.
+          include_container: Whether all objects in a project or folder are included in the undo check-out.
 
       status:
         options:
