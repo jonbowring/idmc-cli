@@ -220,3 +220,12 @@ english:
           path: Project or path where the assets are located. Required if --id is not specified.
           type: Type of the asset. Required if --id is not specified.
           branch: Repository branch, if different from the branch that's configured for the organization.
+
+      compare-versions:
+        options:
+          id: ID of the project, folder, or asset.
+          path: Project or path where the assets are located. Required if --id is not specified.
+          type: Type of the asset. Required if --id is not specified.
+          old_version: "The base version of the asset to compare. If the asset version to compare is checked in to the repository, use the commit hash for the value. If the asset version to compare hasn't been checked in, use the following value: CURRENT-VERSION"
+          new_version: "The asset version to compare to the base version. If the asset version to compare is checked in to the repository, use the commit hash for the value. If the asset version to compare hasn't been checked in, use the following value: CURRENT-VERSION"
+          format: Response format. Use either JSON or TEXT.
