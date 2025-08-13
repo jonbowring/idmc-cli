@@ -478,5 +478,16 @@ def getSourceStatus(project_ids, project_names, debug, pretty=0):
     """Gets the source control repository details"""
     click.echo(json.dumps(api.getRepoConnection(projectIds=project_ids, projectNames=project_names, debug=debug), indent=pretty))
 
+@sourceControl.command('commit-history')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'type'))
+@click.option('--branch', '-b', 'branch', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'branch'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getCommitHistory(id, path, type, branch, debug, pretty=0):
+    """Gets the commit history for an asset"""
+    click.echo(json.dumps(api.getCommitHistory(id=id, path=path, type=type, branch=branch, debug=debug), indent=pretty))
+
 if __name__ == '__main__':
     main()

@@ -213,3 +213,10 @@ english:
         options:
           project_ids: Comma separated list of project id's to return the repository details for. Required if --project-names is not used.
           project_names: Comma separated list of project names to return the repository details for. Required if --project-ids is not used.
+
+      commit-history:
+        options:
+          id: ID of the project, folder, or asset.
+          path: Project or path where the assets are located. Required if --id is not specified.
+          type: Type of the asset. Required if --id is not specified.
+          branch: Repository branch, if different from the branch that's configured for the organization.
