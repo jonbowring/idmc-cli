@@ -267,3 +267,12 @@ english:
           old_version: "The base version of the asset to compare. If the asset version to compare is checked in to the repository, use the commit hash for the value. If the asset version to compare hasn't been checked in, use the following value: CURRENT-VERSION"
           new_version: "The asset version to compare to the base version. If the asset version to compare is checked in to the repository, use the commit hash for the value. If the asset version to compare hasn't been checked in, use the following value: CURRENT-VERSION"
           format: Response format. Use either JSON or TEXT.
+
+    logs:
+      security:
+        options:
+          category: Category of the security log entry.
+          actor: User name who performed the action.
+          name: Name of the object acted upon.
+          time_from: Date/time to search from. The maximum date range is 14 days.
+          time_to: Date/time to search until. The maximum date range is 14 days.
