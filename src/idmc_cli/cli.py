@@ -491,6 +491,22 @@ def undoCheckOutObject(id, path, type, include_container, body, debug, pretty=0)
     else:
         click.echo(json.dumps(api.undoCheckOutObject(id=id, path=path, type=type, includeContainer=include_container, debug=debug), indent=pretty))
 
+@sourceControl.command('pull')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'type'))
+@click.option('--hash', '-h', 'hash', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'hash'))
+@click.option('--relax-validation', '-r', 'relax_validation', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'relax_validation'))
+@click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'body'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def checkOutObject(id, path, type, hash, relax_validation, body, debug, pretty=0):
+    """Pulls one or more objects"""
+    if body:
+        click.echo(json.dumps(api.pullObjects(body=body, hash=hash, relaxValidation=relax_validation, debug=debug), indent=pretty))
+    else:
+        click.echo(json.dumps(api.pullObject(id=id, path=path, type=type, hash=hash, relaxValidation=relax_validation, debug=debug), indent=pretty))
+
 @sourceControl.command('status')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'status', 'id'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
