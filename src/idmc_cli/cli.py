@@ -478,5 +478,32 @@ def getSourceStatus(project_ids, project_names, debug, pretty=0):
     """Gets the source control repository details"""
     click.echo(json.dumps(api.getRepoConnection(projectIds=project_ids, projectNames=project_names, debug=debug), indent=pretty))
 
+@sourceControl.command('commit-history')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'type'))
+@click.option('--branch', '-b', 'branch', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'branch'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getCommitHistory(id, path, type, branch, debug, pretty=0):
+    """Gets the commit history for an asset"""
+    click.echo(json.dumps(api.getCommitHistory(id=id, path=path, type=type, branch=branch, debug=debug), indent=pretty))
+
+@sourceControl.command('compare-versions')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'compare-versions', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'compare-versions', 'type'))
+@click.option('--old-version', '-o', 'old_version', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'compare-versions', 'old_version'))
+@click.option('--new-version', '-n', 'new_version', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'compare-versions', 'new_version'))
+@click.option('--format', '-f', 'format', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'compare-versions', 'format'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def compareVersions(id, path, type, old_version, new_version, format, debug, pretty=0):
+    """Used to compare two versions of an asset."""
+    if format == 'JSON':
+        click.echo(json.dumps(api.compareVersions(id=id, path=path, type=type, oldVersion=old_version, newVersion=new_version, format=format, debug=debug), indent=pretty))
+    else:
+        click.echo(api.compareVersions(id=id, path=path, type=type, oldVersion=old_version, newVersion=new_version, format=format, debug=debug))
+
 if __name__ == '__main__':
     main()
