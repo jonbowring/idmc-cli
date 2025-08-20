@@ -612,6 +612,15 @@ def getAgents(id, name, unassigned, debug, pretty=0):
     """Gets Secure Agents"""
     click.echo(json.dumps(api.getAgents(id=id, name=name, unassigned=unassigned, debug=debug), indent=pretty))
 
+@agents.command('status')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'status', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'status', 'name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getAgentStatus(id, name, debug, pretty=0):
+    """Gets Secure Agent Status"""
+    click.echo(json.dumps(api.getAgentStatus(id=id, name=name, debug=debug), indent=pretty))
+
 @agents.group('groups')
 def agentGroup():
     """Secure Agent Group service management commands."""
