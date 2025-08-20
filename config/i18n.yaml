@@ -276,3 +276,21 @@ english:
           name: Name of the object acted upon.
           time_from: Date/time to search from. The maximum date range is 14 days.
           time_to: Date/time to search until. The maximum date range is 14 days.
+          
+    agentGroup:
+      get:
+        options:
+          id: Secure Agent Group ID. Either this option or the name option must be included.
+          name: Secure Agent Group Name. Either this option or the id option must be included.
+      
+    services:
+      stop:
+        options:
+          id: Runtime environment ID. Either this option or the name option must be included.
+          name: Runtime environment Name. Either this option or the id option must be included.
+          service: Service to be stopped on the runtime environment.
+      start:
+        options:
+          id: Runtime environment ID. Either this option or the name option must be included.
+          name: Runtime environment Name. Either this option or the id option must be included.
+          service: Service to be started on the runtime environment.
