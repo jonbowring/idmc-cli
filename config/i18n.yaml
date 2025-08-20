@@ -312,6 +312,11 @@ english:
           group_name: Secure Agent Group Name. Either this option or the group-id option must be included.
           agent_id: Secure Agent ID. Either this option or the agent-name option must be included. This option can be repeated to add multiple agents.
           agent_name: Secure Agent Name. Either this option or the agent-id option must be included. This option can be repeated to add multiple agents.
+
+      delete:
+        options:
+          id: Secure Agent Group ID. Either this option or the name option must be included.
+          name: Secure Agent Group Name. Either this option or the id option must be included.
       
     services:
       stop:

@@ -692,7 +692,16 @@ def createAgentGroup(name, shared, debug, pretty=0):
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def addAgent(group_id, group_name, agent_id, agent_name, debug, pretty=0):
     """Add one or more agents to a secure agent group"""
-    click.echo(json.dumps(api.addAgent(groupId=group_id, groupName=group_name, agentId=agent_id, agentName=agent_name, debug=debug), indent=pretty))    
+    click.echo(json.dumps(api.addAgent(groupId=group_id, groupName=group_name, agentId=agent_id, agentName=agent_name, debug=debug), indent=pretty))   
+
+@agentGroup.command('delete')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete', 'name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def deleteAgentGroup(id, name, debug, pretty=0):
+    """Deletes a secure agent group"""
+    click.echo(json.dumps(api.deleteAgentGroup(id=id, name=name, debug=debug), indent=pretty)) 
 
 if __name__ == '__main__':
     main()
