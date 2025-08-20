@@ -300,6 +300,11 @@ english:
         options:
           id: Secure Agent Group ID. Either this option or the name option must be included.
           name: Secure Agent Group Name. Either this option or the id option must be included.
+
+      create:
+        options:
+          name: Secure Agent Group Name.
+          shared: Flag whether the Secure Agent group can be shared with sub-organizations. 
       
     services:
       stop:
