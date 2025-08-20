@@ -277,6 +277,13 @@ english:
           time_from: Date/time to search from. The maximum date range is 14 days.
           time_to: Date/time to search until. The maximum date range is 14 days.
           
+    agents:
+      get:
+        options:
+          id: Secure Agent ID. Either this option or the name option must be included.
+          name: Secure Agent Name. Either this option or the id option must be included.
+          unassigned: Flag to include a list of all the Secure Agents that are currently not assigned to any group.
+
     agentGroup:
       get:
         options:

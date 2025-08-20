@@ -597,12 +597,22 @@ def getSecurityLogs(category, actor, name, time_from, time_to, debug, pretty=0):
 # Secure agent commands section
 ###################################
 
-@main.group('agent')
-def agent():
+@main.group('agents')
+def agents():
     """Secure Agent management commands."""
     pass
 
-@agent.group('groups')
+@agents.command('get')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'get', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'get', 'name'))
+@click.option('--unassigned', '-u', 'unassigned', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agents', 'get', 'unassigned'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getAgents(id, name, unassigned, debug, pretty=0):
+    """Gets Secure Agents"""
+    click.echo(json.dumps(api.getAgents(id=id, name=name, unassigned=unassigned, debug=debug), indent=pretty))
+
+@agents.group('groups')
 def agentGroup():
     """Secure Agent Group service management commands."""
     pass
@@ -616,12 +626,12 @@ def getAgents(id, name, debug, pretty=0):
     """Gets Secure Agent Groups"""
     click.echo(json.dumps(api.getAgentGroups(id=id, name=name, debug=debug), indent=pretty))
 
-@agent.group('services')
-def services():
+@agents.group('service')
+def service():
     """Secure Agent service management commands."""
     pass
 
-@services.command('stop')
+@service.command('stop')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('services', 'stop', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('services', 'stop', 'name'))
 @click.option('--service', '-s', 'service', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('services', 'stop', 'service'))
@@ -631,7 +641,7 @@ def getAgents(id, name, service, debug, pretty=0):
     """Stops a service on a secure agent"""
     click.echo(json.dumps(api.execAgentService(id=id, name=name, service=service, action='stop', debug=debug), indent=pretty))
 
-@services.command('start')
+@service.command('start')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('services', 'start', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('services', 'start', 'name'))
 @click.option('--service', '-s', 'service', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('services', 'start', 'service'))
