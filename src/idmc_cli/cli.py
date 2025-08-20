@@ -612,6 +612,16 @@ def getAgents(id, name, unassigned, debug, pretty=0):
     """Gets Secure Agents"""
     click.echo(json.dumps(api.getAgents(id=id, name=name, unassigned=unassigned, debug=debug), indent=pretty))
 
+@agents.command('delete')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'delete', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'delete', 'name'))
+@click.option('--unassigned', '-u', 'unassigned', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agents', 'delete', 'unassigned'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def deleteAgent(id, name, unassigned, debug, pretty=0):
+    """Deletes a secure agent"""
+    click.echo(json.dumps(api.deleteAgent(id=id, name=name, unassigned=unassigned, debug=debug), indent=pretty))
+
 @agents.command('status')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'status', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'status', 'name'))
