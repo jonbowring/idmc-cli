@@ -3825,7 +3825,7 @@ class InformaticaCloudAPI:
         return resp
     
 
-    def getAgentGroupProps(self, id=None, name=None, overridden=None, debug=False):
+    def getAgentGroupProps(self, id=None, name=None, overridden=None, platform=None, debug=False):
         """This function returns secure agent group property details"""
         
         # Check if cli has been configured
@@ -3842,6 +3842,12 @@ class InformaticaCloudAPI:
                         'status': 500,
                         'text': f'Unable to find id for runtime environment { name }'
                     }
+            
+        # Include the platform if set
+        if platform:
+            platform = '/' + platform
+        else:
+            platform = ''
         
         attempts = 0
         resp = ''
@@ -3850,9 +3856,9 @@ class InformaticaCloudAPI:
         
             # Execute the API call
             if overridden:
-                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/configs'
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/configs{ platform }'
             else:
-                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/configs/details'
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/configs/details{ platform }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
             r = requests.get(url, headers=headers)
 
@@ -3881,6 +3887,97 @@ class InformaticaCloudAPI:
             # Break when there are no pages left
             else:
                 resp = r.json()
+                break
+        
+        return resp
+    
+
+    def updateAgentGroupProps(self, id=None, name=None, service=None, type=None, property=None, value=None, platform=None, custom=None, sensitive=None, debug=False):
+        """This function updates secure agent group property details"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the runtime env id if needed
+        if name:
+            lookup = self.getAgentGroups(debug=debug)
+            try:
+                id = [obj for obj in lookup if obj['name'] == name][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for runtime environment { name }'
+                    }
+            
+        # Include the platform if set
+        if platform:
+            platform = '/' + platform
+        else:
+            platform = ''
+        
+        attempts = 0
+        resp = ''
+        
+        while True:
+            
+            # Prepare the mandatory fields
+            data = {
+                service: [
+                    {
+                        type: [
+                            {
+                                'name': property,
+                                'value': value
+                            }
+                        ]
+                    }
+                ]
+            }
+
+            # Add the optional fields if needed
+            if custom:
+                data[service][0][type][0]['isCustom'] = 'true'
+            else:
+                data[service][0][type][0]['isCustom'] = 'false'
+            if sensitive:
+                data[service][0][type][0]['isSensitive'] = 'true'
+            else:
+                data[service][0][type][0]['isSensitive'] = 'false'
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/configs{ platform }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            r = requests.put(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = {
+                    'status': r.status_code,
+                    'text': 'Property updated'
+                }
                 break
         
         return resp
