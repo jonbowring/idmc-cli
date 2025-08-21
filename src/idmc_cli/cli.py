@@ -701,7 +701,17 @@ def addAgent(group_id, group_name, agent_id, agent_name, debug, pretty=0):
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def deleteAgentGroup(id, name, debug, pretty=0):
     """Deletes a secure agent group"""
-    click.echo(json.dumps(api.deleteAgentGroup(id=id, name=name, debug=debug), indent=pretty)) 
+    click.echo(json.dumps(api.deleteAgentGroup(id=id, name=name, debug=debug), indent=pretty))
+
+@agentGroup.command('list-components')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-components', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-components', 'name'))
+@click.option('--include-all', '-a', 'include_all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'list-components', 'include_all'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getAgentGroupComponents(id, name, include_all, debug, pretty=0):
+    """Gets Secure Agent Group components"""
+    click.echo(json.dumps(api.getAgentGroupComponents(id=id, name=name, includeAll=include_all, debug=debug), indent=pretty))
 
 if __name__ == '__main__':
     main()
