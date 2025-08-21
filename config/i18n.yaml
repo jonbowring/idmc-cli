@@ -333,6 +333,12 @@ english:
           services: Service to be updated. Can be repeated for multiple services.
           connectors: Connector to be updated. Can be repeated for multiple connectors.
           additional: Additional service to be updated. Can be repeated for multiple additional services.
+
+      list-props:
+        options:
+          id: Secure Agent Group ID. Either this option or the name option must be included.
+          name: Secure Agent Group Name. Either this option or the id option must be included.
+          overridden: Flag to show properties that have been overridden at the secure agent group level.
       
     services:
       stop:

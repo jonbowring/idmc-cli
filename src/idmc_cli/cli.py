@@ -729,5 +729,15 @@ def updateAgentGroupComponents(id, name, enable, disable, services, connectors, 
         enable=disable
     click.echo(json.dumps(api.updateAgentGroupComponents(id=id, name=name, enable=enable, services=services, connectors=connectors, additional=additional, debug=debug), indent=pretty))
 
+@agentGroup.command('list-props')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'name'))
+@click.option('--overridden', '-o', 'overridden', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'list-props', 'overridden'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getAgentGroupProps(id, name, overridden, debug, pretty=0):
+    """Gets Secure Agent Group properties"""
+    click.echo(json.dumps(api.getAgentGroupProps(id=id, name=name, overridden=overridden, debug=debug), indent=pretty))
+
 if __name__ == '__main__':
     main()

@@ -3824,6 +3824,67 @@ class InformaticaCloudAPI:
         
         return resp
     
+
+    def getAgentGroupProps(self, id=None, name=None, overridden=None, debug=False):
+        """This function returns secure agent group property details"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the runtime env id if needed
+        if name:
+            lookup = self.getAgentGroups(debug=debug)
+            try:
+                id = [obj for obj in lookup if obj['name'] == name][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for runtime environment { name }'
+                    }
+        
+        attempts = 0
+        resp = ''
+        
+        while True:
+        
+            # Execute the API call
+            if overridden:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/configs'
+            else:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/configs/details'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            r = requests.get(url, headers=headers)
+
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
     
     def execAgentService(self, id, name, service, action, debug=False):
         """This function is used to stop or start a service on a secure agent"""
