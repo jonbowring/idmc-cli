@@ -729,5 +729,44 @@ def updateAgentGroupComponents(id, name, enable, disable, services, connectors, 
         enable=disable
     click.echo(json.dumps(api.updateAgentGroupComponents(id=id, name=name, enable=enable, services=services, connectors=connectors, additional=additional, debug=debug), indent=pretty))
 
+@agentGroup.command('list-props')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'name'))
+@click.option('--service', '-s', 'service', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'service'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'type'))
+@click.option('--property', '-k', 'property', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'property'))
+@click.option('--overridden', '-o', 'overridden', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'list-props', 'overridden'))
+@click.option('--platform', '-p', 'platform', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'platform'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getAgentGroupProps(id, name, overridden, platform, service, type, property, debug, pretty=0):
+    """Gets Secure Agent Group properties"""
+    click.echo(json.dumps(api.getAgentGroupProps(id=id, name=name, overridden=overridden, platform=platform, service=service, type=type, property=property, debug=debug), indent=pretty))
+
+@agentGroup.command('update-prop')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'name'))
+@click.option('--service', '-s', 'service', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'service'))
+@click.option('--type', '-t', 'type', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'type'))
+@click.option('--property', '-k', 'property', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'property'))
+@click.option('--value', '-v', 'value', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'value'))
+@click.option('--platform', '-p', 'platform', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'platform'))
+@click.option('--custom', '-c', 'custom', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'update-prop', 'custom'))
+@click.option('--sensitive', '-S', 'sensitive', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'update-prop', 'sensitive'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def updateAgentGroupProps(id, name, service, type, property, value, platform, custom, sensitive, debug, pretty=0):
+    """Updates Secure Agent Group properties"""
+    click.echo(json.dumps(api.updateAgentGroupProps(id=id, name=name, service=service, type=type, property=property, value=value, platform=platform, custom=custom, sensitive=sensitive, debug=debug), indent=pretty))
+
+@agentGroup.command('delete-props')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete-props', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete-props', 'name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def deleteAgentGroupProps(id, name, debug, pretty=0):
+    """Deletes Secure Agent Group properties"""
+    click.echo(json.dumps(api.deleteAgentGroupProps(id=id, name=name, debug=debug), indent=pretty))
+
 if __name__ == '__main__':
     main()
