@@ -340,6 +340,9 @@ english:
           name: Secure Agent Group Name. Either this option or the id option must be included.
           overridden: Flag to show properties that have been overridden at the secure agent group level.
           platform: Optionally, include the platform in the URI. You can use linux64 or win64.
+          service: Filter result by service name.
+          type: Filter result by property type. Must be used in conjunction with the service option.
+          property: Filter result by property name. Must be used in conjunction with the service and type options.
 
       update-prop:
         options:
@@ -352,6 +355,11 @@ english:
           platform: Optionally, include the platform in the URI. You can use linux64 or win64.
           custom: Flag to indicate if property is a custom property.
           sensitive: Flag to indicate if property is a sensitive property and should be masked.
+
+      delete-props:
+        options:
+          id: Secure Agent Group ID. Either this option or the name option must be included.
+          name: Secure Agent Group Name. Either this option or the id option must be included.
       
     services:
       stop:
