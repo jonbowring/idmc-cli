@@ -3717,6 +3717,113 @@ class InformaticaCloudAPI:
         
         return resp
     
+
+    def updateAgentGroupComponents(self, id=None, name=None, enable=None, services=None, connectors=None, additional=None, debug=False):
+        """This function returns secure agent group component details"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the runtime env id if needed
+        if name:
+            lookup = self.getAgentGroups(debug=debug)
+            try:
+                id = [obj for obj in lookup if obj['name'] == name][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for runtime environment { name }'
+                    }
+        
+        # Lookup the components for the agent group
+        components = self.getAgentGroupComponents(id=id, includeAll=True, debug=debug)
+
+        connectorObjs = []
+        serviceObjs = []
+        additionalObjs = []
+
+        # Loop through the connectors, lookup the id's and add them to the list
+        for cnx in connectors:
+            lookup = [obj for obj in components['connectors']['selections'] if obj['name'] == cnx][0]
+            connectorObjs.append({
+                'id': lookup['id'],
+                'name': cnx,
+                'enabled': enable
+            })
+
+        # Loop through the services, lookup the id's and add them to the list
+        for svc in services:
+            lookup = [obj for obj in components['services']['selections'] if obj['name'] == svc][0]
+            serviceObjs.append({
+                'id': lookup['id'],
+                'name': svc,
+                'enabled': enable
+            })
+
+        # Loop through the additional services, lookup the id's and add them to the list
+        for svc in additional:
+            lookup = [obj for obj in components['additionalServices']['selections'] if obj['name'] == svc][0]
+            additionalObjs.append({
+                'id': lookup['id'],
+                'name': svc,
+                'enabled': enable
+            })
+
+        attempts = 0
+        resp = ''
+        
+        while True:
+        
+            data = {
+                'services': {
+                    'selections': serviceObjs
+                },
+                'connectors': {
+                    'selections': connectorObjs
+                },
+                'additionalServices': {
+                    'selections': additionalObjs
+                },
+            }
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/selections'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            r = requests.put(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = {
+                        'status': r.status_code,
+                        'text': f'Components updated'
+                    }
+                break
+        
+        return resp
+    
     
     def execAgentService(self, id, name, service, action, debug=False):
         """This function is used to stop or start a service on a secure agent"""
