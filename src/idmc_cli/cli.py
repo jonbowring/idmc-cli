@@ -701,7 +701,33 @@ def addAgent(group_id, group_name, agent_id, agent_name, debug, pretty=0):
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def deleteAgentGroup(id, name, debug, pretty=0):
     """Deletes a secure agent group"""
-    click.echo(json.dumps(api.deleteAgentGroup(id=id, name=name, debug=debug), indent=pretty)) 
+    click.echo(json.dumps(api.deleteAgentGroup(id=id, name=name, debug=debug), indent=pretty))
+
+@agentGroup.command('list-components')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-components', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-components', 'name'))
+@click.option('--include-all', '-a', 'include_all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'list-components', 'include_all'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getAgentGroupComponents(id, name, include_all, debug, pretty=0):
+    """Gets Secure Agent Group components"""
+    click.echo(json.dumps(api.getAgentGroupComponents(id=id, name=name, includeAll=include_all, debug=debug), indent=pretty))
+
+@agentGroup.command('update-components')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-components', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-components', 'name'))
+@click.option('--enable', '-e', 'enable', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'update-components', 'enable'))
+@click.option('--disable', '-d', 'disable', flag_value=False, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'update-components', 'disable'))
+@click.option('--services', '-s', 'services', multiple=True, default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-components', 'services'))
+@click.option('--connectors', '-c', 'connectors', multiple=True, default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-components', 'connectors'))
+@click.option('--additional', '-a', 'additional', multiple=True, default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-components', 'additional'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def updateAgentGroupComponents(id, name, enable, disable, services, connectors, additional, debug, pretty=0):
+    """Can be used to enable or disable Secure Agent Group components"""
+    if disable:
+        enable=disable
+    click.echo(json.dumps(api.updateAgentGroupComponents(id=id, name=name, enable=enable, services=services, connectors=connectors, additional=additional, debug=debug), indent=pretty))
 
 if __name__ == '__main__':
     main()
