@@ -21,6 +21,8 @@ english:
         options:
           id: User id to be deleted. Use this option or the --username option.
           username: User name to be deleted. Use this option or the --id option.
+        errors:
+          id-uname-missing: Either the id or username option must be included.
 
       create:
         options:
@@ -40,13 +42,18 @@ english:
           role_names: Required when no group IDs are included. Comma separated list of Names for the roles to assign to the user.
           group_ids: Required when no role IDs are included. Comma separated list of IDs for the user groups to assign to the user.
           group_names: Required when no role IDs are included. Comma separated list of Names for the user groups to assign to the user.
+        errors:
+          rid-rname-gid-gname-missing: The user needs to have at least one role or one group assigned.
 
       add-roles:
         options:
           id: ID of user to be updated. Must specify this option or --username.
           username: ID of user to be updated. Must specify this option or --id.
-          role_ids: Comma separated list of role ids to be added to user. Must specify this option or --roleNames.
-          role_names: Comma separated list of role names to be added to user. Must specify this option or --roleIds.
+          role_ids: Comma separated list of role ids to be added to user. Must specify this option or --role-names.
+          role_names: Comma separated list of role names to be added to user. Must specify this option or --role-ids.
+        errors:
+          id-uname-missing: Either the id or username option must be included.
+          rid-rname-missing: Either the role id's or role names option must be included.
 
       remove-roles:
         options:
@@ -54,6 +61,9 @@ english:
           username: Username to be updated. Must specify this option or --id.
           role_ids: Comma separated list of role ids to be added to user. Must specify this option or --roleNames.
           role_names: Comma separated list of role names to be added to user. Must specify this option or --roleIds.
+        errors:
+          id-uname-missing: Either the id or username option must be included.
+          rid-rname-missing: Either the role id's or role names option must be included.
 
       add-groups:
         options:
@@ -61,6 +71,9 @@ english:
           username: Username to be updated. Must specify this option or --id.
           group_ids: Comma separated list of group ids to be added to user. Must specify this option or --group-names.
           group_names: Comma separated list of group names to be added to user. Must specify this option or --group-ids.
+        errors:
+          id-uname-missing: Either the id or username option must be included.
+          gid-gname-missing: Either the group id's or group names option must be included.
 
       remove-groups:
         options:
@@ -68,6 +81,9 @@ english:
           username: Username to be updated. Must specify this option or --id.
           group_ids: Comma separated list of group ids to be removed from the user. Must specify this option or --group-names.
           group_names: Comma separated list of group names to be removed from the user. Must specify this option or --group-ids.
+        errors:
+          id-uname-missing: Either the id or username option must be included.
+          gid-gname-missing: Either the group id's or group names option must be included.
 
     user-groups:
       get:
@@ -83,6 +99,8 @@ english:
           role_names: Comma separated list of role names to be added to the new user group. Either this or the --role-ids group is required.
           user_ids: Comma separated list of user ids to be added to the new user group.  Use this option or the --user-names option.
           user_names: Comma separated list of user names to be added to the new user group. Use this option or the --user-ids option.
+        errors:
+          rid-rname-missing: Either the role id's or role names option must be included.
       
       add-roles:
         options:
@@ -90,6 +108,9 @@ english:
           group_name: Name of user group to be updated. Must specify this option or --id.
           role_ids: Comma separated list of role ids to be added to user. Must specify this option or --role-names.
           role_names: Comma separated list of role names to be added to user. Must specify this option or --role-ids.
+        errors:
+          id-gname-missing: Either the id or group name option must be included.
+          rid-rname-missing: Either the role id's or role names option must be included.
 
       delete:
         options:

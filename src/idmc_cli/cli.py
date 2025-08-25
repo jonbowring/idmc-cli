@@ -76,6 +76,9 @@ def getUsers(id, username, debug, pretty=0):
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def deleteUser(id, username, debug, pretty=0):
     """Deletes a user"""
+    if id is None and username is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'delete', 'id-uname-missing'))
+    
     click.echo(json.dumps(api.deleteUser(id=id, username=username, debug=debug), indent=pretty))
     
 
@@ -100,6 +103,9 @@ def deleteUser(id, username, debug, pretty=0):
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def createUser(name, first_name, last_name, email, password, description, title, phone, force_password_change, max_login_attempts, authentication, alias_name, role_ids, role_names, group_ids, group_names, debug, pretty=0):
     """Used to create new users"""
+    if role_ids is None and role_names is None and group_ids is None and group_names is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'create', 'rid-rname-gid-gname-missing'))
+    
     click.echo(json.dumps(api.createUser(name=name, firstName=first_name, lastName=last_name, email=email, password=password, description=description, title=title, phone=phone, forcePasswordChange=force_password_change, maxLoginAttempts=max_login_attempts, authentication=authentication, aliasName=alias_name, roleIds=role_ids, roleNames=role_names, groupIds=group_ids, groupNames=group_names, debug=debug), indent=pretty))
     
 
@@ -110,9 +116,14 @@ def createUser(name, first_name, last_name, email, password, description, title,
 @click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-roles', 'role_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def addUserRoles(id, username, roleIds, roleNames, debug, pretty=0):
+def addUserRoles(id, username, role_ids, role_names, debug, pretty=0):
     """Adds role assignments to a user"""
-    click.echo(json.dumps(api.addUserRoles(id=id, username=username, roleIds=roleIds, roleNames=roleNames, debug=debug), indent=pretty))
+    if id is None and username is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'add-roles', 'id-uname-missing'))
+    elif role_ids is None and role_names is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'add-roles', 'rid-rname-missing'))
+    
+    click.echo(json.dumps(api.addUserRoles(id=id, username=username, roleIds=role_ids, roleNames=role_names, debug=debug), indent=pretty))
 
 
 @users.command('remove-roles')
@@ -124,6 +135,11 @@ def addUserRoles(id, username, roleIds, roleNames, debug, pretty=0):
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def removeUserRoles(id, username, role_ids, role_names, debug, pretty=0):
     """Removes role assignments from a user"""
+    if id is None and username is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'remove-roles', 'id-uname-missing'))
+    elif role_ids is None and role_names is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'remove-roles', 'rid-rname-missing'))
+    
     click.echo(json.dumps(api.removeUserRoles(id=id, username=username, roleIds=role_ids, roleNames=role_names, debug=debug), indent=pretty))
 
 
@@ -136,6 +152,11 @@ def removeUserRoles(id, username, role_ids, role_names, debug, pretty=0):
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def addUserGroups(id, username, group_ids, group_names, debug, pretty=0):
     """Adds group assignments to a user"""
+    if id is None and username is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'add-groups', 'id-uname-missing'))
+    elif group_ids is None and group_names is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'add-groups', 'gid-gname-missing'))
+    
     click.echo(json.dumps(api.addUserGroups(id=id, username=username, groupIds=group_ids, groupNames=group_names, debug=debug), indent=pretty))
 
 
@@ -148,6 +169,11 @@ def addUserGroups(id, username, group_ids, group_names, debug, pretty=0):
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def removeUserGroups(id, username, group_ids, group_names, debug, pretty=0):
     """Removes group assignments from a user"""
+    if id is None and username is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'remove-groups', 'id-uname-missing'))
+    elif group_ids is None and group_names is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'remove-groups', 'gid-gname-missing'))
+    
     click.echo(json.dumps(api.removeUserGroups(id=id, username=username, groupIds=group_ids, groupNames=group_names, debug=debug), indent=pretty))
     
 
@@ -181,6 +207,9 @@ def getUserGroups(id, name, debug, pretty=0):
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def createUserGroup(name, description, role_ids, role_names, user_ids, user_names, debug, pretty=0):
     """Creates a new user group"""
+    if role_ids is None and role_names is None:
+        raise click.BadParameter(i18n.getErrorText('user-groups', 'create', 'rid-rname-missing'))
+    
     click.echo(json.dumps(api.createUserGroup(name=name, description=description, roleIds=role_ids, roleNames=role_names, userIds=user_ids, userNames=user_names, debug=debug), indent=pretty))
 
 
@@ -193,6 +222,11 @@ def createUserGroup(name, description, role_ids, role_names, user_ids, user_name
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def addUserGroupRoles(id, group_name, role_ids, role_names, debug, pretty=0):
     """Adds role assignments to a user group"""
+    if id is None and group_name is None:
+        raise click.BadParameter(i18n.getErrorText('user-groups', 'add-roles', 'id-gname-missing'))
+    elif role_ids is None and role_names is None:
+        raise click.BadParameter(i18n.getErrorText('user-groups', 'add-roles', 'rid-rname-missing'))
+    
     click.echo(json.dumps(api.addUserGroupRoles(id=id, groupname=group_name, roleIds=role_ids, roleNames=role_names, debug=debug), indent=pretty))
 
 
@@ -203,6 +237,9 @@ def addUserGroupRoles(id, group_name, role_ids, role_names, debug, pretty=0):
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def deleteUserGroup(id, name, debug, pretty=0):
     """Deletes a user group"""
+    if id is None and name is None:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
+    
     click.echo(json.dumps(api.deleteUserGroup(id=id, name=name, debug=debug), indent=pretty))
     
 
