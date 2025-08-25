@@ -4,6 +4,12 @@ english:
       options:
         debug: If true, will print the API request details to console.
         pretty: If true, will pretty print the returned JSON.
+      errors:
+          id-name-missing: Either the id or name option must be included.
+          id-path-missing: Either the id or path option must be included.
+          id-path-type-missing: Either the id needs to be provided, or the path and type needs to be provided.
+          body-id-path-type-missing: Either the body, id, or both the path and type need to be provided.
+          path-type-missing: Both path and type must be included when not searching by id.
     
     users:
       get:
@@ -103,6 +109,8 @@ english:
           description: Description of the new role.
           privilege_ids: Comma separated list of privilege IDs for the new role. Must include this option or the --privilege-names option.
           privilege_names: Comma separated list of privilege names for the new role. Must include this option or the --privilege-ids option.
+        errors:
+          pid-pname-missing: Either the privilege id's or privilege names option must be included.
 
       add-privileges:
         options:
@@ -110,6 +118,8 @@ english:
           name: Name of role to be updated. Must specify this option or --id.
           privilege_ids: Comma separated list of privilege ids to be added to user. Must specify this option or --privilege-names.
           privilege_names: Comma separated list of privilege names to be added to user. Must specify this option or --privilege-ids.
+        errors:
+          pid-pname-missing: Either the privilege id's or privilege names option must be included.
 
       remove-privileges:
         options:
@@ -117,6 +127,8 @@ english:
           name: Name of role to be updated. Must specify this option or --id.
           privilege_ids: Comma separated list of privilege ids to be removed from user. Must specify this option or --privilege-names.
           privilege_names: Comma separated list of privilege names to be removed from user. Must specify this option or --privilege-ids.
+        errors:
+          pid-pname-missing: Either the privilege id's or privilege names option must be included.
 
       delete:
         options:
@@ -134,6 +146,9 @@ english:
           id: Global unique identifier for the object. Required if object path and type not included.
           path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
           type: Type of object. Required with path if object ID not included.
+        errors:
+          id-path-type-missing: Either the id needs to be provided, or the path and type needs to be provided.
+          path-type-missing: Both path and type must be included when not searching by id.
 
       objects:
         options:
@@ -147,6 +162,9 @@ english:
           type: Type of object. Required with path if object ID not included.
           body: If tagging multiple objects, use this property to include the JSON body. Only use this if not using --id, --path, --type or --tags options.
           tags: Comma separated list of tags to be added to the object.
+        errors:
+          body-id-path-type-missing: Either the body, id, or both the path and type need to be provided.
+          path-type-missing: Both path and type must be included when not searching by id or body.
 
       remove-tags:
         options:
@@ -155,6 +173,9 @@ english:
           type: Type of object. Required with path if object ID not included.
           body: If removing tags from multiple objects, use this property to include the JSON body. Only use this if not using --id, --path, --type or --tags options.
           tags: Comma separated list of tags to be removed from the object.
+        errors:
+          body-id-path-type-missing: Either the body, id, or both the path and type need to be provided.
+          path-type-missing: Both path and type must be included when not searching by id or body.
 
     projects:
       create:
@@ -181,6 +202,8 @@ english:
           project_name: Name for the parent project. Use this option or --project-id.
           name: Name for the new folder
           description: Description for the new folder
+        errors:
+          pid-pname-missing: Either the project id or project name must be provided.
 
       update:
         options:
@@ -188,11 +211,15 @@ english:
           path: Path of the folder to be updated. Use this option or --id.
           name: New name for the folder.
           description: New description for the folder.
+        errors:
+          id-path-missing: Either the id or path must be provided.
 
       delete:
         options:
           id: ID for the folder to be deleted. Use this option or --path.
           path: Path of the folder to be deleted. Use this option or --id.
+        errors:
+          id-path-missing: Either the id or path must be provided.
 
     source-control:
       check-in:
@@ -245,6 +272,8 @@ english:
         options:
           project_ids: Comma separated list of project id's to return the repository details for. Required if --project-names is not used.
           project_names: Comma separated list of project names to return the repository details for. Required if --project-ids is not used.
+        errors:
+          pid-pname-missing: Either the project-ids or project-names option must be included.
 
       commit-history:
         options:
@@ -280,8 +309,8 @@ english:
     agents:
       get:
         options:
-          id: Secure Agent ID. Either this option or the name option must be included.
-          name: Secure Agent Name. Either this option or the id option must be included.
+          id: Secure Agent ID. If searching for a specific agent, either this option or the name option must be included.
+          name: Secure Agent Name. If searching for a specific agent, either this option or the id option must be included.
           unassigned: Flag to include a list of all the Secure Agents that are currently not assigned to any group.
 
       delete:
@@ -298,8 +327,8 @@ english:
     agentGroup:
       get:
         options:
-          id: Secure Agent Group ID. Either this option or the name option must be included.
-          name: Secure Agent Group Name. Either this option or the id option must be included.
+          id: Secure Agent Group ID. If searching for a specific group, use either this option or the name option.
+          name: Secure Agent Group Name. If searching for a specific group, use either this option or the id option.
 
       create:
         options:
@@ -312,6 +341,9 @@ english:
           group_name: Secure Agent Group Name. Either this option or the group-id option must be included.
           agent_id: Secure Agent ID. Either this option or the agent-name option must be included. This option can be repeated to add multiple agents.
           agent_name: Secure Agent Name. Either this option or the agent-id option must be included. This option can be repeated to add multiple agents.
+        errors:
+          groupid-groupname-missing: Either the group id or group name option must be included.
+          agentid-agentname-missing: Either the agent id or agent name option must be included.
 
       delete:
         options:
@@ -333,6 +365,9 @@ english:
           services: Service to be updated. Can be repeated for multiple services.
           connectors: Connector to be updated. Can be repeated for multiple connectors.
           additional: Additional service to be updated. Can be repeated for multiple additional services.
+        errors:
+          enable-disable-missing: Either the enable or disable option must be included.
+          services-connectors-additional-missing: Either the services, connectors or additional options must be included.
 
       list-props:
         options:
@@ -343,6 +378,7 @@ english:
           service: Filter result by service name.
           type: Filter result by property type. Must be used in conjunction with the service option.
           property: Filter result by property name. Must be used in conjunction with the service and type options.
+        
 
       update-prop:
         options:

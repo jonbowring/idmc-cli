@@ -3745,7 +3745,11 @@ class InformaticaCloudAPI:
 
         # Loop through the connectors, lookup the id's and add them to the list
         for cnx in connectors:
-            lookup = [obj for obj in components['connectors']['selections'] if obj['name'] == cnx][0]
+            try:
+                lookup = [obj for obj in components['connectors']['selections'] if obj['name'] == cnx][0]
+            except Exception as e:
+                print(f'Error: Unable to find connector "{ cnx }"')
+                continue
             connectorObjs.append({
                 'id': lookup['id'],
                 'name': cnx,
@@ -3754,7 +3758,11 @@ class InformaticaCloudAPI:
 
         # Loop through the services, lookup the id's and add them to the list
         for svc in services:
-            lookup = [obj for obj in components['services']['selections'] if obj['name'] == svc][0]
+            try:
+                lookup = [obj for obj in components['services']['selections'] if obj['name'] == svc][0]
+            except Exception as e:
+                print(f'Error: Unable to find service "{ svc }"')
+                continue
             serviceObjs.append({
                 'id': lookup['id'],
                 'name': svc,
@@ -3763,12 +3771,19 @@ class InformaticaCloudAPI:
 
         # Loop through the additional services, lookup the id's and add them to the list
         for svc in additional:
-            lookup = [obj for obj in components['additionalServices']['selections'] if obj['name'] == svc][0]
+            try:
+                lookup = [obj for obj in components['additionalServices']['selections'] if obj['name'] == svc][0]
+            except Exception as e:
+                print(f'Error: Unable to find service "{ svc }"')
+                continue
             additionalObjs.append({
                 'id': lookup['id'],
                 'name': svc,
                 'enabled': enable
             })
+
+        if len(connectorObjs) == 0 and len(serviceObjs) == 0 and len(additionalObjs) == 0:
+            raise Exception('Unable to find relevant service, connector or additional service') 
 
         attempts = 0
         resp = ''

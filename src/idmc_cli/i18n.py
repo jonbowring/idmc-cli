@@ -25,6 +25,14 @@ class I18n:
             option = self.data['english']['help'][command]['options'][option]
         
         return option
+    
+    def getErrorText(self, command, sub_command, error):
+        if sub_command:
+            error = self.data['english']['help'][command][sub_command]['errors'][error]
+        else:
+            error = self.data['english']['help'][command]['errors'][error]
+        
+        return error
 
 # Expose the class as a variable
 i18n = I18n()
