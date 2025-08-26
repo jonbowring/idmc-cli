@@ -9,18 +9,22 @@ A CLI utility for interacting with Informatica Cloud
 ## Unix/macOS:
 source .venv/bin/activate
 
-# How to install the CLI
+# How to install the CLI from source code
 pip install -e .
 
 # Example how to run the CLI
-idmc manage-assets 12345
-idmc run-function myFunction
+idmc --help
+idmc users --help
+idmc users get --help
+idmc users get
 
 # Building the executable
 cd src/idmc-cli
 pyinstaller --onefile cli.py -n idmc --add-data '../../config/i18n.yaml:config'
 
 # Known issues
+
+## JSON string formatting issue
 This command works for passing a JSON string:
 
     idmc lookup test --body '{\"msg\": \"hello world\"}'
