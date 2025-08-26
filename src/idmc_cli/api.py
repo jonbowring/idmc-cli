@@ -4148,14 +4148,6 @@ class InformaticaCloudAPI:
         # Check if cli has been configured
         if not self.username:
             return 'CLI needs to be configured. Run the command "idmc configure"'
-        
-        # Handle the date defaults
-        #now = datetime.now(timezone.utc)
-        #past = now - timedelta(days=14)
-        #if time_to is None:
-        #    time_to = now.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
-        #if time_from is None:
-        #    time_from = past.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
 
         # Lookup the schedule id if needed
         if name:
@@ -4190,6 +4182,99 @@ class InformaticaCloudAPI:
                 params['q'] += f';updateTime<="{ time_to }"'
 
             r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def createSchedule(self, name=None, description=None, status=None, startTime=None, endTime=None, interval=None, frequency=None, rangeStart=None, rangeEnd=None, timezone=None, weekday=None, dayOfMonth=None, weekOfMonth=None, dayOfWeek=None, sun=None, mon=None, tue=None, wed=None, thu=None, fri=None, sat=None, debug=False):
+        """This function creates a new schedule"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        
+        # Add the mandatory fields to the body
+        data = {
+            'name': name,
+            'startTime': startTime
+        }
+
+        # Add the optional fields if needed
+        if description:
+            data['description'] = description
+        if interval:
+            data['interval'] = interval
+        if frequency:
+            data['frequency'] = frequency
+        if status:
+            data['status'] = status
+        if endTime:
+            data['endTime'] = endTime
+        if rangeStart:
+            data['rangeStartTime'] = rangeStart
+        if rangeEnd:
+            data['rangeEndTime'] = rangeEnd
+        if timezone:
+            data['timeZoneId'] = timezone
+        if weekday:
+            data['weekDay'] = weekday
+        if dayOfMonth:
+            data['dayOfMonth'] = dayOfMonth
+        if weekOfMonth:
+            data['weekOfMonth'] = weekOfMonth
+        if dayOfWeek:
+            data['dayOfWeek'] = dayOfWeek
+        if sun:
+            data['sun'] = sun
+        if mon:
+            data['mon'] = mon
+        if tue:
+            data['tue'] = tue
+        if wed:
+            data['wed'] = wed
+        if thu:
+            data['thu'] = thu
+        if fri:
+            data['fri'] = fri
+        if sat:
+            data['sat'] = sat
+
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+
+            r = requests.post(url, headers=headers, json=data)
 
             if debug:
                 self.debugRequest(r, attempts)

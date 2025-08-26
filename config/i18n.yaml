@@ -439,3 +439,48 @@ english:
           interval: Filter by schedule interval. Valid values include Minutely, Hourly, Daily, Weekly, Biweekly, and Monthly.
           time_from: Filter by schedule updated since.
           time_to: Filter by schedule updated up until.
+
+      create:
+        options:
+          name: Schedule name.
+          description: Description of the schedule.
+          status: Status of the schedule. Can be 'enabled' or 'disabled'.
+          start_time: Date and time when the schedule starts running, in UTC format.
+          end_time: Date and time when the schedule stops running. If you do not use this parameter, the schedule runs indefinitely.
+          interval: "Interval or repeat frequency at which the schedule runs tasks. Use one of the following options: None, Minutely, Hourly, Daily, Weekly, Biweekly or Monthly."
+          frequency: |
+            Repeat frequency for tasks. Use one of the following values:
+              - For Minutely intervals, use one of the following options: 5, 10, 15, 20, 30, 45. Default is 5.
+              - For Hourly intervals, use one of the following options: 1, 2, 3, 4, 6, 8, 12. Default is 1. 
+              - For Daily intervals, use number of days between 1 -30. Default is 1.
+            Use with Minutely, Hourly, and Daily intervals only.
+          range_start: The start of the time range within a day that you want tasks to run. Enter a date and time using standard date/time format. Only the time portion is used. Use with Minutely, Hourly, and Daily intervals only.
+          range_end: The end of the time range within a day that you want tasks to run. Enter a date and time using standard date/time format. Only the time portion is used. Use with Minutely, Hourly, and Daily intervals only. 
+          timezone: Time zone that the schedule uses for the dayOfMonth, weekOfMonth, and dayOfWeek fields. Default is UTC. 
+          weekday: Flag to indicate that tasks run on weekdays. Use with the Daily interval only.
+          day_of_month: "Date of the month that tasks should run. Use a date between 1-28. Use with the Monthly interval only. Tip: To run tasks on the last day of the month, use the Last weekOfMonth parameter with the Day dayOfWeek parameter."
+          week_of_month: |
+            Week of the month that tasks should run. Use with dayOfWeek to specify the day and week of the month that tasks should run. For example, the First Day or the Last Wednesday of the month.
+            Use one of the following options:
+              - First
+              - Second
+              - Third
+              - Fourth
+              - Last 
+            Use with the Monthly interval only. 
+          day_of_week:
+          sun: Runs tasks on Sunday at the configured time. You can use the sun - sat parameters to run tasks on several days of the week.
+          mon: Runs tasks on Monday at the configured time. You can use the sun - sat parameters to run tasks on several days of the week.
+          tue: Runs tasks on Tuesday at the configured time. You can use the sun - sat parameters to run tasks on several days of the week.
+          wed: Runs tasks on Wednesday at the configured time. You can use the sun - sat parameters to run tasks on several days of the week.
+          thu: Runs tasks on Thursday at the configured time. You can use the sun - sat parameters to run tasks on several days of the week.
+          fri: Runs tasks on Friday at the configured time. You can use the sun - sat parameters to run tasks on several days of the week.
+          sat: Runs tasks on Saturday at the configured time. You can use the sun - sat parameters to run tasks on several days of the week.
+        errors:
+          day-missing: The sun to sat flags should only be used with 'Minutely', 'Hourly', 'Weekly' or 'Biweekly' intervals.
+          weekday-incorrect: The weekday option should only be used with the 'Daily' interval.
+          month-incorrect: The day of week, day of month and week of month options should only be used with the 'Daily' interval.
+          frequency-incorrect: The frequency option should only be used with the 'Minutely', 'Hourly' and 'Daily' options.
+          range-start-incorrect: The range start option should only be used with the 'Minutely', 'Hourly' and 'Daily' options.
+          range-end-incorrect: The range end option should only be used with the 'Minutely', 'Hourly' and 'Daily' options.
+          timezone-incorrect: The timezone option should only be used in conjunction with the day of week, day of month and week of month options.
