@@ -13,8 +13,12 @@ source .venv/bin/activate
 pip install -e .
 
 # Example how to run the CLI
-idmc-cli manage-assets 12345
-idmc-cli run-function myFunction
+idmc manage-assets 12345
+idmc run-function myFunction
+
+# Building the executable
+cd src/idmc-cli
+pyinstaller --onefile cli.py -n idmc --add-data '../../config/i18n.yaml:config'
 
 # Known issues
 This command works for passing a JSON string:

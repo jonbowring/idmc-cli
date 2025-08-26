@@ -1,17 +1,27 @@
 import yaml
+import sys
 from pathlib import Path
 
-I18N_DIR = Path('config')
-I18N_FILE = I18N_DIR / 'i18n.yaml'
+I18N_PATH = 'config/i18n.yaml'
 
 class I18n:
     def __init__(self):
-        self.i18n_path = I18N_FILE
+        
+        if hasattr(sys, '_MEIPASS'):
+            # Running from a onefile PyInstaller bundle
+            relative_path = Path(I18N_PATH)
+            base_path = Path(sys._MEIPASS)
+        else:
+            # Running from source or a onedir PyInstaller bundle
+            relative_path = Path('../../' + I18N_PATH)
+            base_path = '.'
+
+        self.i18n_path = base_path / relative_path
         self.data = {}
         self.load()
 
     def load(self):
-        if self.i18n_path.exists():
+        if self.i18n_path.is_file():
             with open(self.i18n_path, 'r') as f:
                 self.data = yaml.load(f, Loader=yaml.SafeLoader)
 
