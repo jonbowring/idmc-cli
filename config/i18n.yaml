@@ -429,3 +429,13 @@ english:
           id: Runtime environment ID. Either this option or the name option must be included.
           name: Runtime environment Name. Either this option or the id option must be included.
           service: Service to be started on the runtime environment.
+
+    schedules:
+      get:
+        options:
+          id: Filter the response by schedule id.
+          name: Filter the response by schedule name.
+          status: Filter by schedule status.
+          interval: Filter by schedule interval. Valid values include Minutely, Hourly, Daily, Weekly, Biweekly, and Monthly.
+          time_from: Filter by schedule updated since.
+          time_to: Filter by schedule updated up until.

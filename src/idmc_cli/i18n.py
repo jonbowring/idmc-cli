@@ -13,7 +13,7 @@ class I18n:
             base_path = Path(sys._MEIPASS)
         else:
             # Running from source or a onedir PyInstaller bundle
-            relative_path = Path('../../' + I18N_PATH)
+            relative_path = Path(I18N_PATH)
             base_path = '.'
 
         self.i18n_path = base_path / relative_path

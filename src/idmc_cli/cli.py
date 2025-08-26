@@ -935,5 +935,30 @@ def deleteAgentGroupProps(id, name, debug, pretty=0):
     
     click.echo(json.dumps(api.deleteAgentGroupProps(id=id, name=name, debug=debug), indent=pretty))
 
+###################################
+# Schedules commands section
+###################################
+
+@main.group('schedules')
+def schedules():
+    """Schedule management commands."""
+    pass
+
+@schedules.command('get')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'get', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'get', 'name'))
+@click.option('--status', '-s', 'status', default='enabled', required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'get', 'status'))
+@click.option('--interval', '-I', 'interval', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'get', 'interval'))
+@click.option('--from', '-f', 'time_from', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'get', 'time_from'))
+@click.option('--to', '-t', 'time_to', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'get', 'time_to'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getSchedules(id, name, status, interval, time_from, time_to, debug, pretty=0):
+    """Gets schedules details"""
+    #if id is None and name is None:
+    #    raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
+    
+    click.echo(json.dumps(api.getSchedules(id=id, name=name, status=status, interval=interval, time_from=time_from, time_to=time_to, debug=debug), indent=pretty))
+
 if __name__ == '__main__':
     main()
