@@ -3098,7 +3098,7 @@ class InformaticaCloudAPI:
     # Logs section
     #############################
 
-    def getSecurityLogs(self, category, actor, name, time_from='1970-01-01T00:00:01.000Z', time_to='9999-31-12T00:00:01.000Z', debug=False):
+    def getSecurityLogs(self, category, actor, name, time_from, time_to, debug=False):
         """This function returns the git history for an asset"""
         
         # Check if cli has been configured
@@ -4136,7 +4136,357 @@ class InformaticaCloudAPI:
                 break
         
         return resp
+    
 
+    #############################
+    # Schedules section
+    #############################
+
+    def getSchedules(self, id=None, name=None, interval=None, time_from=None, time_to=None, status='enabled', debug=False):
+        """This function returns schedule information"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+
+        # Lookup the schedule id if needed
+        if name:
+            lookup = self.getSchedules(debug=debug)
+            try:
+                id = [obj for obj in lookup['schedules'] if obj['name'] == name][0]['id']
+            except Exception as e:
+                print(e)
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for schedule { name }'
+                    }
+        
+        attempts = 0
+        
+        while True:
+        
+            # Execute the API call
+            if id:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule/{ quote( id ) }'
+            else:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+
+            # Initialise the query
+            params = { 'q': f'status=="{ status }"' }
+            if interval:
+                params['q'] += f';interval=="{ interval }"'
+            if time_from:
+                params['q'] += f';updateTime>="{ time_from }"'
+            if time_to:
+                params['q'] += f';updateTime<="{ time_to }"'
+
+            r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def createSchedule(self, name=None, description=None, status=None, startTime=None, endTime=None, interval=None, frequency=None, rangeStart=None, rangeEnd=None, timezone=None, weekday=None, dayOfMonth=None, weekOfMonth=None, dayOfWeek=None, sun=None, mon=None, tue=None, wed=None, thu=None, fri=None, sat=None, debug=False):
+        """This function creates a new schedule"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        
+        # Add the mandatory fields to the body
+        data = {
+            'name': name,
+            'startTime': startTime
+        }
+
+        # Add the optional fields if needed
+        if description:
+            data['description'] = description
+        if interval:
+            data['interval'] = interval
+        if frequency:
+            data['frequency'] = frequency
+        if status:
+            data['status'] = status
+        if endTime:
+            data['endTime'] = endTime
+        if rangeStart:
+            data['rangeStartTime'] = rangeStart
+        if rangeEnd:
+            data['rangeEndTime'] = rangeEnd
+        if timezone:
+            data['timeZoneId'] = timezone
+        if weekday:
+            data['weekDay'] = weekday
+        if dayOfMonth:
+            data['dayOfMonth'] = dayOfMonth
+        if weekOfMonth:
+            data['weekOfMonth'] = weekOfMonth
+        if dayOfWeek:
+            data['dayOfWeek'] = dayOfWeek
+        if sun:
+            data['sun'] = sun
+        if mon:
+            data['mon'] = mon
+        if tue:
+            data['tue'] = tue
+        if wed:
+            data['wed'] = wed
+        if thu:
+            data['thu'] = thu
+        if fri:
+            data['fri'] = fri
+        if sat:
+            data['sat'] = sat
+
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+
+            r = requests.post(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def updateSchedule(self, id=None, name=None, description=None, status=None, startTime=None, endTime=None, interval=None, frequency=None, rangeStart=None, rangeEnd=None, timezone=None, weekday=None, dayOfMonth=None, weekOfMonth=None, dayOfWeek=None, sun=None, mon=None, tue=None, wed=None, thu=None, fri=None, sat=None, debug=False):
+        """This function updates a schedule"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the schedule id if needed
+        if name and id is None:
+            lookup = self.getSchedules(debug=debug)
+            try:
+                id = [obj for obj in lookup['schedules'] if obj['name'] == name][0]['id']
+                fedId = [obj for obj in lookup['schedules'] if obj['name'] == name][0]['scheduleFederatedId']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for schedule { name }'
+                    }
+        elif id is not None:
+            lookup = self.getSchedules(id=id, debug=debug)
+            try:
+                fedId = lookup['scheduleFederatedId']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for schedule { id }'
+                    }
+        
+        attempts = 0
+        
+        # Add the mandatory fields to the body
+        data = {
+            'schedules': [
+                {
+                    'id': id,
+                    'scheduleFederatedId': fedId
+                }
+            ]
+        }
+
+        # Add the optional fields if needed
+        if name:
+            data['schedules'][0]['name'] = name
+        if startTime:
+            data['schedules'][0]['startTime'] = startTime
+        if description:
+            data['schedules'][0]['description'] = description
+        if interval:
+            data['schedules'][0]['interval'] = interval
+        if frequency:
+            data['schedules'][0]['frequency'] = frequency
+        if status:
+            data['schedules'][0]['status'] = status
+        if endTime:
+            data['schedules'][0]['endTime'] = endTime
+        if rangeStart:
+            data['schedules'][0]['rangeStartTime'] = rangeStart
+        if rangeEnd:
+            data['schedules'][0]['rangeEndTime'] = rangeEnd
+        if timezone:
+            data['schedules'][0]['timeZoneId'] = timezone
+        if weekday:
+            data['schedules'][0]['weekDay'] = weekday
+        if dayOfMonth:
+            data['schedules'][0]['dayOfMonth'] = dayOfMonth
+        if weekOfMonth:
+            data['schedules'][0]['weekOfMonth'] = weekOfMonth
+        if dayOfWeek:
+            data['schedules'][0]['dayOfWeek'] = dayOfWeek
+        if sun:
+            data['schedules'][0]['sun'] = sun
+        if mon:
+            data['schedules'][0]['mon'] = mon
+        if tue:
+            data['schedules'][0]['tue'] = tue
+        if wed:
+            data['schedules'][0]['wed'] = wed
+        if thu:
+            data['schedules'][0]['thu'] = thu
+        if fri:
+            data['schedules'][0]['fri'] = fri
+        if sat:
+            data['schedules'][0]['sat'] = sat
+
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule/{ quote( id ) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+
+            r = requests.patch(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def deleteSchedule(self, id=None, name=None, debug=False):
+        """This function deletes a schedule"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the schedule id if needed
+        if name:
+            lookup = self.getSchedules(debug=debug)
+            try:
+                id = [obj for obj in lookup['schedules'] if obj['name'] == name][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for schedule { name }'
+                    }
+        
+        attempts = 0
+        resp = ''
+        
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule/{ quote( id ) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.delete(url, headers=headers)
+
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = {
+                    'status': r.status_code,
+                    'text': 'Schedule deleted'
+                }
+                break
+        
+        return resp
     
 
 # Expose the class as a variable
