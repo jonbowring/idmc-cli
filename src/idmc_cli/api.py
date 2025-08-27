@@ -4167,7 +4167,7 @@ class InformaticaCloudAPI:
         
             # Execute the API call
             if id:
-                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule/{ id }'
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule/{ quote( id ) }'
             else:
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
@@ -4301,6 +4301,189 @@ class InformaticaCloudAPI:
             # Break when there are no pages left
             else:
                 resp = r.json()
+                break
+        
+        return resp
+    
+
+    def updateSchedule(self, id=None, name=None, description=None, status=None, startTime=None, endTime=None, interval=None, frequency=None, rangeStart=None, rangeEnd=None, timezone=None, weekday=None, dayOfMonth=None, weekOfMonth=None, dayOfWeek=None, sun=None, mon=None, tue=None, wed=None, thu=None, fri=None, sat=None, debug=False):
+        """This function updates a schedule"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the schedule id if needed
+        if name and id is None:
+            lookup = self.getSchedules(debug=debug)
+            try:
+                id = [obj for obj in lookup['schedules'] if obj['name'] == name][0]['id']
+                fedId = [obj for obj in lookup['schedules'] if obj['name'] == name][0]['scheduleFederatedId']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for schedule { name }'
+                    }
+        elif id is not None:
+            lookup = self.getSchedules(id=id, debug=debug)
+            try:
+                fedId = lookup['scheduleFederatedId']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for schedule { id }'
+                    }
+        
+        attempts = 0
+        
+        # Add the mandatory fields to the body
+        data = {
+            'schedules': [
+                {
+                    'id': id,
+                    'scheduleFederatedId': fedId
+                }
+            ]
+        }
+
+        # Add the optional fields if needed
+        if name:
+            data['schedules'][0]['name'] = name
+        if startTime:
+            data['schedules'][0]['startTime'] = startTime
+        if description:
+            data['schedules'][0]['description'] = description
+        if interval:
+            data['schedules'][0]['interval'] = interval
+        if frequency:
+            data['schedules'][0]['frequency'] = frequency
+        if status:
+            data['schedules'][0]['status'] = status
+        if endTime:
+            data['schedules'][0]['endTime'] = endTime
+        if rangeStart:
+            data['schedules'][0]['rangeStartTime'] = rangeStart
+        if rangeEnd:
+            data['schedules'][0]['rangeEndTime'] = rangeEnd
+        if timezone:
+            data['schedules'][0]['timeZoneId'] = timezone
+        if weekday:
+            data['schedules'][0]['weekDay'] = weekday
+        if dayOfMonth:
+            data['schedules'][0]['dayOfMonth'] = dayOfMonth
+        if weekOfMonth:
+            data['schedules'][0]['weekOfMonth'] = weekOfMonth
+        if dayOfWeek:
+            data['schedules'][0]['dayOfWeek'] = dayOfWeek
+        if sun:
+            data['schedules'][0]['sun'] = sun
+        if mon:
+            data['schedules'][0]['mon'] = mon
+        if tue:
+            data['schedules'][0]['tue'] = tue
+        if wed:
+            data['schedules'][0]['wed'] = wed
+        if thu:
+            data['schedules'][0]['thu'] = thu
+        if fri:
+            data['schedules'][0]['fri'] = fri
+        if sat:
+            data['schedules'][0]['sat'] = sat
+
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule/{ quote( id ) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+
+            r = requests.patch(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def deleteSchedule(self, id=None, name=None, debug=False):
+        """This function deletes a schedule"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the schedule id if needed
+        if name:
+            lookup = self.getSchedules(debug=debug)
+            try:
+                id = [obj for obj in lookup['schedules'] if obj['name'] == name][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for schedule { name }'
+                    }
+        
+        attempts = 0
+        resp = ''
+        
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule/{ quote( id ) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.delete(url, headers=headers)
+
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = {
+                    'status': r.status_code,
+                    'text': 'Schedule deleted'
+                }
                 break
         
         return resp

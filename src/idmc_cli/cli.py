@@ -963,7 +963,7 @@ def getSchedules(id, name, status, interval, time_from, time_to, debug, pretty=0
 @click.option('--status', '-s', 'status', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'status'))
 @click.option('--start-time', '-S', 'start_time', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'start_time'))
 @click.option('--end-time', '-e', 'end_time', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'end_time'))
-@click.option('--interval', '-i', 'interval', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'interval'))
+@click.option('--interval', '-I', 'interval', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'interval'))
 @click.option('--frequency', '-f', 'frequency', default=None, required=False, type=click.INT, help=i18n.getHelpOption('schedules', 'create', 'frequency'))
 @click.option('--range-start', '-rs', 'range_start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'range_start'))
 @click.option('--range-end', '-re', 'range_end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'range_end'))
@@ -1001,6 +1001,68 @@ def createSchedule(name, description, status, start_time, end_time, interval, fr
         raise click.BadParameter(i18n.getErrorText('schedules', 'create', 'timezone-incorrect'))
     
     click.echo(json.dumps(api.createSchedule(name=name, description=description, status=status, startTime=start_time, endTime=end_time, interval=interval, frequency=frequency, rangeStart=range_start, rangeEnd=range_end, timezone=timezone, weekday=weekday, dayOfMonth=day_of_month, weekOfMonth=week_of_month, dayOfWeek=day_of_week, sun=sun, mon=mon, tue=tue, wed=wed, thu=thu, fri=fri, sat=sat, debug=debug), indent=pretty))
+
+@schedules.command('update')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'name'))
+@click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'description'))
+@click.option('--status', '-s', 'status', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'status'))
+@click.option('--start-time', '-S', 'start_time', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'start_time'))
+@click.option('--end-time', '-e', 'end_time', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'end_time'))
+@click.option('--interval', '-I', 'interval', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'interval'))
+@click.option('--frequency', '-f', 'frequency', default=None, required=False, type=click.INT, help=i18n.getHelpOption('schedules', 'update', 'frequency'))
+@click.option('--range-start', '-rs', 'range_start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'range_start'))
+@click.option('--range-end', '-re', 'range_end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'range_end'))
+@click.option('--timezone', '-t', 'timezone', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'timezone'))
+@click.option('--weekday', '-w', 'weekday', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'weekday'))
+@click.option('--day-of-month', '-dm', 'day_of_month', default=None, required=False, type=click.INT, help=i18n.getHelpOption('schedules', 'update', 'day_of_month'))
+@click.option('--week-of-month', '-wm', 'week_of_month', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'week_of_month'))
+@click.option('--day-of-week', '-dw', 'day_of_week', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'day_of_week'))
+@click.option('--sunday', '-sun', 'sun', default=None, required=False, type=click.BOOL, help=i18n.getHelpOption('schedules', 'update', 'sun'))
+@click.option('--monday', '-mon', 'mon', default=None, required=False, type=click.BOOL, help=i18n.getHelpOption('schedules', 'update', 'mon'))
+@click.option('--tuesday', '-tue', 'tue', default=None, required=False, type=click.BOOL, help=i18n.getHelpOption('schedules', 'update', 'tue'))
+@click.option('--wednesday', '-wed', 'wed', default=None, required=False, type=click.BOOL, help=i18n.getHelpOption('schedules', 'update', 'wed'))
+@click.option('--thursday', '-thu', 'thu', default=None, required=False, type=click.BOOL, help=i18n.getHelpOption('schedules', 'update', 'thu'))
+@click.option('--friday', '-fri', 'fri', default=None, required=False, type=click.BOOL, help=i18n.getHelpOption('schedules', 'update', 'fri'))
+@click.option('--saturday', '-sat', 'sat', default=None, required=False, type=click.BOOL, help=i18n.getHelpOption('schedules', 'update', 'sat'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def updateSchedule(id, name, description, status, start_time, end_time, interval, frequency, range_start, range_end, timezone, weekday, day_of_month, week_of_month, day_of_week, sun, mon, tue, wed, thu, fri, sat, debug, pretty=0):
+    """Updates a schedule"""
+    
+    # Validate the options
+    if id is None and name is None:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
+    if ( sun is not None or mon is not None or tue is not None or wed is not None or thu is not None or fri is not None or sat is not None ) and interval not in ['Minutely', 'Hourly', 'Weekly', 'Biweekly']:
+        raise click.BadParameter(i18n.getErrorText('schedules', 'update', 'day-missing'))
+    if weekday is not None and interval != 'Daily':
+        raise click.BadParameter(i18n.getErrorText('schedules', 'update', 'weekday-incorrect'))
+    if ( day_of_month is not None  or day_of_week is not None or week_of_month is not None) and interval != 'Monthly':
+        raise click.BadParameter(i18n.getErrorText('schedules', 'update', 'month-incorrect'))
+    if frequency is not None and interval not in ['Minutely', 'Hourly', 'Daily']:
+        raise click.BadParameter(i18n.getErrorText('schedules', 'update', 'frequency-incorrect'))
+    if range_start is not None and interval not in ['Minutely', 'Hourly', 'Daily']:
+        raise click.BadParameter(i18n.getErrorText('schedules', 'update', 'range-start-incorrect'))
+    if range_end is not None and interval not in ['Minutely', 'Hourly', 'Daily']:
+        raise click.BadParameter(i18n.getErrorText('schedules', 'update', 'range-end-incorrect'))
+    if timezone is not None and day_of_month is None and week_of_month is None and day_of_week is None:
+        raise click.BadParameter(i18n.getErrorText('schedules', 'update', 'timezone-incorrect'))
+    
+    click.echo(json.dumps(api.updateSchedule(id=id, name=name, description=description, status=status, startTime=start_time, endTime=end_time, interval=interval, frequency=frequency, rangeStart=range_start, rangeEnd=range_end, timezone=timezone, weekday=weekday, dayOfMonth=day_of_month, weekOfMonth=week_of_month, dayOfWeek=day_of_week, sun=sun, mon=mon, tue=tue, wed=wed, thu=thu, fri=fri, sat=sat, debug=debug), indent=pretty))
+
+@schedules.command('delete')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'delete', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'delete', 'name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def deleteSchedule(id, name, debug, pretty=0):
+    """Deletes a schedule"""
+    
+    # Validate the options
+    if id is None and name is None:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
+    
+    click.echo(json.dumps(api.deleteSchedule(id=id, name=name, debug=debug), indent=pretty))
 
 if __name__ == '__main__':
     main()
