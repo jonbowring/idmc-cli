@@ -535,3 +535,13 @@ english:
         options:
           id: ID of the schedule to be deleted. Use this option or the name option.
           name: Name of the schedule to be deleted. Use this option or the id option.
+
+      enable:
+        options:
+          id: ID of the schedule to be enabled. Use this option or the name option.
+          name: Name of the schedule to be enabled. Use this option or the id option.
+
+      disable:
+        options:
+          id: ID of the schedule to be disabled. Use this option or the name option.
+          name: Name of the schedule to be disabled. Use this option or the id option.
