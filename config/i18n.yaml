@@ -85,6 +85,20 @@ english:
           id-uname-missing: Either the id or username option must be included.
           gid-gname-missing: Either the group id's or group names option must be included.
 
+    password:
+      change:
+        options:
+          id: User id to be updated. Use this option or the --username option. This or the --username option is required if an administrator is changing the password for another user.
+          username: User name to be updated. Use this option or the --id option. This or the --id option is required if an administrator is changing the password for another user.
+          old_password: The old password for the user. Required if you are changing your own password.
+          new_password: The new password for the user.
+      reset:
+        options:
+          id: User id to be updated. Use this option or the --username option.
+          username: User name to be updated. Use this option or the --id option.
+          security_answer: Security answer to the user's security question.
+          new_password: The new password for the user.
+
     user-groups:
       get:
         options:
