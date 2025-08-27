@@ -175,7 +175,42 @@ def removeUserGroups(id, username, group_ids, group_names, debug, pretty=0):
         raise click.BadParameter(i18n.getErrorText('users', 'remove-groups', 'gid-gname-missing'))
     
     click.echo(json.dumps(api.removeUserGroups(id=id, username=username, groupIds=group_ids, groupNames=group_names, debug=debug), indent=pretty))
-    
+
+
+###################################
+# Password commands section
+###################################
+
+@users.group('password')
+def password():
+    """Password management commands."""
+    pass
+
+@password.command('change')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'change', 'id'))
+@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'change', 'username'))
+@click.option('--old-password', '-o', 'old_password', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'change', 'old_password'))
+@click.option('--new-password', '-n', 'new_password', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('password', 'change', 'new_password'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def changePassword(id, username, old_password, new_password, debug, pretty=0):
+    """Change a users password"""  
+    if id is None and username is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'remove-groups', 'id-uname-missing'))
+    click.echo(json.dumps(api.changePassword(id=id, username=username, oldPassword=old_password, newPassword=new_password, debug=debug), indent=pretty))
+
+@password.command('reset')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'reset', 'id'))
+@click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'reset', 'username'))
+@click.option('--security-answer', '-s', 'security_answer', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('password', 'reset', 'security_answer'))
+@click.option('--new-password', '-n', 'new_password', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('password', 'reset', 'new_password'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def resetPassword(id, username, security_answer, new_password, debug, pretty=0):
+    """Resets a users password using their security answer"""  
+    if id is None and username is None:
+        raise click.BadParameter(i18n.getErrorText('users', 'remove-groups', 'id-uname-missing'))
+    click.echo(json.dumps(api.resetPassword(id=id, username=username, securityAnswer=security_answer, newPassword=new_password, debug=debug), indent=pretty))
 
 ###################################
 # User Groups commands section
