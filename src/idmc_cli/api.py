@@ -4618,7 +4618,288 @@ class InformaticaCloudAPI:
                 break
         
         return resp
+
     
+    #############################
+    # Permissions section
+    #############################
+
+    def getPermissions(self, id, acl, path, type, checkType, checkAccess=False, debug=False):
+        """This function returns the permissions for an object"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the object id if needed
+        if path and type:
+            lookup = self.lookupObject(path=path, type=type, debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type { type }'
+                }
+            
+        params = None
+
+        while True:
+            
+            # Execute the API call
+            if acl:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions/{ quote( acl ) }'
+            elif checkAccess:
+                if checkType:
+                    params = {
+                        'type': checkType
+                    }
+
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions/checkAccess'
+            else:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.get(url, headers=headers, params=params)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+    def createPermission(self, id, path, type, ptype, pname, read=False, update=False, delete=False, execute=False, change=False, debug=False):
+        """This function returns the permissions for an object"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the object id if needed
+        if path and type:
+            lookup = self.lookupObject(path=path, type=type, debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type { type }'
+                }
+        
+        # Prepare the data body
+        data = {
+            'principal': {
+                'type': ptype,
+                'name': pname
+            },
+            'permissions': {
+                'read': read,
+                'update': update,
+                'delete': delete,
+                'execute': execute,
+                'changePermission': change
+            }
+        }
+
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.post(url, headers=headers, json=data)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def updatePermission(self, id, acl, path, type, ptype, pname, read=False, update=False, delete=False, execute=False, change=False, debug=False):
+        """This function updates the permissions for an object"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the object id if needed
+        if path and type:
+            lookup = self.lookupObject(path=path, type=type, debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type { type }'
+                }
+        
+        # Prepare the data body
+        data = {
+            'principal': {
+                'type': ptype,
+                'name': pname
+            },
+            'permissions': {
+                'read': read,
+                'update': update,
+                'delete': delete,
+                'execute': execute,
+                'changePermission': change
+            }
+        }
+
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions/{ quote( acl ) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.put(url, headers=headers, json=data)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = {
+                    'status': r.status_code,
+                    'text': 'Permission updated'
+                }
+                break
+        
+        return resp
+    
+
+    def deletePermissions(self, id, acl, path, type, debug=False):
+        """This function deletes permissions from an object"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        resp = ''
+        attempts = 0
+        
+        # Lookup the object id if needed
+        if path and type:
+            lookup = self.lookupObject(path=path, type=type, debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type { type }'
+                }
+
+        while True:
+            
+            # Execute the API call
+            if acl:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions/{ quote( acl ) }'
+            else:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.delete(url, headers=headers)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = {
+                    'status': r.status_code,
+                    'text': 'Permissions deleted'
+                }
+                break
+        
+        return resp
 
 # Expose the class as a variable
 api = InformaticaCloudAPI()
