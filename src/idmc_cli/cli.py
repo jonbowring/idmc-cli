@@ -440,8 +440,8 @@ def tagObject(id, path, type, body, tags, debug, pretty=0):
 
 @objects.command('remove-tags')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'id'))
-@click.option('--path', '-p' 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'path'))
-@click.option('--type', '-t' 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'type'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'type'))
 @click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'body'))
 @click.option('--tags', '-T', 'tags', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'tags'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -457,6 +457,86 @@ def tagObject(id, path, type, body, tags, debug, pretty=0):
         click.echo(json.dumps(api.untagObjects(body=body, debug=debug), indent=pretty))
     else:
         click.echo(json.dumps(api.untagObject(id=id, path=path, type=type, tags=tags, debug=debug), indent=pretty))
+
+@objects.group('permissions')
+def permissions():
+    """Permission management commands."""
+    pass
+
+@permissions.command('get')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'get', 'id'))
+@click.option('--acl', '-a', 'acl', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'get', 'acl'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'get', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'get', 'type'))
+@click.option('--check-access', '-c', 'check_access', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'get', 'check_access'))
+@click.option('--check-type', '-ct', 'check_type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'get', 'check_type'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getPermissions(id, acl, path, type, check_access, check_type, debug, pretty=0):
+    """Gets permission ACL's for an object"""
+    if id is None and path is None and type is None:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
+    if check_type is not None and check_access == False:
+        check_access = True
+    
+    click.echo(json.dumps(api.getPermissions(id=id, acl=acl, path=path, type=type, checkAccess=check_access, checkType=check_type, debug=debug), indent=pretty))
+
+
+@permissions.command('create')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'create', 'id'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'create', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'create', 'type'))
+@click.option('--ptype', '-pt', 'ptype', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('permissions', 'create', 'ptype'))
+@click.option('--pname', '-pn', 'pname', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('permissions', 'create', 'pname'))
+@click.option('--read', '-r', 'read', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'create', 'read'))
+@click.option('--update', '-u', 'update', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'create', 'update'))
+@click.option('--delete', '-d', 'delete', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'create', 'delete'))
+@click.option('--execute', '-e', 'execute', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'create', 'execute'))
+@click.option('--change', '-c', 'change', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'create', 'change'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def createPermission(id, path, type, ptype, pname, read, update, delete, execute, change, debug, pretty=0):
+    """Creates a permission ACL for an object"""
+    if id is None and path is None and type is None:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
+    
+    click.echo(json.dumps(api.createPermission(id=id, path=path, type=type, ptype=ptype, pname=pname, read=read, update=update, delete=delete, execute=execute, change=change, debug=debug), indent=pretty))
+
+@permissions.command('update')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'update', 'id'))
+@click.option('--acl', '-a', 'acl', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'update', 'acl'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'update', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'update', 'type'))
+@click.option('--ptype', '-pt', 'ptype', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('permissions', 'update', 'ptype'))
+@click.option('--pname', '-pn', 'pname', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('permissions', 'update', 'pname'))
+@click.option('--read', '-r', 'read', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'update', 'read'))
+@click.option('--update', '-u', 'update', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'update', 'update'))
+@click.option('--delete', '-d', 'delete', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'update', 'delete'))
+@click.option('--execute', '-e', 'execute', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'update', 'execute'))
+@click.option('--change', '-c', 'change', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'update', 'change'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def updatePermission(id, acl, path, type, ptype, pname, read, update, delete, execute, change, debug, pretty=0):
+    """Updates a permission ACL for an object"""
+    if id is None and path is None and type is None:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
+    
+    click.echo(json.dumps(api.updatePermission(id=id, acl=acl, path=path, type=type, ptype=ptype, pname=pname, read=read, update=update, delete=delete, execute=execute, change=change, debug=debug), indent=pretty))
+
+
+@permissions.command('delete')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'delete', 'id'))
+@click.option('--acl', '-a', 'acl', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'delete', 'acl'))
+@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'delete', 'path'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'delete', 'type'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def deletePermissions(id, acl, path, type, debug, pretty=0):
+    """Deletes permission ACL's for an object"""
+    if id is None and path is None and type is None:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
+    
+    click.echo(json.dumps(api.deletePermissions(id=id, acl=acl, path=path, type=type, debug=debug), indent=pretty))
 
 
 ###################################

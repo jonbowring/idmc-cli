@@ -212,6 +212,47 @@ english:
           body-id-path-type-missing: Either the body, id, or both the path and type need to be provided.
           path-type-missing: Both path and type must be included when not searching by id or body.
 
+    permissions:
+      get:
+        options:
+          id: Global unique identifier for the object. Required if object path and type not included.
+          acl: Permissions ACL id.
+          path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
+          type: Type of object. Required with path if object ID not included.
+          check_access: Flag to check your access rights before you attempt to create an asset in a project or folder.
+          check_type: Object type to be checked if you have permission to create.
+      create:
+        options:
+          id: Global unique identifier for the object. Required if object path and type not included.
+          path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
+          type: Type of object. Required with path if object ID not included.
+          ptype: Principal type. Valid values are USER or GROUP.
+          pname: Principal name.
+          read: Flag whether to allow the user or group to view the object. 
+          update: Flag whether to allow the user or group to update the object. 
+          delete: Flag whether to allow the user or group to delete the object. 
+          execute: Flag whether to allow the user or group to execute the object. 
+          change: Flag whether to allow the user or group to change the object. 
+      update:
+        options:
+          id: Global unique identifier for the object. Required if object path and type not included.
+          acl: Permissions ACL id.
+          path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
+          type: Type of object. Required with path if object ID not included.
+          ptype: Principal type. Valid values are USER or GROUP.
+          pname: Principal name.
+          read: Flag whether to allow the user or group to view the object. 
+          update: Flag whether to allow the user or group to update the object. 
+          delete: Flag whether to allow the user or group to delete the object. 
+          execute: Flag whether to allow the user or group to execute the object. 
+          change: Flag whether to allow the user or group to change the object. 
+      delete:
+        options:
+          id: Global unique identifier for the object. Required if object path and type not included.
+          acl: Permissions ACL id. If not included all permissions are deleted from the object.
+          path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
+          type: Type of object. Required with path if object ID not included.
+
     projects:
       create:
         options:
