@@ -199,6 +199,9 @@ english:
           checked-in-by: User who last checked in the asset. 
           source-ctrld: Flag to indicate that the asset is source controlled.
           published-by: User who published the asset. Applicable to Application Integration.
+          updated-by: The user who last updated the assets. Use the userName value for the user.
+          updated-since: Assets that have been updated since date/time.
+          updated-until: Assets that have been updated until date/time.
       
       add-tags:
         options:

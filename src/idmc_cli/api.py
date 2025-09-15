@@ -1332,7 +1332,7 @@ class InformaticaCloudAPI:
     # Objects section
     #############################
 
-    def queryObjects(self, type=None, location=None, tag=None, checkedOutBy=None, checkedInBy=None, sourceCtrld=None, publishedBy=None, debug=False):
+    def queryObjects(self, type=None, location=None, tag=None, checkedOutBy=None, checkedInBy=None, sourceCtrld=None, publishedBy=None, updatedBy=None, updatedSince=None, updatedUntil=None, debug=False):
         """This function is used to query objects"""
         
         # Check if cli has been configured
@@ -1358,7 +1358,13 @@ class InformaticaCloudAPI:
         if sourceCtrld:
             qargs.append(f'sourceControl.sourceControlled == { sourceCtrld }')
         if publishedBy:
-            qargs.append(f'customAttributes.publishedBy == { publishedBy }')
+            qargs.append(f'customAttributes.publishedBy == "{ publishedBy }"')
+        if updatedBy:
+            qargs.append(f'updatedBy == "{ updatedBy }"')
+        if updatedSince:
+            qargs.append(f'updateTime >= { updatedSince }')
+        if updatedUntil:
+            qargs.append(f'updateTime <= { updatedUntil }')
         
         while True:
         
