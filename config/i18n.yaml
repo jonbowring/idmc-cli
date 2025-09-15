@@ -190,6 +190,16 @@ english:
           body: JSON payload containing the search conditions for the objects.
 
     objects:
+      query:
+        options:
+          type: "Asset type. Type can be project, folder, or one of the following asset types: DTEMPLATE, MTT, DSS, DMASK, DRS, DMAPPLET, MAPPLET, BSERVICE, HSCHEMA, PCS, FWCONFIG, CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW, UDF, PROJECT, FOLDER, PROCESS, GUIDE, AI_CONNECTION, AI_SERVICE_CONNECTOR, PROCESS_OBJECT, B2BGW_MONITOR, B2BGW_CUSTOMER, B2BGW_SUPPLIER, MDM_BUSINESS_ENTITY, MDM_REFERENCE_ENTITY, MDM_HIERARCHY, MDM_RELATIONSHIP, MDM_JOB_DEFINITION, MDM_AUTHORIZATION, MDM_BUSINESS_EVENT, MDM_REPORT_SET, MDM_REPORT, MDM_DYNAMIC_POOL, MDM_APPLICATION, MDM_SRC_SYSTEM, MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE, DEDUPLICATE, DICTIONARY, EXCEPTION, LABELER, PARSE, RULE_SPECIFICATION, VERIFIER"
+          location: The project and folder path where the assets are located, such as Default/Sales.
+          tag: The tag associated with the assets.
+          checked-out-by: User who checked out the asset.
+          checked-in-by: User who last checked in the asset. 
+          source-ctrld: Flag to indicate that the asset is source controlled.
+          published-by: User who published the asset. Applicable to Application Integration.
+      
       add-tags:
         options:
           id: Global unique identifier for the object. Required if object path and type not included.

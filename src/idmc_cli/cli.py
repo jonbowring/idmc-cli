@@ -417,6 +417,21 @@ def objects():
     """Object management commands."""
     pass
 
+@objects.command('query')
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'type'))
+@click.option('--location', '-l', 'location', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'location'))
+@click.option('--tag', '-T', 'tag', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'tag'))
+@click.option('--checked-out-by', '-co', 'checked_out_by', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'checked-out-by'))
+@click.option('--checked-in-by', '-ci', 'checked_in_by', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'checked-in-by'))
+@click.option('--source-ctrld', '-s', 'source_cntrld', default=None, required=False, type=click.BOOL, help=i18n.getHelpOption('objects', 'query', 'source-ctrld'))
+@click.option('--published-by', '-p', 'published_by', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('objects', 'query', 'published-by'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def queryObjects(type, location, tag, checked_out_by, checked_in_by, source_cntrld, published_by, debug, pretty=0):
+    """Used to query objects"""
+    click.echo(json.dumps(api.queryObjects(type=type, location=location, tag=tag, checkedOutBy=checked_out_by, checkedInBy=checked_in_by, sourceCtrld=source_cntrld, publishedBy=published_by, debug=debug), indent=pretty))
+
+
 @objects.command('add-tags')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'path'))
