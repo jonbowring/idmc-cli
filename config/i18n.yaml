@@ -190,6 +190,26 @@ english:
           body: JSON payload containing the search conditions for the objects.
 
     objects:
+      query:
+        options:
+          type: "Asset type. Type can be project, folder, or one of the following asset types: DTEMPLATE, MTT, DSS, DMASK, DRS, DMAPPLET, MAPPLET, BSERVICE, HSCHEMA, PCS, FWCONFIG, CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW, UDF, PROJECT, FOLDER, PROCESS, GUIDE, AI_CONNECTION, AI_SERVICE_CONNECTOR, PROCESS_OBJECT, B2BGW_MONITOR, B2BGW_CUSTOMER, B2BGW_SUPPLIER, MDM_BUSINESS_ENTITY, MDM_REFERENCE_ENTITY, MDM_HIERARCHY, MDM_RELATIONSHIP, MDM_JOB_DEFINITION, MDM_AUTHORIZATION, MDM_BUSINESS_EVENT, MDM_REPORT_SET, MDM_REPORT, MDM_DYNAMIC_POOL, MDM_APPLICATION, MDM_SRC_SYSTEM, MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE, DEDUPLICATE, DICTIONARY, EXCEPTION, LABELER, PARSE, RULE_SPECIFICATION, VERIFIER"
+          location: The project and folder path where the assets are located, such as Default/Sales.
+          tag: The tag associated with the assets.
+          checked-out-by: User who checked out the asset.
+          checked-out-since: Assets that have been checked out since date/time.
+          checked-out-until: Assets that have been checked out until date/time.
+          checked-in-by: User who last checked in the asset.
+          checked-in-since: Assets that have been checked in since date/time.
+          checked-in-until: Assets that have been checked in until date/time.
+          source-ctrld: Flag to indicate that the asset is source controlled.
+          hash: Source control hash. Supports partial hash using a wildcard ( * ).
+          published-by: User who published the asset. Applicable to Application Integration.
+          published-since: Assets that have been published since date/time.
+          published-until: Assets that have been published until date/time.
+          updated-by: The user who last updated the assets. Use the userName value for the user.
+          updated-since: Assets that have been updated since date/time.
+          updated-until: Assets that have been updated until date/time.
+      
       add-tags:
         options:
           id: Global unique identifier for the object. Required if object path and type not included.

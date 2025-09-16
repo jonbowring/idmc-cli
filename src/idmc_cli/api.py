@@ -1329,9 +1329,102 @@ class InformaticaCloudAPI:
     
 
     #############################
-    # Lookup section
+    # Objects section
     #############################
 
+    def queryObjects(self, type=None, location=None, tag=None, hash=None, checkedOutBy=None, checkedOutSince=None, checkedOutUntil=None, checkedInBy=None, checkedInSince=None, checkedInUntil=None, sourceCtrld=None, publishedBy=None, publishedSince=None, publishedUntil=None, updatedBy=None, updatedSince=None, updatedUntil=None, debug=False):
+        """This function is used to query objects"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        skip = 0
+        pages = []
+
+        # Prepare the query string
+        qargs = []
+        if type:
+            qargs.append(f'type == "{ type }"')
+        if location:
+            qargs.append(f'location == "{ location }"')
+        if tag:
+            qargs.append(f'tag == "{ tag }"')
+        if checkedOutBy:
+            qargs.append(f'sourceControl.checkedOutBy == "{ checkedOutBy }"')
+        if checkedOutSince:
+            qargs.append(f'sourceControl.checkedOutTime >= { checkedOutSince }')
+        if checkedOutUntil:
+            qargs.append(f'sourceControl.checkedOutTime <= { checkedOutUntil }')
+        if checkedInBy:
+            qargs.append(f'sourceControl.lastCheckinBy == "{ checkedInBy }"')
+        if checkedInSince:
+            qargs.append(f'sourceControl.lastCheckinTime >= { checkedInSince }')
+        if checkedInUntil:
+            qargs.append(f'sourceControl.lastCheckinTime <= { checkedInUntil }')
+        if sourceCtrld:
+            qargs.append(f'sourceControl.sourceControlled == { sourceCtrld }')
+        if publishedBy:
+            qargs.append(f'customAttributes.publishedBy == "{ publishedBy }"')
+        if publishedSince:
+            qargs.append(f'customAttributes.publicationDate >= { publishedSince }')
+        if publishedUntil:
+            qargs.append(f'customAttributes.publicationDate <= { publishedUntil }')
+        if updatedBy:
+            qargs.append(f'updatedBy == "{ updatedBy }"')
+        if updatedSince:
+            qargs.append(f'updateTime >= { updatedSince }')
+        if updatedUntil:
+            qargs.append(f'updateTime <= { updatedUntil }')
+        if hash:
+            qargs.append(f'sourceControl.hash <= { hash }')
+        
+        while True:
+        
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            params = { 'limit': self.page_size, 'skip': skip }
+            params['q'] = ' and '.join(qargs)
+
+            r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                pages.append(resp)
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # If there is still some data then continue onto the next page
+            elif len(r.json()['objects']) > 0:
+                resp = r.json()
+                pages.append(resp)
+                skip = skip + self.page_size
+                continue
+            # Break when there are no pages left
+            else:
+                break
+        
+        return pages
+    
     def lookupObject(self, id=None, path=None, type=None, debug=False):
         """This function is used to lookup objects"""
         
