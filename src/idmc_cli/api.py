@@ -1332,7 +1332,7 @@ class InformaticaCloudAPI:
     # Objects section
     #############################
 
-    def queryObjects(self, type=None, location=None, tag=None, checkedOutBy=None, checkedInBy=None, sourceCtrld=None, publishedBy=None, updatedBy=None, updatedSince=None, updatedUntil=None, debug=False):
+    def queryObjects(self, type=None, location=None, tag=None, hash=None, checkedOutBy=None, checkedOutSince=None, checkedOutUntil=None, checkedInBy=None, checkedInSince=None, checkedInUntil=None, sourceCtrld=None, publishedBy=None, publishedSince=None, publishedUntil=None, updatedBy=None, updatedSince=None, updatedUntil=None, debug=False):
         """This function is used to query objects"""
         
         # Check if cli has been configured
@@ -1353,18 +1353,32 @@ class InformaticaCloudAPI:
             qargs.append(f'tag == "{ tag }"')
         if checkedOutBy:
             qargs.append(f'sourceControl.checkedOutBy == "{ checkedOutBy }"')
+        if checkedOutSince:
+            qargs.append(f'sourceControl.checkedOutTime >= { checkedOutSince }')
+        if checkedOutUntil:
+            qargs.append(f'sourceControl.checkedOutTime <= { checkedOutUntil }')
         if checkedInBy:
             qargs.append(f'sourceControl.lastCheckinBy == "{ checkedInBy }"')
+        if checkedInSince:
+            qargs.append(f'sourceControl.lastCheckinTime >= { checkedInSince }')
+        if checkedInUntil:
+            qargs.append(f'sourceControl.lastCheckinTime <= { checkedInUntil }')
         if sourceCtrld:
             qargs.append(f'sourceControl.sourceControlled == { sourceCtrld }')
         if publishedBy:
             qargs.append(f'customAttributes.publishedBy == "{ publishedBy }"')
+        if publishedSince:
+            qargs.append(f'customAttributes.publicationDate >= { publishedSince }')
+        if publishedUntil:
+            qargs.append(f'customAttributes.publicationDate <= { publishedUntil }')
         if updatedBy:
             qargs.append(f'updatedBy == "{ updatedBy }"')
         if updatedSince:
             qargs.append(f'updateTime >= { updatedSince }')
         if updatedUntil:
             qargs.append(f'updateTime <= { updatedUntil }')
+        if hash:
+            qargs.append(f'sourceControl.hash <= { hash }')
         
         while True:
         

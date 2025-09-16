@@ -196,9 +196,16 @@ english:
           location: The project and folder path where the assets are located, such as Default/Sales.
           tag: The tag associated with the assets.
           checked-out-by: User who checked out the asset.
-          checked-in-by: User who last checked in the asset. 
+          checked-out-since: Assets that have been checked out since date/time.
+          checked-out-until: Assets that have been checked out until date/time.
+          checked-in-by: User who last checked in the asset.
+          checked-in-since: Assets that have been checked in since date/time.
+          checked-in-until: Assets that have been checked in until date/time.
           source-ctrld: Flag to indicate that the asset is source controlled.
+          hash: Source control hash. Supports partial hash using a wildcard ( * ).
           published-by: User who published the asset. Applicable to Application Integration.
+          published-since: Assets that have been published since date/time.
+          published-until: Assets that have been published until date/time.
           updated-by: The user who last updated the assets. Use the userName value for the user.
           updated-since: Assets that have been updated since date/time.
           updated-until: Assets that have been updated until date/time.
