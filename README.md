@@ -19,7 +19,7 @@ idmc users get --help
 idmc users get
 
 # Building the executable
-cd src/idmc-cli
+cd src/idmc_cli
 pyinstaller --onefile cli.py -n idmc --add-data '../../config/i18n.yaml:config'
 
 # Known issues
