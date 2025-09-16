@@ -210,6 +210,14 @@ english:
           updated-since: Assets that have been updated since date/time.
           updated-until: Assets that have been updated until date/time.
       
+      dependencies:
+        options:
+          id: Global unique identifier for the object. Required if object path and type not included.
+          path: Full path of the object including project, folder, and object name. Required with type if object ID not included.
+          type: Type of object. Required with path if object ID not included.
+          body: If tagging multiple objects, use this property to include the JSON body. Only use this if not using --id, --path, --type or --tags options.
+          ref_type: "Whether to list objects that the asset uses or objects that use the asset. Use one of the following values: uses, usedBy"
+      
       add-tags:
         options:
           id: Global unique identifier for the object. Required if object path and type not included.
