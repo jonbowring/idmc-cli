@@ -636,3 +636,17 @@ english:
         options:
           id: ID of the schedule to be disabled. Use this option or the name option.
           name: Name of the schedule to be disabled. Use this option or the id option.
+
+    jobs:
+      start:
+        options:
+          id: Global unique identifier for the task to start. Must be used if path is not included.
+          path: Path to the task to be started. Must be used in conjunction with the type option.
+          type: "The type of task. Valid values include: DMASK, DRS, DSS, MTT, PCS, WORKFLOW, TASKFLOW. The taskflow must be first published."
+          callback: URL endpoint to be called when the job is finished.
+          param-file: Parameter file name. Must be used in conjunction with the param-dir option.
+          param-dir: Parameter file directory on the Secure Agent machine. Must be used in conjunction with the param-file option.
+          api-name: The API name of the taskflow to be executed.
+        errors:
+          param-file-dir-missing: If specifying a parameter file then both the param-file and param-dir options must be included.
+          api-name-missing: If specifying the TASKFLOW type you must also include the api-name option.

@@ -139,7 +139,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -221,7 +221,7 @@ class InformaticaCloudAPI:
             for group in groups:
                 lookup = self.getUserGroups(name=group, debug=debug)
                 try:
-                    groupId = lookup[0][0]['id']
+                    groupId = lookup[0]['id']
                     groupIds.append(groupId)
                 except Exception as e:
                     return {
@@ -312,7 +312,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -394,7 +394,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -476,7 +476,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -490,7 +490,7 @@ class InformaticaCloudAPI:
             for group in groups:
                 lookup = self.getUserGroups(id=group, debug=debug)
                 try:
-                    groupName = lookup[0][0]['userGroupName']
+                    groupName = lookup[0]['userGroupName']
                     groupNames.append(groupName)
                 except Exception as e:
                     return {
@@ -559,7 +559,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -573,7 +573,7 @@ class InformaticaCloudAPI:
             for group in groups:
                 lookup = self.getUserGroups(id=group, debug=debug)
                 try:
-                    groupName = lookup[0][0]['userGroupName']
+                    groupName = lookup[0]['userGroupName']
                     groupNames.append(groupName)
                 except Exception as e:
                     return {
@@ -1137,7 +1137,7 @@ class InformaticaCloudAPI:
             for user in users:
                 lookup = self.getUsers(username=user, debug=debug)
                 try:
-                    userId = lookup[0][0]['id']
+                    userId = lookup[0]['id']
                     userIds.append(userId)
                 except Exception as e:
                     return {
@@ -1209,7 +1209,7 @@ class InformaticaCloudAPI:
         if groupname:
             lookup = self.getUserGroups(name=groupname, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -1288,7 +1288,7 @@ class InformaticaCloudAPI:
         if name:
             lookup = self.getUserGroups(name=name, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -4701,7 +4701,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -4765,7 +4765,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -5100,37 +5100,50 @@ class InformaticaCloudAPI:
     # Jobs section
     #############################
 
-    def startCdiJob(self, id=None, path=None, type=None, callbackUrl=None, paramFile=None, paramDir=None, debug=False):
+    def startCdiJob(self, id=None, path=None, type=None, callbackUrl=None, paramFile=None, paramDir=None, apiName=None, debug=False):
         """This function starts a new data integration job"""
         
         # Check if cli has been configured
         if not self.username:
             return 'CLI needs to be configured. Run the command "idmc configure"'
         
-        # Lookup the task id if needed
-        if name:
-            lookup = self.lookupObject(unassigned=unassigned, debug=debug)
+        # Lookup the object id if needed
+        if path and type:
+            lookup = self.lookupObject(path=path, type=type, debug=debug)
             try:
-                id = [obj for obj in lookup if obj['name'] == name][0]['id']
+                id = lookup['objects'][0]['id']
             except Exception as e:
                 return {
                         'status': 500,
-                        'text': f'Unable to find id for runtime environment { name }'
-                    }
+                        'text': f'Unable to find object id for path { path } and type { type }'
+                }
         
         attempts = 0
         resp = ''
         
         while True:
         
-            data = {
-                '@type': 'job'
-            }
-            
-            # Execute the API call
-            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/job'
-            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            if type == 'TASKFLOW':
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/active-bpel/rt/{ apiName }'
+                headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+                r = requests.get(url, headers=headers, auth=(self.username, self.password))
+            else:
+                data = {
+                    '@type': 'job',
+                    'taskFederatedId': id,
+                    'taskType': type
+                }
+                if callbackUrl:
+                    data['callbackURL'] = callbackUrl
+                if paramFile and paramDir:
+                    data['runtime'] = {}
+                    data['runtime']['parameterFileName'] = paramFile
+                    data['runtime']['parameterFileDir'] = paramDir
+                
+                # Execute the API call
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/job'
+                headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+                r = requests.post(url, headers=headers, json=data)
 
             if debug:
                 self.debugRequest(r, attempts)
