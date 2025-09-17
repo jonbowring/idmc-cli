@@ -190,6 +190,14 @@ english:
           body: JSON payload containing the search conditions for the objects.
 
     objects:
+      get:
+        options:
+          id: Filter the returned objects by id.
+          name: Filter the returned objects by name.
+          type: "Asset type. Must include this option or the location option. Type can be project, folder, or one of the following asset types: DTEMPLATE, MTT, DSS, DMASK, DRS, DMAPPLET, MAPPLET, BSERVICE, HSCHEMA, PCS, FWCONFIG, CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW, UDF, PROJECT, FOLDER, PROCESS, GUIDE, AI_CONNECTION, AI_SERVICE_CONNECTOR, PROCESS_OBJECT, B2BGW_MONITOR, B2BGW_CUSTOMER, B2BGW_SUPPLIER, MDM_BUSINESS_ENTITY, MDM_REFERENCE_ENTITY, MDM_HIERARCHY, MDM_RELATIONSHIP, MDM_JOB_DEFINITION, MDM_AUTHORIZATION, MDM_BUSINESS_EVENT, MDM_REPORT_SET, MDM_REPORT, MDM_DYNAMIC_POOL, MDM_APPLICATION, MDM_SRC_SYSTEM, MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE, DEDUPLICATE, DICTIONARY, EXCEPTION, LABELER, PARSE, RULE_SPECIFICATION, VERIFIER"
+          location: The project and folder path where the assets are located, such as Default/Sales. Must include this option or the type option.
+        errors:
+          location-type-missing: Either the location or type option must be included.
       query:
         options:
           type: "Asset type. Type can be project, folder, or one of the following asset types: DTEMPLATE, MTT, DSS, DMASK, DRS, DMAPPLET, MAPPLET, BSERVICE, HSCHEMA, PCS, FWCONFIG, CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW, UDF, PROJECT, FOLDER, PROCESS, GUIDE, AI_CONNECTION, AI_SERVICE_CONNECTOR, PROCESS_OBJECT, B2BGW_MONITOR, B2BGW_CUSTOMER, B2BGW_SUPPLIER, MDM_BUSINESS_ENTITY, MDM_REFERENCE_ENTITY, MDM_HIERARCHY, MDM_RELATIONSHIP, MDM_JOB_DEFINITION, MDM_AUTHORIZATION, MDM_BUSINESS_EVENT, MDM_REPORT_SET, MDM_REPORT, MDM_DYNAMIC_POOL, MDM_APPLICATION, MDM_SRC_SYSTEM, MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE, DEDUPLICATE, DICTIONARY, EXCEPTION, LABELER, PARSE, RULE_SPECIFICATION, VERIFIER"

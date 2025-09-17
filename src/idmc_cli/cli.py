@@ -417,6 +417,17 @@ def objects():
     """Object management commands."""
     pass
 
+@objects.command('get')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'get', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'get', 'name'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'get', 'type'))
+@click.option('--location', '-l', 'location', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'location'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getObjects(id, name, type, location, debug, pretty=0):
+    """Used to get objects"""
+    click.echo(json.dumps(api.getObjects(id=id, name=name, type=type, location=location, debug=debug), indent=pretty))
+
 @objects.command('query')
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'type'))
 @click.option('--location', '-l', 'location', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'location'))
@@ -446,7 +457,7 @@ def queryObjects(type, location, tag, checked_out_by, checked_out_since, checked
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'type'))
-@click.option('--ref-type', '-r', 'ref_type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'ref_type'))
+@click.option('--ref-type', '-r', 'ref_type', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'ref_type'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def getDependencies(id, path, type, ref_type, debug, pretty=0):

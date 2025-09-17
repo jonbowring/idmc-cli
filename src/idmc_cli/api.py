@@ -121,7 +121,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page
+
+        return result
     
 
     def deleteUser(self, id=None, username=None, debug=False):
@@ -1091,7 +1095,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page
+
+        return result
     
 
 
@@ -1332,6 +1340,17 @@ class InformaticaCloudAPI:
     # Objects section
     #############################
 
+    def getObjects(self, id=None, name=None, type=None, location=None, debug=False):
+        result = self.queryObjects(type=type, location=location, debug=debug)
+        if name:
+            filtered = [obj for obj in result if obj['path'].split('/')[-1] == name]
+            return filtered
+        elif id:
+            filtered = [obj for obj in result if obj['id'] == id]
+            return filtered
+        else:
+            return result
+    
     def queryObjects(self, type=None, location=None, tag=None, hash=None, checkedOutBy=None, checkedOutSince=None, checkedOutUntil=None, checkedInBy=None, checkedInSince=None, checkedInUntil=None, sourceCtrld=None, publishedBy=None, publishedSince=None, publishedUntil=None, updatedBy=None, updatedSince=None, updatedUntil=None, debug=False):
         """This function is used to query objects"""
         
@@ -1386,7 +1405,8 @@ class InformaticaCloudAPI:
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
             params = { 'limit': self.page_size, 'skip': skip }
-            params['q'] = ' and '.join(qargs)
+            if len(qargs) > 0:
+                params['q'] = ' and '.join(qargs)
 
             r = requests.get(url, headers=headers, params=params)
 
@@ -1423,7 +1443,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page['objects']
+
+        return result
     
     def getDependencies(self, id=None, path=None, type=None, refType=None, debug=False):
         """This function is used to find dependencies for an object"""
@@ -1489,7 +1513,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page['references']
+
+        return result
     
     def lookupObject(self, id=None, path=None, type=None, debug=False):
         """This function is used to lookup objects"""
@@ -3129,7 +3157,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page['commits']
+
+        return result
     
 
     def getCommitDetails(self, hash, searchAllRepos, repoId, debug=False):
@@ -3326,7 +3358,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page['entries']
+
+        return result
     
 
     #############################
@@ -5056,6 +5092,71 @@ class InformaticaCloudAPI:
                     'status': r.status_code,
                     'text': 'Permissions deleted'
                 }
+                break
+        
+        return resp
+    
+    #############################
+    # Jobs section
+    #############################
+
+    def startCdiJob(self, id=None, path=None, type=None, callbackUrl=None, paramFile=None, paramDir=None, debug=False):
+        """This function starts a new data integration job"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the task id if needed
+        if name:
+            lookup = self.lookupObject(unassigned=unassigned, debug=debug)
+            try:
+                id = [obj for obj in lookup if obj['name'] == name][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find id for runtime environment { name }'
+                    }
+        
+        attempts = 0
+        resp = ''
+        
+        while True:
+        
+            data = {
+                '@type': 'job'
+            }
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/job'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            r = requests.post(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
                 break
         
         return resp
