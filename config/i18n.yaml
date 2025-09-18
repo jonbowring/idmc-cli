@@ -194,7 +194,7 @@ english:
         options:
           id: Filter the returned objects by id.
           name: Filter the returned objects by name.
-          type: "Asset type. Must include this option or the location option. Type can be project, folder, or one of the following asset types: DTEMPLATE, MTT, DSS, DMASK, DRS, DMAPPLET, MAPPLET, BSERVICE, HSCHEMA, PCS, FWCONFIG, CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW, UDF, PROJECT, FOLDER, PROCESS, GUIDE, AI_CONNECTION, AI_SERVICE_CONNECTOR, PROCESS_OBJECT, B2BGW_MONITOR, B2BGW_CUSTOMER, B2BGW_SUPPLIER, MDM_BUSINESS_ENTITY, MDM_REFERENCE_ENTITY, MDM_HIERARCHY, MDM_RELATIONSHIP, MDM_JOB_DEFINITION, MDM_AUTHORIZATION, MDM_BUSINESS_EVENT, MDM_REPORT_SET, MDM_REPORT, MDM_DYNAMIC_POOL, MDM_APPLICATION, MDM_SRC_SYSTEM, MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE, DEDUPLICATE, DICTIONARY, EXCEPTION, LABELER, PARSE, RULE_SPECIFICATION, VERIFIER"
+          type: "Asset type. Type can be project, folder, or one of the following asset types: DTEMPLATE, MTT, DSS, DMASK, DRS, DMAPPLET, MAPPLET, BSERVICE, HSCHEMA, PCS, FWCONFIG, CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW, UDF, PROJECT, FOLDER, PROCESS, GUIDE, AI_CONNECTION, AI_SERVICE_CONNECTOR, PROCESS_OBJECT, B2BGW_MONITOR, B2BGW_CUSTOMER, B2BGW_SUPPLIER, MDM_BUSINESS_ENTITY, MDM_REFERENCE_ENTITY, MDM_HIERARCHY, MDM_RELATIONSHIP, MDM_JOB_DEFINITION, MDM_AUTHORIZATION, MDM_BUSINESS_EVENT, MDM_REPORT_SET, MDM_REPORT, MDM_DYNAMIC_POOL, MDM_APPLICATION, MDM_SRC_SYSTEM, MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE, DEDUPLICATE, DICTIONARY, EXCEPTION, LABELER, PARSE, RULE_SPECIFICATION, VERIFIER"
           location: The project and folder path where the assets are located, such as Default/Sales. Must include this option or the type option.
         errors:
           location-type-missing: Either the location or type option must be included.
@@ -640,13 +640,13 @@ english:
     jobs:
       start:
         options:
-          id: Global unique identifier for the task to start. Must be used if path is not included.
-          path: Path to the task to be started. Must be used in conjunction with the type option.
+          ids: Comma separated list of global unique identifier for the task to start. Must be used if path is not included.
+          paths: Comma separated list of paths to the task to be started. Supports the '*' (matches everything) and '?' (matches any single character) wildcard characters.
           type: "The type of task. Valid values include: DMASK, DRS, DSS, MTT, PCS, WORKFLOW, TASKFLOW. The taskflow must be first published."
           callback: URL endpoint to be called when the job is finished.
           param-file: Parameter file name. Must be used in conjunction with the param-dir option.
           param-dir: Parameter file directory on the Secure Agent machine. Must be used in conjunction with the param-file option.
-          api-name: The API name of the taskflow to be executed.
+          api-names: Comma separated list of API names for the taskflows to be executed.
         errors:
           param-file-dir-missing: If specifying a parameter file then both the param-file and param-dir options must be included.
           api-name-missing: If specifying the TASKFLOW type you must also include the api-name option.

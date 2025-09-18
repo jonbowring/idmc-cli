@@ -1268,27 +1268,28 @@ def jobs():
     pass
 
 @jobs.command('start')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'id'))
-@click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'path'))
+@click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'ids'))
+@click.option('--paths', '-p', 'paths', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'paths'))
 @click.option('--type', '-t', 'type', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'type'))
 @click.option('--callback', '-c', 'callback_url', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'callback'))
 @click.option('--param-file', '-f', 'param_file', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'param-file'))
 @click.option('--param-dir', '-d', 'param_dir', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'param-dir'))
-@click.option('--api-name', '-a', 'api_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'api-name'))
+@click.option('--api-names', '-a', 'api_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'api-names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def startJob(id, path, type, callback_url, param_file, param_dir, api_name, debug, pretty=0):
+def startJob(ids, paths, type, callback_url, param_file, param_dir, api_names, debug, pretty=0):
     """Starts a job"""
     
     # Validate the options
-    if id is None and path is None and type != 'TASKFLOW':
+    if ids is None and paths is None and type != 'TASKFLOW':
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
     if (param_file and param_dir is None) or (param_file is None and param_dir):
         raise click.BadParameter(i18n.getErrorText('jobs', 'start', 'param-file-dir-missing'))
-    if type == 'TASKFLOW' and api_name is None:
+    if type == 'TASKFLOW' and api_names is None:
         raise click.BadParameter(i18n.getErrorText('jobs', 'start', 'api-name-missing'))
     
-    click.echo(json.dumps(api.startCdiJob(id=id, path=path, type=type, callbackUrl=callback_url, paramFile=param_file, paramDir=param_dir, apiName=api_name, debug=debug), indent=pretty))
+    if type in ['DMASK', 'DRS', 'DSS', 'MTT', 'PCS', 'WORKFLOW', 'TASKFLOW']:
+        click.echo(json.dumps(api.startCdiJobs(ids=ids, paths=paths, type=type, callbackUrl=callback_url, paramFile=param_file, paramDir=param_dir, apiNames=api_names, debug=debug), indent=pretty))
 
 if __name__ == '__main__':
     main()

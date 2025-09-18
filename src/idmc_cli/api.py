@@ -1,5 +1,6 @@
 import requests
 import json
+import fnmatch
 from datetime import datetime, timezone, timedelta
 from urllib.parse import quote
 from idmc_cli.config import config
@@ -5100,6 +5101,43 @@ class InformaticaCloudAPI:
     # Jobs section
     #############################
 
+    def startCdiJobs(self, ids=None, paths=None, type=None, callbackUrl=None, paramFile=None, paramDir=None, apiNames=None, debug=False):
+        """This function is used to manage starting multiple jobs, including the support of wildcard path searches."""
+
+        result = []
+        
+        if type == 'TASKFLOW':
+            apiNames = apiNames.split(',')
+            for apiName in apiNames:
+                result.append(self.startCdiJob(apiName=apiName, debug=debug))
+
+        elif ids:
+            ids = ids.split(',')
+            for id in ids:
+                result.append(self.startCdiJob(id=id, type=type, callbackUrl=callbackUrl, paramFile=paramFile, paramDir=paramDir, debug=debug))
+                    
+        elif paths:
+            
+            # Get a list of all objects to support a wildcard search if needed
+            if '*' in paths or '?' in paths:
+                objects = self.getObjects(type=type, debug=debug)
+            
+            # Loop through the paths, search for matching objects and execute the jobs
+            paths = paths.split(',')
+            for path in paths:
+                if '*' in path or '?' in path:
+                    filtered = [obj for obj in objects if fnmatch.fnmatch(obj['path'], path) ]
+                else:
+                    filtered = []
+                    filtered.append(self.lookupObject(path=path, type=type, debug=debug)['objects'][0])
+                for obj in filtered:
+                    result.append(self.startCdiJob(id=obj['id'], type=type, callbackUrl=callbackUrl, paramFile=paramFile, paramDir=paramDir, debug=debug))
+
+        else:
+            result.append(self.startCdiJob(id=ids, path=paths, type=type, callbackUrl=callbackUrl, paramFile=paramFile, paramDir=paramDir, debug=debug))
+
+        return result
+    
     def startCdiJob(self, id=None, path=None, type=None, callbackUrl=None, paramFile=None, paramDir=None, apiName=None, debug=False):
         """This function starts a new data integration job"""
         
