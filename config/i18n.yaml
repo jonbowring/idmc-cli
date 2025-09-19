@@ -417,6 +417,14 @@ english:
           name: Name of the object acted upon.
           time_from: Date/time to search from. The maximum date range is 14 days.
           time_to: Date/time to search until. The maximum date range is 14 days.
+      completed-activity:
+        options:
+          id: Log entry ID. Include this attribute if you want to receive information for a specific ID.
+          run-id: Job ID associated with the log entry ID. Whenever runId is included in a request, taskId is required. 
+          task-id: Task ID associated with the log entry ID. If taskId is not specified, all activityLog entries for all tasks are returned.
+          name: Name of the job.
+        errors:
+          task-id-missing: Task ID must be provided with run-id.
           
     agents:
       get:

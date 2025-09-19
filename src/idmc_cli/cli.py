@@ -883,6 +883,26 @@ def getSecurityLogs(category, actor, name, time_from, time_to, debug, pretty=0):
     """Gets the security logs"""
     click.echo(json.dumps(api.getSecurityLogs(category=category, actor=actor, name=name, time_from=time_from, time_to=time_to, debug=debug), indent=pretty))
 
+@logs.group('activity')
+def logsActivity():
+    """Activity log commands."""
+    pass
+
+@logsActivity.command('completed')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'id'))
+@click.option('--run-id', '-r', 'run_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'run-id'))
+@click.option('--task-id', '-t', 'task_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'task-id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getCompletedActivityJobs(id, run_id, task_id, name, debug, pretty=0):
+    """Gets the completed activity logs"""
+    
+    if run_id and task_id is None:
+        raise click.BadParameter(i18n.getErrorText('logs', 'completed-activity', 'task-id-missing'))
+    
+    click.echo(json.dumps(api.getCompletedActivityJobs(id=id, runId=run_id, taskId=task_id, taskName=name, debug=debug), indent=pretty))
+
 ###################################
 # Secure agent commands section
 ###################################

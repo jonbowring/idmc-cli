@@ -3397,6 +3397,141 @@ class InformaticaCloudAPI:
         return result
     
 
+    def getRunningActivityJobs(self, id=None, runId=None, taskId=None, taskName=None, debug=False):
+        """This function is used to return completed job info from the monitor"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        
+        while True:
+        
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityMonitor'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            params = { 'details': 'true' }
+            r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+
+        # Filter the running jobs
+        if id:
+            result = [obj for obj in resp if obj['id'] == id]
+        elif taskId and runId:
+            result = [obj for obj in resp if obj['taskId'] == taskId and obj['runId'] == runId]
+        elif taskId:
+            result = [obj for obj in resp if obj['taskId'] == taskId]
+        elif taskName:
+            result = [obj for obj in resp if obj['taskName'] == taskName]
+        else:
+            result = resp
+        
+        return result
+    
+
+    def getCompletedActivityJobs(self, id=None, runId=None, taskId=None, taskName=None, debug=False):
+        """This function is used to return completed job info from the monitor"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        skip = 0
+        pages = []
+        
+        while True:
+        
+            # Execute the API call
+            if id:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityLog/{ quote(id) }'
+            else:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityLog'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            params = { 'rowLimit': self.page_size, 'offset': skip }
+            if taskId:
+                params['taskId'] = taskId
+            if runId:
+                params['runId'] = runId
+            r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                pages.append(resp)
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # If there is still some data then continue onto the next page
+            elif len(r.json()) > 0:
+                resp = r.json()
+                pages.append(resp)
+                skip = skip + self.page_size
+                if id:
+                    break
+                else:
+                    continue
+            # Break when there are no pages left
+            else:
+                break
+        
+        result = []
+        if id:
+            result = pages
+        else:
+            for page in pages:
+                result += page
+
+        # Filter the completed jobs
+        if taskName:
+            result = [obj for obj in result if re.match(rf'^{ taskName }.*$', obj['objectName'])]
+        
+        return result
+    
+
     #############################
     # Secure agent section
     #############################
@@ -5283,153 +5418,6 @@ class InformaticaCloudAPI:
         for page in pages:
             result += page['value']
 
-        return result
-
-    
-    def getAllJobs(self, id=None, runId=None, taskId=None, taskName=None, running=False, debug=False):
-        """This function is used to return all jobs from the monitor"""
-        if running:
-            running = self.getRunningJobs(id=id, runId=runId, taskId=taskId, taskName=taskName, debug=debug)
-            result = running
-        else:
-            running = self.getRunningJobs(id=id, runId=runId, taskId=taskId, taskName=taskName, debug=debug)
-            completed = self.getCompletedJobs(id=id, runId=runId, taskId=taskId, taskName=taskName, debug=debug)
-            result = running + completed
-        return result
-
-
-    def getRunningJobs(self, id=None, runId=None, taskId=None, taskName=None, debug=False):
-        """This function is used to return completed job info from the monitor"""
-        
-        # Check if cli has been configured
-        if not self.username:
-            return 'CLI needs to be configured. Run the command "idmc configure"'
-        
-        attempts = 0
-        
-        while True:
-        
-            # Execute the API call
-            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityMonitor'
-            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            params = { 'details': 'true' }
-            r = requests.get(url, headers=headers, params=params)
-
-            if debug:
-                self.debugRequest(r, attempts)
-
-            # Check for expired session token
-            if r.status_code == 401 and attempts <= self.max_attempts:
-                self.login()
-                attempts = attempts + 1
-                continue
-            # Abort after the maximum number of attempts
-            elif attempts > self.max_attempts:
-                resp = {
-                    'status': r.status_code,
-                    'text': r.text
-                }
-                break
-            # Else if there is an unexpected error return a failure
-            elif r.status_code < 200 or r.status_code > 299:
-                resp = {
-                    'status': r.status_code,
-                    'text': r.text
-                }
-                break
-            # Break when there are no pages left
-            else:
-                resp = r.json()
-                break
-
-        # Filter the running jobs
-        if id:
-            result = [obj for obj in resp if obj['id'] == id]
-        elif taskId and runId:
-            result = [obj for obj in resp if obj['taskId'] == taskId and obj['runId'] == runId]
-        elif taskId:
-            result = [obj for obj in resp if obj['taskId'] == taskId]
-        elif taskName:
-            result = [obj for obj in resp if obj['taskName'] == taskName]
-        else:
-            result = resp
-        
-        return result
-    
-
-    def getCompletedJobs(self, id=None, runId=None, taskId=None, taskName=None, debug=False):
-        """This function is used to return completed job info from the monitor"""
-        
-        # Check if cli has been configured
-        if not self.username:
-            return 'CLI needs to be configured. Run the command "idmc configure"'
-        
-        attempts = 0
-        skip = 0
-        pages = []
-        
-        while True:
-        
-            # Execute the API call
-            if id:
-                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityLog/{ quote(id) }'
-            else:
-                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityLog'
-            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            params = { 'rowLimit': self.page_size, 'offset': skip }
-            if taskId:
-                params['taskId'] = taskId
-            if runId:
-                params['runId'] = runId
-            r = requests.get(url, headers=headers, params=params)
-
-            if debug:
-                self.debugRequest(r, attempts)
-
-            # Check for expired session token
-            if r.status_code == 401 and attempts <= self.max_attempts:
-                self.login()
-                attempts = attempts + 1
-                continue
-            # Abort after the maximum number of attempts
-            elif attempts > self.max_attempts:
-                resp = {
-                    'status': r.status_code,
-                    'text': r.text
-                }
-                pages.append(resp)
-                break
-            # Else if there is an unexpected error return a failure
-            elif r.status_code < 200 or r.status_code > 299:
-                resp = {
-                    'status': r.status_code,
-                    'text': r.text
-                }
-                break
-            # If there is still some data then continue onto the next page
-            elif len(r.json()) > 0:
-                resp = r.json()
-                pages.append(resp)
-                skip = skip + self.page_size
-                if id:
-                    break
-                else:
-                    continue
-            # Break when there are no pages left
-            else:
-                break
-        
-        result = []
-        if id:
-            result = pages
-        else:
-            for page in pages:
-                result += page
-
-        # Filter the completed jobs
-        if taskName:
-            result = [obj for obj in result if re.match(rf'^{ taskName }.*$', obj['objectName'])]
-        
         return result
 
     
