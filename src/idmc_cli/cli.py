@@ -1275,9 +1275,11 @@ def jobs():
 @click.option('--param-file', '-f', 'param_file', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'param-file'))
 @click.option('--param-dir', '-d', 'param_dir', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'param-dir'))
 @click.option('--api-names', '-a', 'api_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'api-names'))
+@click.option('--wait', '-w', 'wait', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('jobs', 'start', 'wait'))
+@click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('jobs', 'start', 'poll-delay'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def startJob(ids, paths, type, callback_url, param_file, param_dir, api_names, debug, pretty=0):
+def startJob(ids, paths, type, callback_url, param_file, param_dir, api_names, wait, poll_delay, debug, pretty=0):
     """Starts a job"""
     
     # Validate the options
@@ -1289,7 +1291,7 @@ def startJob(ids, paths, type, callback_url, param_file, param_dir, api_names, d
         raise click.BadParameter(i18n.getErrorText('jobs', 'start', 'api-name-missing'))
     
     if type in ['DMASK', 'DRS', 'DSS', 'MTT', 'PCS', 'WORKFLOW', 'TASKFLOW']:
-        click.echo(json.dumps(api.startCdiJobs(ids=ids, paths=paths, type=type, callbackUrl=callback_url, paramFile=param_file, paramDir=param_dir, apiNames=api_names, debug=debug), indent=pretty))
+        click.echo(json.dumps(api.startCdiJobs(ids=ids, paths=paths, type=type, callbackUrl=callback_url, paramFile=param_file, paramDir=param_dir, apiNames=api_names, wait=wait, pollDelay=poll_delay, debug=debug), indent=pretty))
 
 if __name__ == '__main__':
     main()

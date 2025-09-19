@@ -647,6 +647,8 @@ english:
           param-file: Parameter file name. Must be used in conjunction with the param-dir option.
           param-dir: Parameter file directory on the Secure Agent machine. Must be used in conjunction with the param-file option.
           api-names: Comma separated list of API names for the taskflows to be executed.
+          wait: Flag to wait for all jobs to finish.
+          poll-delay: Time in seconds to wait between job status polling when waiting for them to finish.
         errors:
           param-file-dir-missing: If specifying a parameter file then both the param-file and param-dir options must be included.
           api-name-missing: If specifying the TASKFLOW type you must also include the api-name option.
