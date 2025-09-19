@@ -1267,6 +1267,23 @@ def jobs():
     """Job management commands."""
     pass
 
+@jobs.command('get')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'id'))
+@click.option('--run-id', '-r', 'run_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'run-id'))
+@click.option('--task-id', '-t', 'task_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'task-id'))
+@click.option('--task-name', '-n', 'task_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'task-name'))
+@click.option('--running', '-R', 'running', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('jobs', 'get', 'running'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getJobs(id, run_id, task_id, task_name, running, debug, pretty=0):
+    """Get job details from the Monitor"""
+    
+    # Validate the options
+    if run_id and task_id is None:
+        raise click.BadParameter(i18n.getErrorText('jobs', 'get', 'run-id-task-id-missing'))
+    
+    click.echo(json.dumps(api.getAllJobs(id=id, runId=run_id, taskId=task_id, taskName=task_name, running=running, debug=debug), indent=pretty))
+
 @jobs.command('start')
 @click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'ids'))
 @click.option('--paths', '-p', 'paths', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'paths'))
@@ -1279,7 +1296,7 @@ def jobs():
 @click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('jobs', 'start', 'poll-delay'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def startJob(ids, paths, type, callback_url, param_file, param_dir, api_names, wait, poll_delay, debug, pretty=0):
+def startJobs(ids, paths, type, callback_url, param_file, param_dir, api_names, wait, poll_delay, debug, pretty=0):
     """Starts a job"""
     
     # Validate the options

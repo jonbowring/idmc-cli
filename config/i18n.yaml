@@ -638,6 +638,15 @@ english:
           name: Name of the schedule to be disabled. Use this option or the id option.
 
     jobs:
+      get:
+        options:
+          id: Log entry ID. Include this attribute if you want to receive information for a specific ID. 
+          run-id: Job ID associated with the log entry ID. Whenever run-id is included in a request, task-id is required.
+          task-id: Task ID associated with the log entry ID.
+          task-name: Filter the returned jobs by jobs that begin with task name.
+          running: Flag to return only running jobs.
+        errors:
+          run-id-task-id-missing: The task-id option must be provided if run-id is used.
       start:
         options:
           ids: Comma separated list of global unique identifier for the task to start. Must be used if path is not included.

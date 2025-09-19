@@ -2,6 +2,7 @@ import requests
 import json
 import fnmatch
 import time
+import re
 from datetime import datetime, timezone, timedelta
 from urllib.parse import quote
 from idmc_cli.config import config
@@ -5102,7 +5103,155 @@ class InformaticaCloudAPI:
     # Jobs section
     #############################
 
-    def getCdiJobStatus(self, type, jobs, pollDelay=3, debug=False):
+    def getAllJobs(self, id=None, runId=None, taskId=None, taskName=None, running=False, debug=False):
+        """This function is used to return all jobs from the monitor"""
+        if running:
+            running = self.getRunningJobs(id=id, runId=runId, taskId=taskId, taskName=taskName, debug=debug)
+            result = running
+        else:
+            running = self.getRunningJobs(id=id, runId=runId, taskId=taskId, taskName=taskName, debug=debug)
+            completed = self.getCompletedJobs(id=id, runId=runId, taskId=taskId, taskName=taskName, debug=debug)
+            result = running + completed
+        return result
+
+
+    def getRunningJobs(self, id=None, runId=None, taskId=None, taskName=None, debug=False):
+        """This function is used to return completed job info from the monitor"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        
+        while True:
+        
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityMonitor'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            params = { 'details': 'true' }
+            r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+
+        # Filter the running jobs
+        if id:
+            result = [obj for obj in resp if obj['id'] == id]
+        elif taskId and runId:
+            result = [obj for obj in resp if obj['taskId'] == taskId and obj['runId'] == runId]
+        elif taskId:
+            result = [obj for obj in resp if obj['taskId'] == taskId]
+        elif taskName:
+            result = [obj for obj in resp if obj['taskName'] == taskName]
+        else:
+            result = resp
+        
+        return result
+    
+
+    def getCompletedJobs(self, id=None, runId=None, taskId=None, taskName=None, debug=False):
+        """This function is used to return completed job info from the monitor"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        skip = 0
+        pages = []
+        
+        while True:
+        
+            # Execute the API call
+            if id:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityLog/{ quote(id) }'
+            else:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityLog'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            params = { 'rowLimit': self.page_size, 'offset': skip }
+            if taskId:
+                params['taskId'] = taskId
+            if runId:
+                params['runId'] = runId
+            r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                pages.append(resp)
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # If there is still some data then continue onto the next page
+            elif len(r.json()) > 0:
+                resp = r.json()
+                pages.append(resp)
+                skip = skip + self.page_size
+                if id:
+                    break
+                else:
+                    continue
+            # Break when there are no pages left
+            else:
+                break
+        
+        result = []
+        if id:
+            result = pages
+        else:
+            for page in pages:
+                result += page
+
+        # Filter the completed jobs
+        if taskName:
+            result = [obj for obj in result if re.match(rf'^{ taskName }.*$', obj['objectName'])]
+        
+        return result
+
+    
+    def waitForCdiJobs(self, type, jobs, pollDelay=3, debug=False):
+        """This function is used to wait for CDI jobs to complete"""
         
         # For taskflow jobs
         if type == 'TASKFLOW':
@@ -5248,7 +5397,7 @@ class InformaticaCloudAPI:
             result.append(self.startCdiJob(id=ids, path=paths, type=type, callbackUrl=callbackUrl, paramFile=paramFile, paramDir=paramDir, debug=debug))
         
         if wait:
-            return self.getCdiJobStatus(type=type, jobs=result, pollDelay=pollDelay, debug=debug)   
+            return self.waitForCdiJobs(type=type, jobs=result, pollDelay=pollDelay, debug=debug)   
         else:
             return result
         
@@ -5328,80 +5477,6 @@ class InformaticaCloudAPI:
         
         return resp
     
-
-    def stopCdiJob(self, id=None, path=None, type=None, apiName=None, debug=False):
-        """This function stops a runnin data integration job"""
-        
-        # Check if cli has been configured
-        if not self.username:
-            return 'CLI needs to be configured. Run the command "idmc configure"'
-        
-        # Lookup the object id if needed
-        if path and type:
-            lookup = self.lookupObject(path=path, type=type, debug=debug)
-            try:
-                id = lookup['objects'][0]['id']
-            except Exception as e:
-                return {
-                        'status': 500,
-                        'text': f'Unable to find object id for path { path } and type { type }'
-                }
-        
-        attempts = 0
-        resp = ''
-        
-        while True:
-        
-            if type == 'TASKFLOW':
-                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/active-bpel/rt/{ apiName }'
-                headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-                r = requests.get(url, headers=headers, auth=(self.username, self.password))
-            else:
-                data = {
-                    '@type': 'job',
-                    'taskFederatedId': id,
-                    'taskType': type
-                }
-                if callbackUrl:
-                    data['callbackURL'] = callbackUrl
-                if paramFile and paramDir:
-                    data['runtime'] = {}
-                    data['runtime']['parameterFileName'] = paramFile
-                    data['runtime']['parameterFileDir'] = paramDir
-                
-                # Execute the API call
-                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/job/stop'
-                headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-                r = requests.post(url, headers=headers, json=data)
-
-            if debug:
-                self.debugRequest(r, attempts)
-            
-            # Check for expired session token
-            if r.status_code == 401 and attempts <= self.max_attempts:
-                self.login()
-                attempts = attempts + 1
-                continue
-            # Abort after the maximum number of attempts
-            elif attempts > self.max_attempts:
-                resp = {
-                    'status': r.status_code,
-                    'text': r.text
-                }
-                break
-            # Else if there is an unexpected error return a failure
-            elif r.status_code < 200 or r.status_code > 299:
-                resp = {
-                    'status': r.status_code,
-                    'text': r.text
-                }
-                break
-            # Break when there are no pages left
-            else:
-                resp = r.json()
-                break
-        
-        return resp
 
 # Expose the class as a variable
 api = InformaticaCloudAPI()
