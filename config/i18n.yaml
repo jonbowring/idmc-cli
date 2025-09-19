@@ -423,6 +423,12 @@ english:
           run-id: Job ID associated with the log entry ID. Whenever runId is included in a request, taskId is required. 
           task-id: Task ID associated with the log entry ID. If taskId is not specified, all activityLog entries for all tasks are returned.
           name: Name of the job.
+      running-activity:
+        options:
+          id: Log entry ID. Include this attribute if you want to receive information for a specific ID.
+          run-id: Job ID associated with the log entry ID. Whenever runId is included in a request, taskId is required. 
+          task-id: Task ID associated with the log entry ID. If taskId is not specified, all activityLog entries for all tasks are returned.
+          name: Name of the job.
         errors:
           task-id-missing: Task ID must be provided with run-id.
           
