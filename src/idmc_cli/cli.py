@@ -17,6 +17,9 @@ def main():
 def configure():
     """Used to configure the global parameters for the CLI."""
 
+    # Log out of current session
+    api.logout()
+
     # Get and set the username
     user = config.get("username")
     user = input(f"Username [{ user }]: ") or user
@@ -49,6 +52,13 @@ def configure():
 def login(debug, pretty=0):
     """Used to login to Informatica Cloud and return the login details."""
     click.echo(json.dumps(api.login(debug=debug), indent=pretty))
+
+@main.command('logout')
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def logout(debug, pretty=0):
+    """Used to login to Informatica Cloud and return the login details."""
+    click.echo(json.dumps(api.logout(debug=debug), indent=pretty))
 
 ###################################
 # User commands section
@@ -1267,22 +1277,28 @@ def jobs():
     """Job management commands."""
     pass
 
-@jobs.command('get')
-@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'id'))
-@click.option('--run-id', '-r', 'run_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'run-id'))
-@click.option('--task-id', '-t', 'task_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'task-id'))
-@click.option('--task-name', '-n', 'task_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'task-name'))
-@click.option('--running', '-R', 'running', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('jobs', 'get', 'running'))
+@jobs.group('exp')
+def jobsExp():
+    """WARNING: Experimental unsupported job management commands."""
+    pass
+
+@jobsExp.command('get')
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'name'))
+@click.option('--status', '-S', 'status', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'status'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'type'))
+@click.option('--order-by', '-o', 'order_by', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'order-by'))
+@click.option('--location', '-l', 'location', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'location'))
+@click.option('--error', '-e', 'error_msg', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'error-msg'))
+@click.option('--runtime', '-r', 'runtime', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'runtime'))
+@click.option('--start-since', '-ss', 'start_since', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'start-since'))
+@click.option('--start-until', '-su', 'start_until', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'start-until'))
+@click.option('--end-since', '-es', 'end_since', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'end-since'))
+@click.option('--end-until', '-eu', 'end_until', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'end-until'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getJobs(id, run_id, task_id, task_name, running, debug, pretty=0):
-    """Get job details from the Monitor"""
-    
-    # Validate the options
-    if run_id and task_id is None:
-        raise click.BadParameter(i18n.getErrorText('jobs', 'get', 'run-id-task-id-missing'))
-    
-    click.echo(json.dumps(api.getAllJobs(id=id, runId=run_id, taskId=task_id, taskName=task_name, running=running, debug=debug), indent=pretty))
+def getJobs(name, start_since, start_until, end_since, end_until, status, type, order_by, error_msg, location, runtime, debug, pretty=0):
+    """Get job details from the monitor"""
+    click.echo(json.dumps(api.getMonitorJobs(type=type, name=name, status=status, errorMsg=error_msg, location=location, startSince=start_since, startUntil=start_until, endSince=end_since, endUntil=end_until, runtime=runtime, orderBy=order_by, debug=debug), indent=pretty))
 
 @jobs.command('start')
 @click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'ids'))
@@ -1309,6 +1325,25 @@ def startJobs(ids, paths, type, callback_url, param_file, param_dir, api_names, 
     
     if type in ['DMASK', 'DRS', 'DSS', 'MTT', 'PCS', 'WORKFLOW', 'TASKFLOW']:
         click.echo(json.dumps(api.startCdiJobs(ids=ids, paths=paths, type=type, callbackUrl=callback_url, paramFile=param_file, paramDir=param_dir, apiNames=api_names, wait=wait, pollDelay=poll_delay, debug=debug), indent=pretty))
+
+###################################
+# Organisations commands section
+###################################
+
+@main.group('orgs')
+def orgs():
+    """Organisation management commands."""
+    pass
+
+@orgs.command('get')
+@click.option('--suborg-id', '-i', 'sub_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('orgs', 'get', 'sub-id'))
+@click.option('--suborg-name', '-n', 'sub_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('orgs', 'get', 'sub-name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getOrgs(sub_id, sub_name, debug, pretty=0):
+    """Get organisation and sub-organisation details"""
+    
+    click.echo(json.dumps(api.getOrg(subId=sub_id, subName=sub_name, debug=debug), indent=pretty))
 
 if __name__ == '__main__':
     main()

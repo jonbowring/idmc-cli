@@ -637,16 +637,26 @@ english:
           id: ID of the schedule to be disabled. Use this option or the name option.
           name: Name of the schedule to be disabled. Use this option or the id option.
 
+    orgs:
+      get:
+        options:
+          sub-id: ID of sub-organisation to be returned.
+          sub-name: Name of sub-organisation to be returned.
+    
     jobs:
       get:
         options:
-          id: Log entry ID. Include this attribute if you want to receive information for a specific ID. 
-          run-id: Job ID associated with the log entry ID. Whenever run-id is included in a request, task-id is required.
-          task-id: Task ID associated with the log entry ID.
-          task-name: Filter the returned jobs by jobs that begin with task name.
-          running: Flag to return only running jobs.
-        errors:
-          run-id-task-id-missing: The task-id option must be provided if run-id is used.
+          name: Filter the jobs by name.
+          start-since: Date and time the task started since.
+          start-until: Date and time the task started until.
+          end-since: Date and time the task ended since.
+          end-until: Date and time the task ended until.
+          status: "Status of the task. You can filter by any of the following statuses: 'ABORTED', 'AWAITING_AUTO_RESTART', 'CHILD_SUSPENDED', 'COMPLETED', 'DEPLOYED', 'DEPLOYING', 'ERROR', 'FAILED', 'INITIALIZED', 'NOT_STARTED', 'PROCESSING_ABORT', 'PROCESSING_DEPLOY', 'PROCESSING_STOP', 'PROCESSING_UNDEPLOY', 'QUEUED', 'RUNNING', 'SKIPPED', 'STOPPED', 'SUBMITTED', 'SUCCESS', 'SUSPENDED', 'TRYING_TO_STOP', 'UNDEPLOYED', 'UNDEPLOYING', 'WARNING'"
+          type: "Type of asset. You can filter by any of the following types: 'API', 'APPMI_TASK', 'AS2_RECEIVE', 'AS2_SEND', 'BATCH_MAPPING', 'CodeTask', 'command', 'DBMI_GROUP_TASK', 'DBMI_TASK', 'DLT', 'DMASK', 'DRS', 'DSS', 'DTT', 'EXCEPTION', 'FILE_TRANSFER_TASK', 'FTP_CLIENT', 'FTPS_CLIENT', 'HTTPS_SERVER', 'MAPPING', 'MI_FILE_LISTENER', 'MI_TASK', 'MLLP_SERVER', 'MTT', 'MTT_DP', 'MTT_DP_CDIE', 'MTT_PDO', 'MTT_TEST', 'PCS', 'PROFILE', 'SFTP_CLIENT', 'SFTP_SERVER', 'SI_DATAFLOW', 'TASKFLOW', 'TunerTask', 'WORKFLOW'."
+          order-by: Sort order in which to return the data. Ascending by default. Include "desc" after order by field if needed.
+          error-msg: Filter the jobs by error messages that contain this value.
+          location: Filter the jobs by project/folder location.
+          runtime: Filter the jobs by the name of the runtime environment.
       start:
         options:
           ids: Comma separated list of global unique identifier for the task to start. Must be used if path is not included.
