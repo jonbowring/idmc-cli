@@ -665,7 +665,7 @@ english:
           start-until: Date and time the task started until.
           end-since: Date and time the task ended since.
           end-until: Date and time the task ended until.
-          status: "Status of the task. You can filter by any of the following statuses: 'ABORTED', 'AWAITING_AUTO_RESTART', 'CHILD_SUSPENDED', 'COMPLETED', 'DEPLOYED', 'DEPLOYING', 'ERROR', 'FAILED', 'INITIALIZED', 'NOT_STARTED', 'PROCESSING_ABORT', 'PROCESSING_DEPLOY', 'PROCESSING_STOP', 'PROCESSING_UNDEPLOY', 'QUEUED', 'RUNNING', 'SKIPPED', 'STOPPED', 'SUBMITTED', 'SUCCESS', 'SUSPENDED', 'TRYING_TO_STOP', 'UNDEPLOYED', 'UNDEPLOYING', 'WARNING'"
+          status: "Comma separated list of statuses for the tasks. You can filter by any of the following statuses: 'ABORTED', 'AWAITING_AUTO_RESTART', 'CHILD_SUSPENDED', 'COMPLETED', 'DEPLOYED', 'DEPLOYING', 'ERROR', 'FAILED', 'INITIALIZED', 'NOT_STARTED', 'PROCESSING_ABORT', 'PROCESSING_DEPLOY', 'PROCESSING_STOP', 'PROCESSING_UNDEPLOY', 'QUEUED', 'RUNNING', 'SKIPPED', 'STOPPED', 'SUBMITTED', 'SUCCESS', 'SUSPENDED', 'TRYING_TO_STOP', 'UNDEPLOYED', 'UNDEPLOYING', 'WARNING'"
           type: "Type of asset. You can filter by any of the following types: 'API', 'APPMI_TASK', 'AS2_RECEIVE', 'AS2_SEND', 'BATCH_MAPPING', 'CodeTask', 'command', 'DBMI_GROUP_TASK', 'DBMI_TASK', 'DLT', 'DMASK', 'DRS', 'DSS', 'DTT', 'EXCEPTION', 'FILE_TRANSFER_TASK', 'FTP_CLIENT', 'FTPS_CLIENT', 'HTTPS_SERVER', 'MAPPING', 'MI_FILE_LISTENER', 'MI_TASK', 'MLLP_SERVER', 'MTT', 'MTT_DP', 'MTT_DP_CDIE', 'MTT_PDO', 'MTT_TEST', 'PCS', 'PROFILE', 'SFTP_CLIENT', 'SFTP_SERVER', 'SI_DATAFLOW', 'TASKFLOW', 'TunerTask', 'WORKFLOW'."
           order-by: Sort order in which to return the data. Ascending by default. Include "desc" after order by field if needed.
           error-msg: Filter the jobs by error messages that contain this value.
@@ -685,3 +685,10 @@ english:
         errors:
           param-file-dir-missing: If specifying a parameter file then both the param-file and param-dir options must be included.
           api-name-missing: If specifying the TASKFLOW type you must also include the api-name option.
+      stop:
+        options:
+          ids: Comma separated list of global unique identifiers for the running jobs.
+          names: Comma separated list of names of jobs to be stopped.
+          locations: Comma separated list of locations of jobs to be stopped.
+          types: "Comma separated list of types of jobs to be stopped. Valid values include: DMASK, DRS, DSS, MTT, PCS, WORKFLOW, TASKFLOW. The taskflow must be first published."
+          clean: Flag to indicate a clean stop of the job should be executed. Not applicable for TASKFLOW types.

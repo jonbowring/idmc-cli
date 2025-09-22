@@ -5353,7 +5353,10 @@ class InformaticaCloudAPI:
             
             filters = []
             if status:
-                filters.append(f"(status eq '{ status }')")
+                statuses = status.split(',')
+                statuses = [f"status eq '{ item }'" for item in statuses]
+                statuses = ' or '.join(statuses)
+                filters.append(f"({ statuses })")
             if name:
                 filters.append(f"(contains(assetName,'{ name }'))")
             if type:
@@ -5647,6 +5650,124 @@ class InformaticaCloudAPI:
                 break
         
         return resp
+    
+    def stopCdiJobs(self, ids=None, names=None, locations=None, types=None, clean=None, debug=False):
+        """This function stops a running data integration job"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Define the list of running statuses to filter for
+        status = ['AWAITING_AUTO_RESTART', 'CHILD_SUSPENDED', 'INITIALIZED', 'NOT_STARTED', 'QUEUED', 'RUNNING', 'SKIPPED', 'SUBMITTED', 'SUSPENDED', 'TRYING_TO_STOP']
+        status = ','.join(status)
+        
+        # Parse the comma separated values
+        if ids:
+            ids = ids.split(',')
+        if names:
+            names = names.split(',')
+        if locations:
+            locations = locations.split(',')
+        if types:
+            types = types.split(',')
+
+        # Get the running jobs
+        stop = []
+        jobs = self.getMonitorJobs(status=status, debug=debug)
+        for job in jobs:
+            job['extraData'] = json.loads(job['extraData'])
+
+            if job['assetType'] == 'TASKFLOW':
+                job['cli_job_id'] = job['extraData']['pid']
+            else:
+                job['cli_job_id'] = job['extraData']['saasTaskId']
+
+            # Check if the job should be stopped
+            if ids and job['cli_job_id'] in ids:
+                stop.append(job)
+            elif names and locations and job['assetName'] in names and job['location'] in locations:
+                stop.append(job)
+            elif names and job['assetName'] in names:
+                stop.append(job)
+            elif locations and job['location'] in locations:
+                stop.append(job)
+            elif types and job['assetType'] in types:
+                stop.append(job)
+            elif ids is None and names is None and locations is None and types is None:
+                stop.append(job)
+
+        # Debugging options
+        if debug:
+            print('Attempting to stop:\n')
+            print(stop)
+        
+        attempts = 0
+        resp = ''
+        result = []
+
+        # Stop the running jobs
+        for job in stop:
+        
+            while True:
+            
+                if job['assetType'] == 'TASKFLOW':
+                    url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/active-bpel/restadmin/processes/{ quote(job['cli_job_id']) }/terminate?isManual=true'
+                    xsrf = shortuuid.uuid()
+                    headers = { 'Accept': 'application/json', 'XSRF_TOKEN': xsrf, 'Cookie': f'USER_SESSION={ self.session_id }; XSRF_TOKEN={ xsrf }', 'Content-Type': 'application/json' }
+                    r = requests.put(url, headers=headers)
+                else:
+                    data = {
+                        '@type': 'job',
+                        'taskFederatedId': job['assetId'],
+                        'taskType': job['assetType']
+                    }
+                    
+                    params = {}
+                    if clean:
+                        params['cleanStop'] = 'true'
+                    
+                    # Execute the API call
+                    url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/job/stop'
+                    headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+                    r = requests.post(url, headers=headers, json=data, params=params)
+
+                if debug:
+                    self.debugRequest(r, attempts)
+                
+                # Check for expired session token
+                if r.status_code == 401 and attempts <= self.max_attempts:
+                    self.login()
+                    attempts = attempts + 1
+                    continue
+                # Abort after the maximum number of attempts
+                elif attempts > self.max_attempts:
+                    resp = {
+                        'status': r.status_code,
+                        'text': r.text
+                    }
+                    result.append(resp)
+                    break
+                # Else if there is an unexpected error return a failure
+                elif r.status_code < 200 or r.status_code > 299:
+                    resp = {
+                        'status': r.status_code,
+                        'text': r.text
+                    }
+                    break
+                # Break when there are no pages left
+                else:
+                    resp = {
+                        'status': r.status_code,
+                        'text': 'Stop request submitted successfully',
+                        'jobId': job['cli_job_id'],
+                        'jobType': job['assetType'],
+                        'jobName': job['assetName']
+                    }
+                    result.append(resp)
+                    break
+        
+        return result
     
 
 # Expose the class as a variable

@@ -1319,7 +1319,7 @@ def jobsExp():
 
 @jobsExp.command('get')
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'name'))
-@click.option('--status', '-S', 'status', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'status'))
+@click.option('--status', '-s', 'status', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'status'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'type'))
 @click.option('--order-by', '-o', 'order_by', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'order-by'))
 @click.option('--location', '-l', 'location', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'location'))
@@ -1360,6 +1360,18 @@ def startJobs(ids, paths, type, callback_url, param_file, param_dir, api_names, 
     
     if type in ['DMASK', 'DRS', 'DSS', 'MTT', 'PCS', 'WORKFLOW', 'TASKFLOW']:
         click.echo(json.dumps(api.startCdiJobs(ids=ids, paths=paths, type=type, callbackUrl=callback_url, paramFile=param_file, paramDir=param_dir, apiNames=api_names, wait=wait, pollDelay=poll_delay, debug=debug), indent=pretty))
+
+@jobs.command('stop')
+@click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'ids'))
+@click.option('--names', '-n', 'names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'names'))
+@click.option('--locations', '-l', 'locations', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'locations'))
+@click.option('--types', '-t', 'types', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'types'))
+@click.option('--clean', '-c', 'clean', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('jobs', 'stop', 'clean'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def stopJobs(ids, names, locations, types, clean, debug, pretty=0):
+    """Stops running jobs"""
+    click.echo(json.dumps(api.stopCdiJobs(ids=ids, names=names, locations=locations, types=types, clean=clean, debug=debug), indent=pretty))
 
 ###################################
 # Organisations commands section
