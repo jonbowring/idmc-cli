@@ -1,5 +1,9 @@
 import requests
 import json
+import fnmatch
+import time
+import re
+import shortuuid
 from datetime import datetime, timezone, timedelta
 from urllib.parse import quote
 from idmc_cli.config import config
@@ -58,6 +62,34 @@ class InformaticaCloudAPI:
             session_id = resp['userInfo']['sessionId']
             self.session_id = session_id
             config.set('sessionId', session_id)
+
+        return resp
+    
+    def logout(self, debug=False):
+        """This function logs out from IDMC"""
+
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Execute the API call
+        url = f'https://{ self.region }.informaticacloud.com/saas/public/core/v3/logout'
+        headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+        r = requests.post(url, headers=headers)
+
+        if debug:
+            self.debugRequest(r)
+
+        if r.status_code < 200 or r.status_code > 299:
+            resp = {
+                'status': r.status_code,
+                'text': r.text
+            }
+        else:
+            resp = {
+                'status': r.status_code,
+                'text': 'Logged out successfully'
+            }
 
         return resp
     
@@ -121,7 +153,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page
+
+        return result
     
 
     def deleteUser(self, id=None, username=None, debug=False):
@@ -135,7 +171,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -217,7 +253,7 @@ class InformaticaCloudAPI:
             for group in groups:
                 lookup = self.getUserGroups(name=group, debug=debug)
                 try:
-                    groupId = lookup[0][0]['id']
+                    groupId = lookup[0]['id']
                     groupIds.append(groupId)
                 except Exception as e:
                     return {
@@ -308,7 +344,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -390,7 +426,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -472,7 +508,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -486,7 +522,7 @@ class InformaticaCloudAPI:
             for group in groups:
                 lookup = self.getUserGroups(id=group, debug=debug)
                 try:
-                    groupName = lookup[0][0]['userGroupName']
+                    groupName = lookup[0]['userGroupName']
                     groupNames.append(groupName)
                 except Exception as e:
                     return {
@@ -555,7 +591,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -569,7 +605,7 @@ class InformaticaCloudAPI:
             for group in groups:
                 lookup = self.getUserGroups(id=group, debug=debug)
                 try:
-                    groupName = lookup[0][0]['userGroupName']
+                    groupName = lookup[0]['userGroupName']
                     groupNames.append(groupName)
                 except Exception as e:
                     return {
@@ -1091,7 +1127,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page
+
+        return result
     
 
 
@@ -1129,7 +1169,7 @@ class InformaticaCloudAPI:
             for user in users:
                 lookup = self.getUsers(username=user, debug=debug)
                 try:
-                    userId = lookup[0][0]['id']
+                    userId = lookup[0]['id']
                     userIds.append(userId)
                 except Exception as e:
                     return {
@@ -1201,7 +1241,7 @@ class InformaticaCloudAPI:
         if groupname:
             lookup = self.getUserGroups(name=groupname, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -1280,7 +1320,7 @@ class InformaticaCloudAPI:
         if name:
             lookup = self.getUserGroups(name=name, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -1332,6 +1372,17 @@ class InformaticaCloudAPI:
     # Objects section
     #############################
 
+    def getObjects(self, id=None, name=None, type=None, location=None, debug=False):
+        result = self.queryObjects(type=type, location=location, debug=debug)
+        if name:
+            filtered = [obj for obj in result if obj['path'].split('/')[-1] == name]
+            return filtered
+        elif id:
+            filtered = [obj for obj in result if obj['id'] == id]
+            return filtered
+        else:
+            return result
+    
     def queryObjects(self, type=None, location=None, tag=None, hash=None, checkedOutBy=None, checkedOutSince=None, checkedOutUntil=None, checkedInBy=None, checkedInSince=None, checkedInUntil=None, sourceCtrld=None, publishedBy=None, publishedSince=None, publishedUntil=None, updatedBy=None, updatedSince=None, updatedUntil=None, debug=False):
         """This function is used to query objects"""
         
@@ -1386,7 +1437,8 @@ class InformaticaCloudAPI:
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
             params = { 'limit': self.page_size, 'skip': skip }
-            params['q'] = ' and '.join(qargs)
+            if len(qargs) > 0:
+                params['q'] = ' and '.join(qargs)
 
             r = requests.get(url, headers=headers, params=params)
 
@@ -1423,7 +1475,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page['objects']
+
+        return result
     
     def getDependencies(self, id=None, path=None, type=None, refType=None, debug=False):
         """This function is used to find dependencies for an object"""
@@ -1489,7 +1545,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page['references']
+
+        return result
     
     def lookupObject(self, id=None, path=None, type=None, debug=False):
         """This function is used to lookup objects"""
@@ -3129,7 +3189,11 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page['commits']
+
+        return result
     
 
     def getCommitDetails(self, hash, searchAllRepos, repoId, debug=False):
@@ -3326,7 +3390,146 @@ class InformaticaCloudAPI:
             else:
                 break
         
-        return pages
+        result = []
+        for page in pages:
+            result += page['entries']
+
+        return result
+    
+
+    def getRunningActivityJobs(self, id=None, runId=None, taskId=None, taskName=None, debug=False):
+        """This function is used to return completed job info from the monitor"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        
+        while True:
+        
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityMonitor'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            params = { 'details': 'true' }
+            r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+
+        # Filter the running jobs
+        if id:
+            result = [obj for obj in resp if obj['id'] == id]
+        elif taskId and runId:
+            result = [obj for obj in resp if obj['taskId'] == taskId and obj['runId'] == runId]
+        elif taskId:
+            result = [obj for obj in resp if obj['taskId'] == taskId]
+        elif taskName:
+            result = [obj for obj in resp if obj['taskName'] == taskName]
+        else:
+            result = resp
+        
+        return result
+    
+
+    def getCompletedActivityJobs(self, id=None, runId=None, taskId=None, taskName=None, debug=False):
+        """This function is used to return completed job info from the monitor"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        skip = 0
+        pages = []
+        
+        while True:
+        
+            # Execute the API call
+            if id:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityLog/{ quote(id) }'
+            else:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityLog'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            params = { 'rowLimit': self.page_size, 'offset': skip }
+            if taskId:
+                params['taskId'] = taskId
+            if runId:
+                params['runId'] = runId
+            r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                pages.append(resp)
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # If there is still some data then continue onto the next page
+            elif len(r.json()) > 0:
+                resp = r.json()
+                pages.append(resp)
+                skip = skip + self.page_size
+                if id:
+                    break
+                else:
+                    continue
+            # Break when there are no pages left
+            else:
+                break
+        
+        result = []
+        if id:
+            result = pages
+        else:
+            for page in pages:
+                result += page
+
+        # Filter the completed jobs
+        if taskName:
+            result = [obj for obj in result if re.match(rf'^{ taskName }.*$', obj['objectName'])]
+        
+        return result
     
 
     #############################
@@ -4665,7 +4868,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -4729,7 +4932,7 @@ class InformaticaCloudAPI:
         if username:
             lookup = self.getUsers(username=username, debug=debug)
             try:
-                id = lookup[0][0]['id']
+                id = lookup[0]['id']
             except Exception as e:
                 return {
                         'status': 500,
@@ -5059,6 +5262,513 @@ class InformaticaCloudAPI:
                 break
         
         return resp
+    
+    #############################
+    # Organizations section
+    #############################
+
+    def getOrg(self, subId=None, subName=None, debug=False):
+        """This function returns details about an organisation or sub-organisation"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        
+        while True:
+        
+            # Execute the API call
+            if subId:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/org/{ quote(subId) }'
+            elif subName:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/org/name/{ quote(subName) }'
+            else:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/org'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+            r = requests.get(url, headers=headers)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code in [401,403] and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+
+        return resp
+    
+    #############################
+    # Jobs section
+    #############################
+
+    def getMonitorJobs(self, type=None, name=None, status=None, errorMsg=None, location=None, startSince=None, startUntil=None, endSince=None, endUntil=None, runtime=None, orderBy=None, debug=False):
+        """
+        ***WARNING!!!***
+        Experimental function - not officially supported
+
+        Used to return job details from the monitor
+        """
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Get the org ID
+        orgId = self.getOrg(debug=debug)[0]['orgUUID']
+        
+        attempts = 0
+        skip = 0
+        pages = []
+        
+        while True:
+        
+            # Execute the API call
+            url = f"https://usw1.dmp-us.informaticacloud.com/jls-di/api/v1/Orgs('{ orgId }')/JobLogEntries"
+            xsrf = shortuuid.uuid()
+            headers = { 'Accept': 'application/json', 'XSRF_TOKEN': xsrf, 'Cookie': f'USER_SESSION={ self.session_id }; XSRF_TOKEN={ xsrf }' }
+            params = { '$top': self.page_size, '$skip': skip }
+            
+            if orderBy:
+                params['$orderby'] = orderBy
+            
+            filters = []
+            if status:
+                statuses = status.split(',')
+                statuses = [f"status eq '{ item }'" for item in statuses]
+                statuses = ' or '.join(statuses)
+                filters.append(f"({ statuses })")
+            if name:
+                filters.append(f"(contains(assetName,'{ name }'))")
+            if type:
+                filters.append(f"(assetType eq '{ type }')")
+            if errorMsg:
+                filters.append(f"(contains(errorMessage,'{ errorMsg }'))")
+            if location:
+                filters.append(f"(contains(location,'{ location }'))")
+            if startSince:
+                filters.append(f"(startTime ge { startSince })")
+            if startUntil:
+                filters.append(f"(startTime le { startUntil })")
+            if endSince:
+                filters.append(f"(startTime ge { endSince })")
+            if endUntil:
+                filters.append(f"(startTime le { endUntil })")
+            if runtime:
+                filters.append(f"(contains(runtimeEnvName,'{ runtime }'))")
+            
+            if len(filters) > 0:
+                params['$filter'] = ' and '.join(filters)
+            
+            r = requests.get(url, headers=headers, params=params)
+
+            if debug:
+                self.debugRequest(r, attempts)
+
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                pages.append(resp)
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # If there is still some data then continue onto the next page
+            elif len(r.json()) > 0:
+                resp = r.json()
+                pages.append(resp)
+                skip = skip + self.page_size
+                if id:
+                    break
+                else:
+                    continue
+            # Break when there are no pages left
+            else:
+                break
+        
+        result = []
+        for page in pages:
+            result += page['value']
+
+        return result
+
+    
+    def waitForCdiJobs(self, type, jobs, pollDelay=3, debug=False):
+        """This function is used to wait for CDI jobs to complete"""
+        
+        # For taskflow jobs
+        if type == 'TASKFLOW':
+            
+            done = False
+            while not done:
+
+                status = []
+                
+                # Check the status of all jobs
+                for job in jobs:
+                    
+                    attempts = 0
+
+                    while True:
+                        url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/active-bpel/services/tf/status/{ quote(job['RunId']) }'
+                        headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+                        r = requests.get(url, headers=headers, auth=(self.username, self.password))
+
+                        if debug:
+                            self.debugRequest(r, attempts)
+                        
+                        # Abort after the maximum number of attempts
+                        if attempts > self.max_attempts:
+                            resp = {
+                                'status': r.status_code,
+                                'text': r.text
+                            }
+                            break
+                        # Else if there is an unexpected error return a failure
+                        elif r.status_code < 200 or r.status_code > 299:
+                            resp = {
+                                'status': r.status_code,
+                                'text': r.text
+                            }
+                            attempts += 1
+                            continue
+                        # Break when there are no pages left
+                        else:
+                            resp = r.json()
+                            break
+
+                    status.append(resp)
+
+                # Evaluate if all jobs have finished
+                done = all(item['status'] != 'RUNNING' for item in status)
+                if not done:
+                    time.sleep(pollDelay)
+
+        # For all other CDI jobs
+        else:
+            done = False
+            while not done:
+
+                status = []
+                
+                # Check the status of all jobs
+                for job in jobs:
+                    
+                    attempts = 0
+
+                    while True:
+                        url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityLog'
+                        params = {
+                            'taskId': job['taskId'],
+                            'runId': job['runId']
+                        }
+                        headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+                        r = requests.get(url, headers=headers, params=params)
+
+                        if debug:
+                            self.debugRequest(r, attempts)
+                        
+                        # Check for expired session token
+                        if r.status_code == 401 and attempts <= self.max_attempts:
+                            self.login()
+                            attempts = attempts + 1
+                            continue
+                        # Abort after the maximum number of attempts
+                        elif attempts > self.max_attempts:
+                            resp = {
+                                'status': r.status_code,
+                                'text': r.text
+                            }
+                            break
+                        # Else if there is an unexpected error return a failure
+                        elif r.status_code < 200 or r.status_code > 299:
+                            resp = {
+                                'status': r.status_code,
+                                'text': r.text
+                            }
+                            attempts += 1
+                            continue
+                        # Break when there are no pages left
+                        else:
+                            resp = r.json()
+                            break
+
+                    status.append(resp)
+
+                # Evaluate if all jobs have finished
+                done = True if sum(1 for sublist in status if len(sublist) > 0) == len(jobs) else False
+                if not done:
+                    time.sleep(pollDelay)
+
+        return status
+
+                
+    
+    def startCdiJobs(self, ids=None, paths=None, type=None, callbackUrl=None, paramFile=None, paramDir=None, apiNames=None, wait=None, pollDelay=None, debug=False):
+        """This function is used to manage starting multiple jobs, including the support of wildcard path searches."""
+
+        result = []
+        
+        if type == 'TASKFLOW':
+            apiNames = apiNames.split(',')
+            for apiName in apiNames:
+                result.append(self.startCdiJob(apiName=apiName, type=type, debug=debug))
+
+        elif ids:
+            ids = ids.split(',')
+            for id in ids:
+                result.append(self.startCdiJob(id=id, type=type, callbackUrl=callbackUrl, paramFile=paramFile, paramDir=paramDir, debug=debug))
+                    
+        elif paths:
+            
+            # Get a list of all objects to support a wildcard search if needed
+            if '*' in paths or '?' in paths:
+                objects = self.getObjects(type=type, debug=debug)
+            
+            # Loop through the paths, search for matching objects and execute the jobs
+            paths = paths.split(',')
+            for path in paths:
+                if '*' in path or '?' in path:
+                    filtered = [obj for obj in objects if fnmatch.fnmatch(obj['path'], path) ]
+                else:
+                    filtered = []
+                    filtered.append(self.lookupObject(path=path, type=type, debug=debug)['objects'][0])
+                for obj in filtered:
+                    result.append(self.startCdiJob(id=obj['id'], type=type, callbackUrl=callbackUrl, paramFile=paramFile, paramDir=paramDir, debug=debug))
+
+        else:
+            result.append(self.startCdiJob(id=ids, path=paths, type=type, callbackUrl=callbackUrl, paramFile=paramFile, paramDir=paramDir, debug=debug))
+        
+        if wait:
+            return self.waitForCdiJobs(type=type, jobs=result, pollDelay=pollDelay, debug=debug)   
+        else:
+            return result
+        
+    
+    
+    def startCdiJob(self, id=None, path=None, type=None, callbackUrl=None, paramFile=None, paramDir=None, apiName=None, debug=False):
+        """This function starts a new data integration job"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Lookup the object id if needed
+        if path and type:
+            lookup = self.lookupObject(path=path, type=type, debug=debug)
+            try:
+                id = lookup['objects'][0]['id']
+            except Exception as e:
+                return {
+                        'status': 500,
+                        'text': f'Unable to find object id for path { path } and type { type }'
+                }
+        
+        attempts = 0
+        resp = ''
+        
+        while True:
+        
+            if type == 'TASKFLOW':
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/active-bpel/rt/{ apiName }'
+                headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+                r = requests.get(url, headers=headers, auth=(self.username, self.password))
+            else:
+                data = {
+                    '@type': 'job',
+                    'taskFederatedId': id,
+                    'taskType': type
+                }
+                if callbackUrl:
+                    data['callbackURL'] = callbackUrl
+                if paramFile and paramDir:
+                    data['runtime'] = {}
+                    data['runtime']['parameterFileName'] = paramFile
+                    data['runtime']['parameterFileDir'] = paramDir
+                
+                # Execute the API call
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/job'
+                headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+                r = requests.post(url, headers=headers, json=data)
+
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Break when there are no pages left
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+    def stopCdiJobs(self, ids=None, names=None, locations=None, types=None, clean=None, debug=False):
+        """This function stops a running data integration job"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Define the list of running statuses to filter for
+        status = ['AWAITING_AUTO_RESTART', 'CHILD_SUSPENDED', 'INITIALIZED', 'NOT_STARTED', 'QUEUED', 'RUNNING', 'SKIPPED', 'SUBMITTED', 'SUSPENDED', 'TRYING_TO_STOP']
+        status = ','.join(status)
+        
+        # Parse the comma separated values
+        if ids:
+            ids = ids.split(',')
+        if names:
+            names = names.split(',')
+        if locations:
+            locations = locations.split(',')
+        if types:
+            types = types.split(',')
+
+        # Get the running jobs
+        stop = []
+        jobs = self.getMonitorJobs(status=status, debug=debug)
+        for job in jobs:
+            job['extraData'] = json.loads(job['extraData'])
+
+            if job['assetType'] == 'TASKFLOW':
+                job['cli_job_id'] = job['extraData']['pid']
+            else:
+                job['cli_job_id'] = job['extraData']['saasTaskId']
+
+            # Check if the job should be stopped
+            if ids and job['cli_job_id'] in ids:
+                stop.append(job)
+            elif names and locations and job['assetName'] in names and job['location'] in locations:
+                stop.append(job)
+            elif names and job['assetName'] in names:
+                stop.append(job)
+            elif locations and job['location'] in locations:
+                stop.append(job)
+            elif types and job['assetType'] in types:
+                stop.append(job)
+            elif ids is None and names is None and locations is None and types is None:
+                stop.append(job)
+
+        # Debugging options
+        if debug:
+            print('Attempting to stop:\n')
+            print(stop)
+        
+        attempts = 0
+        resp = ''
+        result = []
+
+        # Stop the running jobs
+        for job in stop:
+        
+            while True:
+            
+                if job['assetType'] == 'TASKFLOW':
+                    url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/active-bpel/restadmin/processes/{ quote(job['cli_job_id']) }/terminate?isManual=true'
+                    xsrf = shortuuid.uuid()
+                    headers = { 'Accept': 'application/json', 'XSRF_TOKEN': xsrf, 'Cookie': f'USER_SESSION={ self.session_id }; XSRF_TOKEN={ xsrf }', 'Content-Type': 'application/json' }
+                    r = requests.put(url, headers=headers)
+                else:
+                    data = {
+                        '@type': 'job',
+                        'taskFederatedId': job['assetId'],
+                        'taskType': job['assetType']
+                    }
+                    
+                    params = {}
+                    if clean:
+                        params['cleanStop'] = 'true'
+                    
+                    # Execute the API call
+                    url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/job/stop'
+                    headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
+                    r = requests.post(url, headers=headers, json=data, params=params)
+
+                if debug:
+                    self.debugRequest(r, attempts)
+                
+                # Check for expired session token
+                if r.status_code == 401 and attempts <= self.max_attempts:
+                    self.login()
+                    attempts = attempts + 1
+                    continue
+                # Abort after the maximum number of attempts
+                elif attempts > self.max_attempts:
+                    resp = {
+                        'status': r.status_code,
+                        'text': r.text
+                    }
+                    result.append(resp)
+                    break
+                # Else if there is an unexpected error return a failure
+                elif r.status_code < 200 or r.status_code > 299:
+                    resp = {
+                        'status': r.status_code,
+                        'text': r.text
+                    }
+                    break
+                # Break when there are no pages left
+                else:
+                    resp = {
+                        'status': r.status_code,
+                        'text': 'Stop request submitted successfully',
+                        'jobId': job['cli_job_id'],
+                        'jobType': job['assetType'],
+                        'jobName': job['assetName']
+                    }
+                    result.append(resp)
+                    break
+        
+        return result
+    
 
 # Expose the class as a variable
 api = InformaticaCloudAPI()

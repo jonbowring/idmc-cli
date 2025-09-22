@@ -17,6 +17,9 @@ def main():
 def configure():
     """Used to configure the global parameters for the CLI."""
 
+    # Log out of current session
+    api.logout()
+
     # Get and set the username
     user = config.get("username")
     user = input(f"Username [{ user }]: ") or user
@@ -49,6 +52,13 @@ def configure():
 def login(debug, pretty=0):
     """Used to login to Informatica Cloud and return the login details."""
     click.echo(json.dumps(api.login(debug=debug), indent=pretty))
+
+@main.command('logout')
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def logout(debug, pretty=0):
+    """Used to login to Informatica Cloud and return the login details."""
+    click.echo(json.dumps(api.logout(debug=debug), indent=pretty))
 
 ###################################
 # User commands section
@@ -417,6 +427,17 @@ def objects():
     """Object management commands."""
     pass
 
+@objects.command('get')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'get', 'id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'get', 'name'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'get', 'type'))
+@click.option('--location', '-l', 'location', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'location'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getObjects(id, name, type, location, debug, pretty=0):
+    """Used to get objects"""
+    click.echo(json.dumps(api.getObjects(id=id, name=name, type=type, location=location, debug=debug), indent=pretty))
+
 @objects.command('query')
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'type'))
 @click.option('--location', '-l', 'location', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'location'))
@@ -446,7 +467,7 @@ def queryObjects(type, location, tag, checked_out_by, checked_out_since, checked
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'type'))
-@click.option('--ref-type', '-r', 'ref_type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'ref_type'))
+@click.option('--ref-type', '-r', 'ref_type', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'ref_type'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def getDependencies(id, path, type, ref_type, debug, pretty=0):
@@ -862,6 +883,41 @@ def getSecurityLogs(category, actor, name, time_from, time_to, debug, pretty=0):
     """Gets the security logs"""
     click.echo(json.dumps(api.getSecurityLogs(category=category, actor=actor, name=name, time_from=time_from, time_to=time_to, debug=debug), indent=pretty))
 
+@logs.group('activity')
+def logsActivity():
+    """Activity log commands."""
+    pass
+
+@logsActivity.command('completed')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'id'))
+@click.option('--run-id', '-r', 'run_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'run-id'))
+@click.option('--task-id', '-t', 'task_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'task-id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getCompletedActivityJobs(id, run_id, task_id, name, debug, pretty=0):
+    """Gets the completed activity logs"""
+    
+    if run_id and task_id is None:
+        raise click.BadParameter(i18n.getErrorText('logs', 'completed-activity', 'task-id-missing'))
+    
+    click.echo(json.dumps(api.getCompletedActivityJobs(id=id, runId=run_id, taskId=task_id, taskName=name, debug=debug), indent=pretty))
+
+@logsActivity.command('running')
+@click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'running-activity', 'id'))
+@click.option('--run-id', '-r', 'run_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'running-activity', 'run-id'))
+@click.option('--task-id', '-t', 'task_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'running-activity', 'task-id'))
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'running-activity', 'name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getRunningActivityJobs(id, run_id, task_id, name, debug, pretty=0):
+    """Gets the running activity logs"""
+    
+    if run_id and task_id is None:
+        raise click.BadParameter(i18n.getErrorText('logs', 'running-activity', 'task-id-missing'))
+    
+    click.echo(json.dumps(api.getRunningActivityJobs(id=id, runId=run_id, taskId=task_id, taskName=name, debug=debug), indent=pretty))
+
 ###################################
 # Secure agent commands section
 ###################################
@@ -1245,6 +1301,96 @@ def disableSchedule(id, name, debug, pretty=0):
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
     
     click.echo(json.dumps(api.updateSchedule(id=id, name=name, status='disabled', debug=debug), indent=pretty))
+
+
+###################################
+# Jobs commands section
+###################################
+
+@main.group('jobs')
+def jobs():
+    """Job management commands."""
+    pass
+
+@jobs.group('exp')
+def jobsExp():
+    """WARNING: Experimental unsupported job management commands."""
+    pass
+
+@jobsExp.command('get')
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'name'))
+@click.option('--status', '-s', 'status', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'status'))
+@click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'type'))
+@click.option('--order-by', '-o', 'order_by', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'order-by'))
+@click.option('--location', '-l', 'location', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'location'))
+@click.option('--error', '-e', 'error_msg', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'error-msg'))
+@click.option('--runtime', '-r', 'runtime', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'runtime'))
+@click.option('--start-since', '-ss', 'start_since', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'start-since'))
+@click.option('--start-until', '-su', 'start_until', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'start-until'))
+@click.option('--end-since', '-es', 'end_since', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'end-since'))
+@click.option('--end-until', '-eu', 'end_until', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'end-until'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getJobs(name, start_since, start_until, end_since, end_until, status, type, order_by, error_msg, location, runtime, debug, pretty=0):
+    """Get job details from the monitor"""
+    click.echo(json.dumps(api.getMonitorJobs(type=type, name=name, status=status, errorMsg=error_msg, location=location, startSince=start_since, startUntil=start_until, endSince=end_since, endUntil=end_until, runtime=runtime, orderBy=order_by, debug=debug), indent=pretty))
+
+@jobs.command('start')
+@click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'ids'))
+@click.option('--paths', '-p', 'paths', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'paths'))
+@click.option('--type', '-t', 'type', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'type'))
+@click.option('--callback', '-c', 'callback_url', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'callback'))
+@click.option('--param-file', '-f', 'param_file', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'param-file'))
+@click.option('--param-dir', '-d', 'param_dir', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'param-dir'))
+@click.option('--api-names', '-a', 'api_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'api-names'))
+@click.option('--wait', '-w', 'wait', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('jobs', 'start', 'wait'))
+@click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('jobs', 'start', 'poll-delay'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def startJobs(ids, paths, type, callback_url, param_file, param_dir, api_names, wait, poll_delay, debug, pretty=0):
+    """Starts a job"""
+    
+    # Validate the options
+    if ids is None and paths is None and type != 'TASKFLOW':
+        raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
+    if (param_file and param_dir is None) or (param_file is None and param_dir):
+        raise click.BadParameter(i18n.getErrorText('jobs', 'start', 'param-file-dir-missing'))
+    if type == 'TASKFLOW' and api_names is None:
+        raise click.BadParameter(i18n.getErrorText('jobs', 'start', 'api-name-missing'))
+    
+    if type in ['DMASK', 'DRS', 'DSS', 'MTT', 'PCS', 'WORKFLOW', 'TASKFLOW']:
+        click.echo(json.dumps(api.startCdiJobs(ids=ids, paths=paths, type=type, callbackUrl=callback_url, paramFile=param_file, paramDir=param_dir, apiNames=api_names, wait=wait, pollDelay=poll_delay, debug=debug), indent=pretty))
+
+@jobs.command('stop')
+@click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'ids'))
+@click.option('--names', '-n', 'names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'names'))
+@click.option('--locations', '-l', 'locations', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'locations'))
+@click.option('--types', '-t', 'types', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'types'))
+@click.option('--clean', '-c', 'clean', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('jobs', 'stop', 'clean'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def stopJobs(ids, names, locations, types, clean, debug, pretty=0):
+    """Stops running jobs"""
+    click.echo(json.dumps(api.stopCdiJobs(ids=ids, names=names, locations=locations, types=types, clean=clean, debug=debug), indent=pretty))
+
+###################################
+# Organisations commands section
+###################################
+
+@main.group('orgs')
+def orgs():
+    """Organisation management commands."""
+    pass
+
+@orgs.command('get')
+@click.option('--suborg-id', '-i', 'sub_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('orgs', 'get', 'sub-id'))
+@click.option('--suborg-name', '-n', 'sub_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('orgs', 'get', 'sub-name'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+def getOrgs(sub_id, sub_name, debug, pretty=0):
+    """Get organisation and sub-organisation details"""
+    
+    click.echo(json.dumps(api.getOrg(subId=sub_id, subName=sub_name, debug=debug), indent=pretty))
 
 if __name__ == '__main__':
     main()

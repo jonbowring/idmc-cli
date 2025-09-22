@@ -190,6 +190,14 @@ english:
           body: JSON payload containing the search conditions for the objects.
 
     objects:
+      get:
+        options:
+          id: Filter the returned objects by id.
+          name: Filter the returned objects by name.
+          type: "Asset type. Type can be project, folder, or one of the following asset types: DTEMPLATE, MTT, DSS, DMASK, DRS, DMAPPLET, MAPPLET, BSERVICE, HSCHEMA, PCS, FWCONFIG, CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW, UDF, PROJECT, FOLDER, PROCESS, GUIDE, AI_CONNECTION, AI_SERVICE_CONNECTOR, PROCESS_OBJECT, B2BGW_MONITOR, B2BGW_CUSTOMER, B2BGW_SUPPLIER, MDM_BUSINESS_ENTITY, MDM_REFERENCE_ENTITY, MDM_HIERARCHY, MDM_RELATIONSHIP, MDM_JOB_DEFINITION, MDM_AUTHORIZATION, MDM_BUSINESS_EVENT, MDM_REPORT_SET, MDM_REPORT, MDM_DYNAMIC_POOL, MDM_APPLICATION, MDM_SRC_SYSTEM, MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE, DEDUPLICATE, DICTIONARY, EXCEPTION, LABELER, PARSE, RULE_SPECIFICATION, VERIFIER"
+          location: The project and folder path where the assets are located, such as Default/Sales. Must include this option or the type option.
+        errors:
+          location-type-missing: Either the location or type option must be included.
       query:
         options:
           type: "Asset type. Type can be project, folder, or one of the following asset types: DTEMPLATE, MTT, DSS, DMASK, DRS, DMAPPLET, MAPPLET, BSERVICE, HSCHEMA, PCS, FWCONFIG, CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW, UDF, PROJECT, FOLDER, PROCESS, GUIDE, AI_CONNECTION, AI_SERVICE_CONNECTOR, PROCESS_OBJECT, B2BGW_MONITOR, B2BGW_CUSTOMER, B2BGW_SUPPLIER, MDM_BUSINESS_ENTITY, MDM_REFERENCE_ENTITY, MDM_HIERARCHY, MDM_RELATIONSHIP, MDM_JOB_DEFINITION, MDM_AUTHORIZATION, MDM_BUSINESS_EVENT, MDM_REPORT_SET, MDM_REPORT, MDM_DYNAMIC_POOL, MDM_APPLICATION, MDM_SRC_SYSTEM, MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE, DEDUPLICATE, DICTIONARY, EXCEPTION, LABELER, PARSE, RULE_SPECIFICATION, VERIFIER"
@@ -409,6 +417,20 @@ english:
           name: Name of the object acted upon.
           time_from: Date/time to search from. The maximum date range is 14 days.
           time_to: Date/time to search until. The maximum date range is 14 days.
+      completed-activity:
+        options:
+          id: Log entry ID. Include this attribute if you want to receive information for a specific ID.
+          run-id: Job ID associated with the log entry ID. Whenever runId is included in a request, taskId is required. 
+          task-id: Task ID associated with the log entry ID. If taskId is not specified, all activityLog entries for all tasks are returned.
+          name: Name of the job.
+      running-activity:
+        options:
+          id: Log entry ID. Include this attribute if you want to receive information for a specific ID.
+          run-id: Job ID associated with the log entry ID. Whenever runId is included in a request, taskId is required. 
+          task-id: Task ID associated with the log entry ID. If taskId is not specified, all activityLog entries for all tasks are returned.
+          name: Name of the job.
+        errors:
+          task-id-missing: Task ID must be provided with run-id.
           
     agents:
       get:
@@ -628,3 +650,45 @@ english:
         options:
           id: ID of the schedule to be disabled. Use this option or the name option.
           name: Name of the schedule to be disabled. Use this option or the id option.
+
+    orgs:
+      get:
+        options:
+          sub-id: ID of sub-organisation to be returned.
+          sub-name: Name of sub-organisation to be returned.
+    
+    jobs:
+      get:
+        options:
+          name: Filter the jobs by name.
+          start-since: Date and time the task started since.
+          start-until: Date and time the task started until.
+          end-since: Date and time the task ended since.
+          end-until: Date and time the task ended until.
+          status: "Comma separated list of statuses for the tasks. You can filter by any of the following statuses: 'ABORTED', 'AWAITING_AUTO_RESTART', 'CHILD_SUSPENDED', 'COMPLETED', 'DEPLOYED', 'DEPLOYING', 'ERROR', 'FAILED', 'INITIALIZED', 'NOT_STARTED', 'PROCESSING_ABORT', 'PROCESSING_DEPLOY', 'PROCESSING_STOP', 'PROCESSING_UNDEPLOY', 'QUEUED', 'RUNNING', 'SKIPPED', 'STOPPED', 'SUBMITTED', 'SUCCESS', 'SUSPENDED', 'TRYING_TO_STOP', 'UNDEPLOYED', 'UNDEPLOYING', 'WARNING'"
+          type: "Type of asset. You can filter by any of the following types: 'API', 'APPMI_TASK', 'AS2_RECEIVE', 'AS2_SEND', 'BATCH_MAPPING', 'CodeTask', 'command', 'DBMI_GROUP_TASK', 'DBMI_TASK', 'DLT', 'DMASK', 'DRS', 'DSS', 'DTT', 'EXCEPTION', 'FILE_TRANSFER_TASK', 'FTP_CLIENT', 'FTPS_CLIENT', 'HTTPS_SERVER', 'MAPPING', 'MI_FILE_LISTENER', 'MI_TASK', 'MLLP_SERVER', 'MTT', 'MTT_DP', 'MTT_DP_CDIE', 'MTT_PDO', 'MTT_TEST', 'PCS', 'PROFILE', 'SFTP_CLIENT', 'SFTP_SERVER', 'SI_DATAFLOW', 'TASKFLOW', 'TunerTask', 'WORKFLOW'."
+          order-by: Sort order in which to return the data. Ascending by default. Include "desc" after order by field if needed.
+          error-msg: Filter the jobs by error messages that contain this value.
+          location: Filter the jobs by project/folder location.
+          runtime: Filter the jobs by the name of the runtime environment.
+      start:
+        options:
+          ids: Comma separated list of global unique identifier for the task to start. Must be used if path is not included.
+          paths: Comma separated list of paths to the task to be started. Supports the '*' (matches everything) and '?' (matches any single character) wildcard characters.
+          type: "The type of task. Valid values include: DMASK, DRS, DSS, MTT, PCS, WORKFLOW, TASKFLOW. The taskflow must be first published."
+          callback: URL endpoint to be called when the job is finished.
+          param-file: Parameter file name. Must be used in conjunction with the param-dir option.
+          param-dir: Parameter file directory on the Secure Agent machine. Must be used in conjunction with the param-file option.
+          api-names: Comma separated list of API names for the taskflows to be executed.
+          wait: Flag to wait for all jobs to finish.
+          poll-delay: Time in seconds to wait between job status polling when waiting for them to finish.
+        errors:
+          param-file-dir-missing: If specifying a parameter file then both the param-file and param-dir options must be included.
+          api-name-missing: If specifying the TASKFLOW type you must also include the api-name option.
+      stop:
+        options:
+          ids: Comma separated list of global unique identifiers for the running jobs.
+          names: Comma separated list of names of jobs to be stopped.
+          locations: Comma separated list of locations of jobs to be stopped.
+          types: "Comma separated list of types of jobs to be stopped. Valid values include: DMASK, DRS, DSS, MTT, PCS, WORKFLOW, TASKFLOW. The taskflow must be first published."
+          clean: Flag to indicate a clean stop of the job should be executed. Not applicable for TASKFLOW types.
