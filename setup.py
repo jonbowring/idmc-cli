@@ -10,7 +10,9 @@ setup(
         'requests',
         'cryptography',
         'pyyaml',
-        'shortuuid'
+        'shortuuid',
+        'polars',
+        'xlsxwriter'
     ],
     entry_points={
         'console_scripts': [

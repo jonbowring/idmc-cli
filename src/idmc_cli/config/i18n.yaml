@@ -4,12 +4,14 @@ english:
       options:
         debug: If true, will print the API request details to console.
         pretty: If true, will pretty print the returned JSON.
+        output: Path that output file should be written to. Supported file formats include json, csv and xlsx.
       errors:
           id-name-missing: Either the id or name option must be included.
           id-path-missing: Either the id or path option must be included.
           id-path-type-missing: Either the id needs to be provided, or the path and type needs to be provided.
           body-id-path-type-missing: Either the body, id, or both the path and type need to be provided.
           path-type-missing: Both path and type must be included when not searching by id.
+          bad-file-type: Invalid output file extension specified.
     
     users:
       get:

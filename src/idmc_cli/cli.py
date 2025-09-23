@@ -1,17 +1,65 @@
 import click
 import json
+import polars as pl
+from pathlib import Path
 from idmc_cli.config import config
 from idmc_cli.i18n import i18n
 from idmc_cli.api import api
+
+###################################
+# Utility section
+###################################
+
+# Define the allowed output file types
+out_types = ['.csv','.xlsx','.json']
+
+def flatten_resp(resp):
+    
+    if isinstance(resp, list):
+        flat_list = []
+        for row in resp:
+            flat_dict = {}
+            for key, value in row.items():
+                if isinstance(value, dict) or isinstance(value, list):
+                    flat_dict[key] = json.dumps(value)
+                else:
+                    flat_dict[key] = value
+            flat_list.append(flat_dict)
+        return flat_list
+    
+    else:
+        flat_dict = {}
+        for key, value in resp.items():
+            if isinstance(value, dict) or isinstance(value, list):
+                flat_dict[key] = json.dumps(value)
+            else:
+                flat_dict[key] = value
+        return flat_dict
+    
+
+def write_output(output, pretty, result):
+
+    out_path = Path(output)
+    
+    if out_path.suffix == '.csv':
+        result = flatten_resp(result)
+        df = pl.from_dicts(result)
+        df.write_csv(out_path, separator=',', quote_style='always')
+    elif out_path.suffix == '.xlsx':
+        df = pl.from_dicts(result)
+        df.write_excel(workbook=out_path)
+    elif out_path.suffix == '.json':
+        with open(out_path, 'w', encoding='utf-8') as file:
+            json.dump(result, file, ensure_ascii=False, indent=pretty)
+
+###################################
+# Admin commands section
+###################################
 
 @click.group()
 def idmc():
     """Informatica Cloud CLI Utility"""
     pass
-
-###################################
-# Admin commands section
-###################################
 
 @idmc.command('configure')
 def configure():
@@ -74,9 +122,18 @@ def users():
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'get', 'username'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getUsers(id, username, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getUsers(id, username, debug, output, pretty=0):
     """Returns users"""
-    click.echo(json.dumps(api.getUsers(id=id, username=username, debug=debug), indent=pretty))
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
+    result = api.getUsers(id=id, username=username, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @users.command('delete')
