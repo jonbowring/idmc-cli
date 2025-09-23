@@ -1,0 +1,5 @@
+site_name: IDMC CLI
+theme: readthedocs
+
+markdown_extensions:
+    - mkdocs-click

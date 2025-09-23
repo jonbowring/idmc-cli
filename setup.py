@@ -14,7 +14,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'idmc = idmc_cli.cli:main',
+            'idmc = idmc_cli.cli:idmc',
         ],
     },
     author='Jonathon Bowring',

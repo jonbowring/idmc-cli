@@ -5,7 +5,7 @@ from idmc_cli.i18n import i18n
 from idmc_cli.api import api
 
 @click.group()
-def main():
+def idmc():
     """Informatica Cloud CLI Utility"""
     pass
 
@@ -13,7 +13,7 @@ def main():
 # Admin commands section
 ###################################
 
-@main.command('configure')
+@idmc.command('configure')
 def configure():
     """Used to configure the global parameters for the CLI."""
 
@@ -46,25 +46,25 @@ def configure():
 
 
 
-@main.command('login')
+@idmc.command('login')
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def login(debug, pretty=0):
     """Used to login to Informatica Cloud and return the login details."""
     click.echo(json.dumps(api.login(debug=debug), indent=pretty))
 
-@main.command('logout')
+@idmc.command('logout')
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
 def logout(debug, pretty=0):
-    """Used to login to Informatica Cloud and return the login details."""
+    """Used to logout from Informatica Cloud."""
     click.echo(json.dumps(api.logout(debug=debug), indent=pretty))
 
 ###################################
 # User commands section
 ###################################
 
-@main.group('users')
+@idmc.group('users')
 def users():
     """User management commands."""
     pass
@@ -226,7 +226,7 @@ def resetPassword(id, username, security_answer, new_password, debug, pretty=0):
 # User Groups commands section
 ###################################
 
-@main.group('user-groups')
+@idmc.group('user-groups')
 def userGroups():
     """User group management commands."""
     pass
@@ -292,7 +292,7 @@ def deleteUserGroup(id, name, debug, pretty=0):
 # Role commands section
 ###################################
 
-@main.group('roles')
+@idmc.group('roles')
 def roles():
     """Role management commands."""
     pass
@@ -373,7 +373,7 @@ def deleteRole(id, name, debug, pretty=0):
 # Privileges commands section
 ###################################
 
-@main.group('privileges')
+@idmc.group('privileges')
 def privileges():
     """Privilege management commands."""
     pass
@@ -390,7 +390,7 @@ def getPrivileges(all, debug, pretty=0):
 # Lookup commands section
 ###################################
 
-@main.group('lookup')
+@idmc.group('lookup')
 def lookup():
     """Lookup objects."""
     pass
@@ -422,7 +422,7 @@ def lookupObjects(body, debug, pretty=0):
 # Object commands section
 ###################################
 
-@main.group('objects')
+@idmc.group('objects')
 def objects():
     """Object management commands."""
     pass
@@ -603,7 +603,7 @@ def deletePermissions(id, acl, path, type, debug, pretty=0):
 # Project commands section
 ###################################
 
-@main.group('projects')
+@idmc.group('projects')
 def projects():
     """Project management commands."""
     pass
@@ -646,7 +646,7 @@ def deleteProject(id, path, debug, pretty=0):
 # Folder commands section
 ###################################
 
-@main.group('folders')
+@idmc.group('folders')
 def folders():
     """Folder management commands."""
     pass
@@ -696,7 +696,7 @@ def deleteFolder(id, path, debug, pretty=0):
 # Source control commands section
 ###################################
 
-@main.group('source-control')
+@idmc.group('source-control')
 def sourceControl():
     """Source control management commands."""
     pass
@@ -866,7 +866,7 @@ def compareVersions(id, path, type, old_version, new_version, format, debug, pre
 # Log commands section
 ###################################
 
-@main.group('logs')
+@idmc.group('logs')
 def logs():
     """Log commands."""
     pass
@@ -922,7 +922,7 @@ def getRunningActivityJobs(id, run_id, task_id, name, debug, pretty=0):
 # Secure agent commands section
 ###################################
 
-@main.group('agents')
+@idmc.group('agents')
 def agents():
     """Secure Agent management commands."""
     pass
@@ -1149,7 +1149,7 @@ def deleteAgentGroupProps(id, name, debug, pretty=0):
 # Schedules commands section
 ###################################
 
-@main.group('schedules')
+@idmc.group('schedules')
 def schedules():
     """Schedule management commands."""
     pass
@@ -1307,7 +1307,7 @@ def disableSchedule(id, name, debug, pretty=0):
 # Jobs commands section
 ###################################
 
-@main.group('jobs')
+@idmc.group('jobs')
 def jobs():
     """Job management commands."""
     pass
@@ -1377,7 +1377,7 @@ def stopJobs(ids, names, locations, types, clean, debug, pretty=0):
 # Organisations commands section
 ###################################
 
-@main.group('orgs')
+@idmc.group('orgs')
 def orgs():
     """Organisation management commands."""
     pass
@@ -1393,4 +1393,4 @@ def getOrgs(sub_id, sub_name, debug, pretty=0):
     click.echo(json.dumps(api.getOrg(subId=sub_id, subName=sub_name, debug=debug), indent=pretty))
 
 if __name__ == '__main__':
-    main()
+    idmc()

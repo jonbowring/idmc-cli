@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>IDMC CLI</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "CLI Reference";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> IDMC CLI
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">CLI Reference</a>
+    <ul class="current">
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">IDMC CLI</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">CLI Reference</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cli-reference">CLI Reference</h1>
+<p>This page provides documentation for the IDMC CLI tool.</p>
+<h1 id="idmc">idmc</h1>
+<p>Informatica Cloud CLI Utility</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>agents</em>: Secure Agent management commands.</li>
+<li><em>configure</em>: Used to configure the global parameters for the CLI.</li>
+<li><em>folders</em>: Folder management commands.</li>
+<li><em>jobs</em>: Job management commands.</li>
+<li><em>login</em>: Used to login to Informatica Cloud and return the login details.</li>
+<li><em>logout</em>: Used to logout from Informatica Cloud.</li>
+<li><em>logs</em>: Log commands.</li>
+<li><em>lookup</em>: Lookup objects.</li>
+<li><em>objects</em>: Object management commands.</li>
+<li><em>orgs</em>: Organisation management commands.</li>
+<li><em>privileges</em>: Privilege management commands.</li>
+<li><em>projects</em>: Project management commands.</li>
+<li><em>roles</em>: Role management commands.</li>
+<li><em>schedules</em>: Schedule management commands.</li>
+<li><em>source-control</em>: Source control management commands.</li>
+<li><em>user-groups</em>: User group management commands.</li>
+<li><em>users</em>: User management commands.</li>
+</ul>
+<h2 id="agents">agents</h2>
+<p>Secure Agent management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>delete</em>: Deletes a secure agent</li>
+<li><em>get</em>: Gets Secure Agents</li>
+<li><em>groups</em>: Secure Agent Group service management commands.</li>
+<li><em>service</em>: Secure Agent service management commands.</li>
+<li><em>status</em>: Gets Secure Agent Status</li>
+</ul>
+<h3 id="delete">delete</h3>
+<p>Deletes a secure agent</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents delete [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT     Secure Agent ID. Either this option or the name option
+                    must be included.
+  -n, --name TEXT   Secure Agent Name. Either this option or the id option
+                    must be included.
+  -u, --unassigned  Flag to include a list of all the Secure Agents that are
+                    currently not assigned to any group.
+  -D, --debug       If true, will print the API request details to console.
+  -P, --pretty      If true, will pretty print the returned JSON.
+  --help            Show this message and exit.
+</code></pre>
+<h3 id="get">get</h3>
+<p>Gets Secure Agents</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT     Secure Agent ID. If searching for a specific agent, either
+                    this option or the name option must be included.
+  -n, --name TEXT   Secure Agent Name. If searching for a specific agent,
+                    either this option or the id option must be included.
+  -u, --unassigned  Flag to include a list of all the Secure Agents that are
+                    currently not assigned to any group.
+  -D, --debug       If true, will print the API request details to console.
+  -P, --pretty      If true, will pretty print the returned JSON.
+  --help            Show this message and exit.
+</code></pre>
+<h3 id="groups">groups</h3>
+<p>Secure Agent Group service management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>add-agent</em>: Add one or more agents to a secure agent group</li>
+<li><em>components</em>: Secure Agent Group component management commands.</li>
+<li><em>create</em>: Creates a secure agent group</li>
+<li><em>delete</em>: Deletes a secure agent group</li>
+<li><em>get</em>: Gets Secure Agent Groups</li>
+<li><em>properties</em>: Secure Agent Group property management commands.</li>
+</ul>
+<h4 id="add-agent">add-agent</h4>
+<p>Add one or more agents to a secure agent group</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups add-agent [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -gi, --group-id TEXT    Secure Agent Group ID. Either this option or the
+                          group-name option must be included.
+  -gn, --group-name TEXT  Secure Agent Group Name. Either this option or the
+                          group-id option must be included.
+  -ai, --agent-id TEXT    Secure Agent ID. Either this option or the agent-
+                          name option must be included. This option can be
+                          repeated to add multiple agents.
+  -an, --agent-name TEXT  Secure Agent Name. Either this option or the agent-
+                          id option must be included. This option can be
+                          repeated to add multiple agents.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h4 id="components">components</h4>
+<p>Secure Agent Group component management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups components [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>get</em>: Gets Secure Agent Group components</li>
+<li><em>update</em>: Can be used to enable or disable Secure Agent Group components</li>
+</ul>
+<h5 id="get_1">get</h5>
+<p>Gets Secure Agent Group components</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups components get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT      Secure Agent Group ID. Either this option or the name
+                     option must be included.
+  -n, --name TEXT    Secure Agent Group Name. Either this option or the id
+                     option must be included.
+  -a, --include-all  Flag to include disabled components in the response.
+  -D, --debug        If true, will print the API request details to console.
+  -P, --pretty       If true, will pretty print the returned JSON.
+  --help             Show this message and exit.
+</code></pre>
+<h5 id="update">update</h5>
+<p>Can be used to enable or disable Secure Agent Group components</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups components update [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT          Secure Agent Group ID. Either this option or the name
+                         option must be included.
+  -n, --name TEXT        Secure Agent Group Name. Either this option or the id
+                         option must be included.
+  -e, --enable           Flag to enable components. Use this flag or the
+                         disable flag.
+  -d, --disable          Flag to disable components. Use this flag or the
+                         enable flag.
+  -s, --services TEXT    Service to be updated. Can be repeated for multiple
+                         services.
+  -c, --connectors TEXT  Connector to be updated. Can be repeated for multiple
+                         connectors.
+  -a, --additional TEXT  Additional service to be updated. Can be repeated for
+                         multiple additional services.
+  -D, --debug            If true, will print the API request details to
+                         console.
+  -P, --pretty           If true, will pretty print the returned JSON.
+  --help                 Show this message and exit.
+</code></pre>
+<h4 id="create">create</h4>
+<p>Creates a secure agent group</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups create [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -n, --name TEXT  Secure Agent Group Name.
+  -s, --shared     Flag whether the Secure Agent group can be shared with sub-
+                   organizations.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h4 id="delete_1">delete</h4>
+<p>Deletes a secure agent group</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups delete [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Secure Agent Group ID. Either this option or the name
+                   option must be included.
+  -n, --name TEXT  Secure Agent Group Name. Either this option or the id
+                   option must be included.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h4 id="get_2">get</h4>
+<p>Gets Secure Agent Groups</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Secure Agent Group ID. If searching for a specific group,
+                   use either this option or the name option.
+  -n, --name TEXT  Secure Agent Group Name. If searching for a specific group,
+                   use either this option or the id option.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h4 id="properties">properties</h4>
+<p>Secure Agent Group property management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups properties [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>delete</em>: Deletes Secure Agent Group properties</li>
+<li><em>get</em>: Gets Secure Agent Group properties</li>
+<li><em>update</em>: Updates Secure Agent Group properties</li>
+</ul>
+<h5 id="delete_2">delete</h5>
+<p>Deletes Secure Agent Group properties</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups properties delete [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Secure Agent Group ID. Either this option or the name
+                   option must be included.
+  -n, --name TEXT  Secure Agent Group Name. Either this option or the id
+                   option must be included.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h5 id="get_3">get</h5>
+<p>Gets Secure Agent Group properties</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups properties get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT        Secure Agent Group ID. Either this option or the name
+                       option must be included.
+  -n, --name TEXT      Secure Agent Group Name. Either this option or the id
+                       option must be included.
+  -s, --service TEXT   Filter result by service name.
+  -t, --type TEXT      Filter result by property type. Must be used in
+                       conjunction with the service option.
+  -k, --property TEXT  Filter result by property name. Must be used in
+                       conjunction with the service and type options.
+  -o, --overridden     Flag to show properties that have been overridden at
+                       the secure agent group level.
+  -p, --platform TEXT  Optionally, include the platform in the URI. You can
+                       use linux64 or win64.
+  -D, --debug          If true, will print the API request details to console.
+  -P, --pretty         If true, will pretty print the returned JSON.
+  --help               Show this message and exit.
+</code></pre>
+<h5 id="update_1">update</h5>
+<p>Updates Secure Agent Group properties</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents groups properties update [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT        Secure Agent Group ID. Either this option or the name
+                       option must be included.
+  -n, --name TEXT      Secure Agent Group Name. Either this option or the id
+                       option must be included.
+  -s, --service TEXT   Service to be updated.  [required]
+  -t, --type TEXT      Property type to be updated.  [required]
+  -k, --property TEXT  Property name to be updated.  [required]
+  -v, --value TEXT     New property value.  [required]
+  -p, --platform TEXT  Optionally, include the platform in the URI. You can
+                       use linux64 or win64.
+  -c, --custom         Flag to indicate if property is a custom property.
+  -S, --sensitive      Flag to indicate if property is a sensitive property
+                       and should be masked.
+  -D, --debug          If true, will print the API request details to console.
+  -P, --pretty         If true, will pretty print the returned JSON.
+  --help               Show this message and exit.
+</code></pre>
+<h3 id="service">service</h3>
+<p>Secure Agent service management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents service [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>start</em>: Starts a service on a secure agent</li>
+<li><em>stop</em>: Stops a service on a secure agent</li>
+</ul>
+<h4 id="start">start</h4>
+<p>Starts a service on a secure agent</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents service start [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT       Runtime environment ID. Either this option or the name
+                      option must be included.
+  -n, --name TEXT     Runtime environment Name. Either this option or the id
+                      option must be included.
+  -s, --service TEXT  Service to be started on the runtime environment.
+                      [required]
+  -D, --debug         If true, will print the API request details to console.
+  -P, --pretty        If true, will pretty print the returned JSON.
+  --help              Show this message and exit.
+</code></pre>
+<h4 id="stop">stop</h4>
+<p>Stops a service on a secure agent</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents service stop [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT       Runtime environment ID. Either this option or the name
+                      option must be included.
+  -n, --name TEXT     Runtime environment Name. Either this option or the id
+                      option must be included.
+  -s, --service TEXT  Service to be stopped on the runtime environment.
+                      [required]
+  -D, --debug         If true, will print the API request details to console.
+  -P, --pretty        If true, will pretty print the returned JSON.
+  --help              Show this message and exit.
+</code></pre>
+<h3 id="status">status</h3>
+<p>Gets Secure Agent Status</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc agents status [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Secure Agent ID. Either this option or the name option must
+                   be included.
+  -n, --name TEXT  Secure Agent Name. Either this option or the id option must
+                   be included.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h2 id="configure">configure</h2>
+<p>Used to configure the global parameters for the CLI.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc configure [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<h2 id="folders">folders</h2>
+<p>Folder management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc folders [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>create</em>: Creates a folder</li>
+<li><em>delete</em>: Deletes a folder</li>
+<li><em>update</em>: Updates a folder</li>
+</ul>
+<h3 id="create_1">create</h3>
+<p>Creates a folder</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc folders create [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -pi, --project-id TEXT    ID for the parent project. Use this option or
+                            --project_name.
+  -pn, --project-name TEXT  Name for the parent project. Use this option or
+                            --project-id.
+  -n, --name TEXT           Name for the new folder  [required]
+  -d, --description TEXT    Description for the new folder
+  -D, --debug               If true, will print the API request details to
+                            console.
+  -P, --pretty              If true, will pretty print the returned JSON.
+  --help                    Show this message and exit.
+</code></pre>
+<h3 id="delete_3">delete</h3>
+<p>Deletes a folder</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc folders delete [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    ID for the folder to be deleted. Use this option or --path.
+  -p, --path TEXT  Path of the folder to be deleted. Use this option or --id.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h3 id="update_2">update</h3>
+<p>Updates a folder</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc folders update [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT           ID for the folder to be updated. Use this option or
+                          --path.
+  -p, --path TEXT         Path of the folder to be updated. Use this option or
+                          --id.
+  -n, --name TEXT         New name for the folder.
+  -d, --description TEXT  New description for the folder.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h2 id="jobs">jobs</h2>
+<p>Job management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc jobs [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>exp</em>: WARNING: Experimental unsupported job management commands.</li>
+<li><em>start</em>: Starts a job</li>
+<li><em>stop</em>: Stops running jobs</li>
+</ul>
+<h3 id="exp">exp</h3>
+<p>WARNING: Experimental unsupported job management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc jobs exp [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>get</em>: Get job details from the monitor</li>
+</ul>
+<h4 id="get_4">get</h4>
+<p>Get job details from the monitor</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc jobs exp get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -n, --name TEXT          Filter the jobs by name.
+  -s, --status TEXT        Comma separated list of statuses for the tasks. You
+                           can filter by any of the following statuses:
+                           'ABORTED', 'AWAITING_AUTO_RESTART',
+                           'CHILD_SUSPENDED', 'COMPLETED', 'DEPLOYED',
+                           'DEPLOYING', 'ERROR', 'FAILED', 'INITIALIZED',
+                           'NOT_STARTED', 'PROCESSING_ABORT',
+                           'PROCESSING_DEPLOY', 'PROCESSING_STOP',
+                           'PROCESSING_UNDEPLOY', 'QUEUED', 'RUNNING',
+                           'SKIPPED', 'STOPPED', 'SUBMITTED', 'SUCCESS',
+                           'SUSPENDED', 'TRYING_TO_STOP', 'UNDEPLOYED',
+                           'UNDEPLOYING', 'WARNING'
+  -t, --type TEXT          Type of asset. You can filter by any of the
+                           following types: 'API', 'APPMI_TASK',
+                           'AS2_RECEIVE', 'AS2_SEND', 'BATCH_MAPPING',
+                           'CodeTask', 'command', 'DBMI_GROUP_TASK',
+                           'DBMI_TASK', 'DLT', 'DMASK', 'DRS', 'DSS', 'DTT',
+                           'EXCEPTION', 'FILE_TRANSFER_TASK', 'FTP_CLIENT',
+                           'FTPS_CLIENT', 'HTTPS_SERVER', 'MAPPING',
+                           'MI_FILE_LISTENER', 'MI_TASK', 'MLLP_SERVER',
+                           'MTT', 'MTT_DP', 'MTT_DP_CDIE', 'MTT_PDO',
+                           'MTT_TEST', 'PCS', 'PROFILE', 'SFTP_CLIENT',
+                           'SFTP_SERVER', 'SI_DATAFLOW', 'TASKFLOW',
+                           'TunerTask', 'WORKFLOW'.
+  -o, --order-by TEXT      Sort order in which to return the data. Ascending
+                           by default. Include &quot;desc&quot; after order by field if
+                           needed.
+  -l, --location TEXT      Filter the jobs by project/folder location.
+  -e, --error TEXT         Filter the jobs by error messages that contain this
+                           value.
+  -r, --runtime TEXT       Filter the jobs by the name of the runtime
+                           environment.
+  -ss, --start-since TEXT  Date and time the task started since.
+  -su, --start-until TEXT  Date and time the task started until.
+  -es, --end-since TEXT    Date and time the task ended since.
+  -eu, --end-until TEXT    Date and time the task ended until.
+  -D, --debug              If true, will print the API request details to
+                           console.
+  -P, --pretty             If true, will pretty print the returned JSON.
+  --help                   Show this message and exit.
+</code></pre>
+<h3 id="start_1">start</h3>
+<p>Starts a job</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc jobs start [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --ids TEXT             Comma separated list of global unique identifier
+                             for the task to start. Must be used if path is
+                             not included.
+  -p, --paths TEXT           Comma separated list of paths to the task to be
+                             started. Supports the '*' (matches everything)
+                             and '?' (matches any single character) wildcard
+                             characters.
+  -t, --type TEXT            The type of task. Valid values include: DMASK,
+                             DRS, DSS, MTT, PCS, WORKFLOW, TASKFLOW. The
+                             taskflow must be first published.  [required]
+  -c, --callback TEXT        URL endpoint to be called when the job is
+                             finished.
+  -f, --param-file TEXT      Parameter file name. Must be used in conjunction
+                             with the param-dir option.
+  -d, --param-dir TEXT       Parameter file directory on the Secure Agent
+                             machine. Must be used in conjunction with the
+                             param-file option.
+  -a, --api-names TEXT       Comma separated list of API names for the
+                             taskflows to be executed.
+  -w, --wait                 Flag to wait for all jobs to finish.
+  -pd, --poll-delay INTEGER  Time in seconds to wait between job status
+                             polling when waiting for them to finish.
+  -D, --debug                If true, will print the API request details to
+                             console.
+  -P, --pretty               If true, will pretty print the returned JSON.
+  --help                     Show this message and exit.
+</code></pre>
+<h3 id="stop_1">stop</h3>
+<p>Stops running jobs</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc jobs stop [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --ids TEXT        Comma separated list of global unique identifiers for
+                        the running jobs.
+  -n, --names TEXT      Comma separated list of names of jobs to be stopped.
+  -l, --locations TEXT  Comma separated list of locations of jobs to be
+                        stopped.
+  -t, --types TEXT      Comma separated list of types of jobs to be stopped.
+                        Valid values include: DMASK, DRS, DSS, MTT, PCS,
+                        WORKFLOW, TASKFLOW. The taskflow must be first
+                        published.
+  -c, --clean           Flag to indicate a clean stop of the job should be
+                        executed. Not applicable for TASKFLOW types.
+  -D, --debug           If true, will print the API request details to
+                        console.
+  -P, --pretty          If true, will pretty print the returned JSON.
+  --help                Show this message and exit.
+</code></pre>
+<h2 id="login">login</h2>
+<p>Used to login to Informatica Cloud and return the login details.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc login [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -D, --debug   If true, will print the API request details to console.
+  -P, --pretty  If true, will pretty print the returned JSON.
+  --help        Show this message and exit.
+</code></pre>
+<h2 id="logout">logout</h2>
+<p>Used to logout from Informatica Cloud.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc logout [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -D, --debug   If true, will print the API request details to console.
+  -P, --pretty  If true, will pretty print the returned JSON.
+  --help        Show this message and exit.
+</code></pre>
+<h2 id="logs">logs</h2>
+<p>Log commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc logs [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>activity</em>: Activity log commands.</li>
+<li><em>security</em>: Gets the security logs</li>
+</ul>
+<h3 id="activity">activity</h3>
+<p>Activity log commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc logs activity [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>completed</em>: Gets the completed activity logs</li>
+<li><em>running</em>: Gets the running activity logs</li>
+</ul>
+<h4 id="completed">completed</h4>
+<p>Gets the completed activity logs</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc logs activity completed [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT       Log entry ID. Include this attribute if you want to
+                      receive information for a specific ID.
+  -r, --run-id TEXT   Job ID associated with the log entry ID. Whenever runId
+                      is included in a request, taskId is required.
+  -t, --task-id TEXT  Task ID associated with the log entry ID. If taskId is
+                      not specified, all activityLog entries for all tasks are
+                      returned.
+  -n, --name TEXT     Name of the job.
+  -D, --debug         If true, will print the API request details to console.
+  -P, --pretty        If true, will pretty print the returned JSON.
+  --help              Show this message and exit.
+</code></pre>
+<h4 id="running">running</h4>
+<p>Gets the running activity logs</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc logs activity running [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT       Log entry ID. Include this attribute if you want to
+                      receive information for a specific ID.
+  -r, --run-id TEXT   Job ID associated with the log entry ID. Whenever runId
+                      is included in a request, taskId is required.
+  -t, --task-id TEXT  Task ID associated with the log entry ID. If taskId is
+                      not specified, all activityLog entries for all tasks are
+                      returned.
+  -n, --name TEXT     Name of the job.
+  -D, --debug         If true, will print the API request details to console.
+  -P, --pretty        If true, will pretty print the returned JSON.
+  --help              Show this message and exit.
+</code></pre>
+<h3 id="security">security</h3>
+<p>Gets the security logs</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc logs security [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -c, --category TEXT  Category of the security log entry.
+  -a, --actor TEXT     User name who performed the action.
+  -n, --name TEXT      Name of the object acted upon.
+  -f, --from TEXT      Date/time to search from. The maximum date range is 14
+                       days.
+  -t, --to TEXT        Date/time to search until. The maximum date range is 14
+                       days.
+  -D, --debug          If true, will print the API request details to console.
+  -P, --pretty         If true, will pretty print the returned JSON.
+  --help               Show this message and exit.
+</code></pre>
+<h2 id="lookup">lookup</h2>
+<p>Lookup objects.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc lookup [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>object</em>: Lookup a single object</li>
+<li><em>objects</em>: Lookup multiple objects</li>
+</ul>
+<h3 id="object">object</h3>
+<p>Lookup a single object</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc lookup object [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Global unique identifier for the object. Required if object
+                   path and type not included.
+  -p, --path TEXT  Full path of the object including project, folder, and
+                   object name. Required with type if object ID not included.
+  -t, --type TEXT  Type of object. Required with path if object ID not
+                   included.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h3 id="objects">objects</h3>
+<p>Lookup multiple objects</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc lookup objects [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -b, --body TEXT  JSON payload containing the search conditions for the
+                   objects.  [required]
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h2 id="objects_1">objects</h2>
+<p>Object management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>add-tags</em>: Adds one or more tags to an object</li>
+<li><em>dependencies</em>: Returns dependencies for an object</li>
+<li><em>get</em>: Used to get objects</li>
+<li><em>permissions</em>: Permission management commands.</li>
+<li><em>query</em>: Used to query objects</li>
+<li><em>remove-tags</em>: Removes one or more tags from an object</li>
+</ul>
+<h3 id="add-tags">add-tags</h3>
+<p>Adds one or more tags to an object</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects add-tags [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Global unique identifier for the object. Required if object
+                   path and type not included.
+  -p, --path TEXT  Full path of the object including project, folder, and
+                   object name. Required with type if object ID not included.
+  -t, --type TEXT  Type of object. Required with path if object ID not
+                   included.
+  -b, --body TEXT  If tagging multiple objects, use this property to include
+                   the JSON body. Only use this if not using --id, --path,
+                   --type or --tags options.
+  -T, --tags TEXT  Comma separated list of tags to be added to the object.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h3 id="dependencies">dependencies</h3>
+<p>Returns dependencies for an object</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects dependencies [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT        Global unique identifier for the object. Required if
+                       object path and type not included.
+  -p, --path TEXT      Full path of the object including project, folder, and
+                       object name. Required with type if object ID not
+                       included.
+  -t, --type TEXT      Type of object. Required with path if object ID not
+                       included.
+  -r, --ref-type TEXT  Whether to list objects that the asset uses or objects
+                       that use the asset. Use one of the following values:
+                       uses, usedBy  [required]
+  -D, --debug          If true, will print the API request details to console.
+  -P, --pretty         If true, will pretty print the returned JSON.
+  --help               Show this message and exit.
+</code></pre>
+<h3 id="get_5">get</h3>
+<p>Used to get objects</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT        Filter the returned objects by id.
+  -n, --name TEXT      Filter the returned objects by name.
+  -t, --type TEXT      Asset type. Type can be project, folder, or one of the
+                       following asset types: DTEMPLATE, MTT, DSS, DMASK, DRS,
+                       DMAPPLET, MAPPLET, BSERVICE, HSCHEMA, PCS, FWCONFIG,
+                       CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW, UDF,
+                       PROJECT, FOLDER, PROCESS, GUIDE, AI_CONNECTION,
+                       AI_SERVICE_CONNECTOR, PROCESS_OBJECT, B2BGW_MONITOR,
+                       B2BGW_CUSTOMER, B2BGW_SUPPLIER, MDM_BUSINESS_ENTITY,
+                       MDM_REFERENCE_ENTITY, MDM_HIERARCHY, MDM_RELATIONSHIP,
+                       MDM_JOB_DEFINITION, MDM_AUTHORIZATION,
+                       MDM_BUSINESS_EVENT, MDM_REPORT_SET, MDM_REPORT,
+                       MDM_DYNAMIC_POOL, MDM_APPLICATION, MDM_SRC_SYSTEM,
+                       MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE, DEDUPLICATE,
+                       DICTIONARY, EXCEPTION, LABELER, PARSE,
+                       RULE_SPECIFICATION, VERIFIER
+  -l, --location TEXT  The project and folder path where the assets are
+                       located, such as Default/Sales.
+  -D, --debug          If true, will print the API request details to console.
+  -P, --pretty         If true, will pretty print the returned JSON.
+  --help               Show this message and exit.
+</code></pre>
+<h3 id="permissions">permissions</h3>
+<p>Permission management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects permissions [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>create</em>: Creates a permission ACL for an object</li>
+<li><em>delete</em>: Deletes permission ACL's for an object</li>
+<li><em>get</em>: Gets permission ACL's for an object</li>
+<li><em>update</em>: Updates a permission ACL for an object</li>
+</ul>
+<h4 id="create_2">create</h4>
+<p>Creates a permission ACL for an object</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects permissions create [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT      Global unique identifier for the object. Required if
+                     object path and type not included.
+  -p, --path TEXT    Full path of the object including project, folder, and
+                     object name. Required with type if object ID not
+                     included.
+  -t, --type TEXT    Type of object. Required with path if object ID not
+                     included.
+  -pt, --ptype TEXT  Principal type. Valid values are USER or GROUP.
+                     [required]
+  -pn, --pname TEXT  Principal name.  [required]
+  -r, --read         Flag whether to allow the user or group to view the
+                     object.
+  -u, --update       Flag whether to allow the user or group to update the
+                     object.
+  -d, --delete       Flag whether to allow the user or group to delete the
+                     object.
+  -e, --execute      Flag whether to allow the user or group to execute the
+                     object.
+  -c, --change       Flag whether to allow the user or group to change the
+                     object.
+  -D, --debug        If true, will print the API request details to console.
+  -P, --pretty       If true, will pretty print the returned JSON.
+  --help             Show this message and exit.
+</code></pre>
+<h4 id="delete_4">delete</h4>
+<p>Deletes permission ACL's for an object</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects permissions delete [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Global unique identifier for the object. Required if object
+                   path and type not included.
+  -a, --acl TEXT   Permissions ACL id. If not included all permissions are
+                   deleted from the object.
+  -p, --path TEXT  Full path of the object including project, folder, and
+                   object name. Required with type if object ID not included.
+  -t, --type TEXT  Type of object. Required with path if object ID not
+                   included.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h4 id="get_6">get</h4>
+<p>Gets permission ACL's for an object</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects permissions get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT           Global unique identifier for the object. Required if
+                          object path and type not included.
+  -a, --acl TEXT          Permissions ACL id.
+  -p, --path TEXT         Full path of the object including project, folder,
+                          and object name. Required with type if object ID not
+                          included.
+  -t, --type TEXT         Type of object. Required with path if object ID not
+                          included.
+  -c, --check-access      Flag to check your access rights before you attempt
+                          to create an asset in a project or folder.
+  -ct, --check-type TEXT  Object type to be checked if you have permission to
+                          create.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h4 id="update_3">update</h4>
+<p>Updates a permission ACL for an object</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects permissions update [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT      Global unique identifier for the object. Required if
+                     object path and type not included.
+  -a, --acl TEXT     Permissions ACL id.
+  -p, --path TEXT    Full path of the object including project, folder, and
+                     object name. Required with type if object ID not
+                     included.
+  -t, --type TEXT    Type of object. Required with path if object ID not
+                     included.
+  -pt, --ptype TEXT  Principal type. Valid values are USER or GROUP.
+                     [required]
+  -pn, --pname TEXT  Principal name.  [required]
+  -r, --read         Flag whether to allow the user or group to view the
+                     object.
+  -u, --update       Flag whether to allow the user or group to update the
+                     object.
+  -d, --delete       Flag whether to allow the user or group to delete the
+                     object.
+  -e, --execute      Flag whether to allow the user or group to execute the
+                     object.
+  -c, --change       Flag whether to allow the user or group to change the
+                     object.
+  -D, --debug        If true, will print the API request details to console.
+  -P, --pretty       If true, will pretty print the returned JSON.
+  --help             Show this message and exit.
+</code></pre>
+<h3 id="query">query</h3>
+<p>Used to query objects</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects query [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -t, --type TEXT                 Asset type. Type can be project, folder, or
+                                  one of the following asset types: DTEMPLATE,
+                                  MTT, DSS, DMASK, DRS, DMAPPLET, MAPPLET,
+                                  BSERVICE, HSCHEMA, PCS, FWCONFIG,
+                                  CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW,
+                                  UDF, PROJECT, FOLDER, PROCESS, GUIDE,
+                                  AI_CONNECTION, AI_SERVICE_CONNECTOR,
+                                  PROCESS_OBJECT, B2BGW_MONITOR,
+                                  B2BGW_CUSTOMER, B2BGW_SUPPLIER,
+                                  MDM_BUSINESS_ENTITY, MDM_REFERENCE_ENTITY,
+                                  MDM_HIERARCHY, MDM_RELATIONSHIP,
+                                  MDM_JOB_DEFINITION, MDM_AUTHORIZATION,
+                                  MDM_BUSINESS_EVENT, MDM_REPORT_SET,
+                                  MDM_REPORT, MDM_DYNAMIC_POOL,
+                                  MDM_APPLICATION, MDM_SRC_SYSTEM,
+                                  MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE,
+                                  DEDUPLICATE, DICTIONARY, EXCEPTION, LABELER,
+                                  PARSE, RULE_SPECIFICATION, VERIFIER
+  -l, --location TEXT             The project and folder path where the assets
+                                  are located, such as Default/Sales.
+  -T, --tag TEXT                  The tag associated with the assets.
+  -co, --checked-out-by TEXT      User who checked out the asset.
+  -cos, --checked-out-since TEXT  Assets that have been checked out since
+                                  date/time.
+  -cou, --checked-out-until TEXT  Assets that have been checked out until
+                                  date/time.
+  -ci, --checked-in-by TEXT       User who last checked in the asset.
+  -cis, --checked-in-since TEXT   Assets that have been checked in since
+                                  date/time.
+  -ciu, --checked-in-until TEXT   Assets that have been checked in until
+                                  date/time.
+  -s, --source-ctrld BOOLEAN      Flag to indicate that the asset is source
+                                  controlled.
+  -h, --hash TEXT                 Source control hash. Supports partial hash
+                                  using a wildcard ( * ).
+  -p, --published-by TEXT         User who published the asset. Applicable to
+                                  Application Integration.
+  -ps, --published-since TEXT     Assets that have been published since
+                                  date/time.
+  -pu, --published-until TEXT     Assets that have been published until
+                                  date/time.
+  -u, --updated-by TEXT           The user who last updated the assets. Use
+                                  the userName value for the user.
+  -us, --updated-since TEXT       Assets that have been updated since
+                                  date/time.
+  -uu, --updated-until TEXT       Assets that have been updated until
+                                  date/time.
+  -D, --debug                     If true, will print the API request details
+                                  to console.
+  -P, --pretty                    If true, will pretty print the returned
+                                  JSON.
+  --help                          Show this message and exit.
+</code></pre>
+<h3 id="remove-tags">remove-tags</h3>
+<p>Removes one or more tags from an object</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc objects remove-tags [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Global unique identifier for the object. Required if object
+                   path and type not included.
+  -p, --path TEXT  Full path of the object including project, folder, and
+                   object name. Required with type if object ID not included.
+  -t, --type TEXT  Type of object. Required with path if object ID not
+                   included.
+  -b, --body TEXT  If removing tags from multiple objects, use this property
+                   to include the JSON body. Only use this if not using --id,
+                   --path, --type or --tags options.
+  -T, --tags TEXT  Comma separated list of tags to be removed from the object.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h2 id="orgs">orgs</h2>
+<p>Organisation management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc orgs [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>get</em>: Get organisation and sub-organisation details</li>
+</ul>
+<h3 id="get_7">get</h3>
+<p>Get organisation and sub-organisation details</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc orgs get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --suborg-id TEXT    ID of sub-organisation to be returned.
+  -n, --suborg-name TEXT  Name of sub-organisation to be returned.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h2 id="privileges">privileges</h2>
+<p>Privilege management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc privileges [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>get</em>: Returns privileges</li>
+</ul>
+<h3 id="get_8">get</h3>
+<p>Returns privileges</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc privileges get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --all         If included will return a full list of privileges, even those
+                that are disabled or unassigned.
+  -D, --debug   If true, will print the API request details to console.
+  -P, --pretty  If true, will pretty print the returned JSON.
+  --help        Show this message and exit.
+</code></pre>
+<h2 id="projects">projects</h2>
+<p>Project management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc projects [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>create</em>: Creates a project</li>
+<li><em>delete</em>: Deletes a project</li>
+<li><em>update</em>: Updates a project</li>
+</ul>
+<h3 id="create_3">create</h3>
+<p>Creates a project</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc projects create [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -n, --name TEXT         Name for the new project.  [required]
+  -d, --description TEXT  Description of the new project.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h3 id="delete_5">delete</h3>
+<p>Deletes a project</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc projects delete [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    ID for the project to be deleted. Use this option or
+                   --path.
+  -p, --path TEXT  Path of the project to be deleted. Use this option or --id.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h3 id="update_4">update</h3>
+<p>Updates a project</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc projects update [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT           ID for the project to be updated. Use this option or
+                          --path.
+  -p, --path TEXT         Path of the project to be updated. Use this option
+                          or --id.
+  -n, --name TEXT         New name for the project.
+  -d, --description TEXT  New description for the project.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h2 id="roles">roles</h2>
+<p>Role management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc roles [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>add-privileges</em>: Adds privilege assignments to a role</li>
+<li><em>create</em>: Creates a new role</li>
+<li><em>delete</em>: Deletes a role</li>
+<li><em>get</em>: Returns roles</li>
+<li><em>remove-privileges</em>: Remove privilege assignments from a role</li>
+</ul>
+<h3 id="add-privileges">add-privileges</h3>
+<p>Adds privilege assignments to a role</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc roles add-privileges [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT                ID of role to be updated. Must specify this
+                               option or --name.
+  -n, --name TEXT              Name of role to be updated. Must specify this
+                               option or --id.
+  -pi, --privilege-ids TEXT    Comma separated list of privilege ids to be
+                               added to user. Must specify this option or
+                               --privilege-names.
+  -pn, --privilege-names TEXT  Comma separated list of privilege names to be
+                               added to user. Must specify this option or
+                               --privilege-ids.
+  -D, --debug                  If true, will print the API request details to
+                               console.
+  -P, --pretty                 If true, will pretty print the returned JSON.
+  --help                       Show this message and exit.
+</code></pre>
+<h3 id="create_4">create</h3>
+<p>Creates a new role</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc roles create [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -n, --name TEXT              Name for new role.  [required]
+  -d, --description TEXT       Description of the new role.
+  -pi, --privilege-ids TEXT    Comma separated list of privilege IDs for the
+                               new role. Must include this option or the
+                               --privilege-names option.
+  -pn, --privilege-names TEXT  Comma separated list of privilege names for the
+                               new role. Must include this option or the
+                               --privilege-ids option.
+  -D, --debug                  If true, will print the API request details to
+                               console.
+  -P, --pretty                 If true, will pretty print the returned JSON.
+  --help                       Show this message and exit.
+</code></pre>
+<h3 id="delete_6">delete</h3>
+<p>Deletes a role</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc roles delete [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Role id to be deleted. Use this option or the --name
+                   option.
+  -n, --name TEXT  Role name to be deleted. Use this option or the --id
+                   option.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h3 id="get_9">get</h3>
+<p>Returns roles</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc roles get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Filter by role id.
+  -n, --name TEXT  Filter by role name.
+  -e, --expand     Expand role privileges.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h3 id="remove-privileges">remove-privileges</h3>
+<p>Remove privilege assignments from a role</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc roles remove-privileges [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT                ID of role to be updated. Must specify this
+                               option or --name.
+  -n, --name TEXT              Name of role to be updated. Must specify this
+                               option or --id.
+  -pi, --privilege-ids TEXT    Comma separated list of privilege ids to be
+                               removed from user. Must specify this option or
+                               --privilege-names.
+  -pn, --privilege-names TEXT  Comma separated list of privilege names to be
+                               removed from user. Must specify this option or
+                               --privilege-ids.
+  -D, --debug                  If true, will print the API request details to
+                               console.
+  -P, --pretty                 If true, will pretty print the returned JSON.
+  --help                       Show this message and exit.
+</code></pre>
+<h2 id="schedules">schedules</h2>
+<p>Schedule management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc schedules [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>create</em>: Creates a schedule</li>
+<li><em>delete</em>: Deletes a schedule</li>
+<li><em>disable</em>: Disables a schedule</li>
+<li><em>enable</em>: Enables a schedule</li>
+<li><em>get</em>: Gets schedules details</li>
+<li><em>update</em>: Updates a schedule</li>
+</ul>
+<h3 id="create_5">create</h3>
+<p>Creates a schedule</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc schedules create [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -n, --name TEXT              Schedule name.  [required]
+  -d, --description TEXT       Description of the schedule.
+  -s, --status TEXT            Status of the schedule. Can be 'enabled' or
+                               'disabled'.
+  -S, --start-time TEXT        Date and time when the schedule starts running,
+                               in UTC format.  [required]
+  -e, --end-time TEXT          Date and time when the schedule stops running.
+                               If you do not use this parameter, the schedule
+                               runs indefinitely.
+  -I, --interval TEXT          Interval or repeat frequency at which the
+                               schedule runs tasks. Use one of the following
+                               options: None, Minutely, Hourly, Daily, Weekly,
+                               Biweekly or Monthly.
+  -f, --frequency INTEGER      Repeat frequency for tasks. Use one of the
+                               following values:   - For Minutely intervals,
+                               use one of the following options: 5, 10, 15,
+                               20, 30, 45. Default is 5.   - For Hourly
+                               intervals, use one of the following options: 1,
+                               2, 3, 4, 6, 8, 12. Default is 1.    - For Daily
+                               intervals, use number of days between 1 -30.
+                               Default is 1. Use with Minutely, Hourly, and
+                               Daily intervals only.
+  -rs, --range-start TEXT      The start of the time range within a day that
+                               you want tasks to run. Enter a date and time
+                               using standard date/time format. Only the time
+                               portion is used. Use with Minutely, Hourly, and
+                               Daily intervals only.
+  -re, --range-end TEXT        The end of the time range within a day that you
+                               want tasks to run. Enter a date and time using
+                               standard date/time format. Only the time
+                               portion is used. Use with Minutely, Hourly, and
+                               Daily intervals only.
+  -t, --timezone TEXT          Time zone that the schedule uses for the
+                               dayOfMonth, weekOfMonth, and dayOfWeek fields.
+                               Default is UTC.
+  -w, --weekday TEXT           Flag to indicate that tasks run on weekdays.
+                               Use with the Daily interval only.
+  -dm, --day-of-month INTEGER  Date of the month that tasks should run. Use a
+                               date between 1-28. Use with the Monthly
+                               interval only. Tip: To run tasks on the last
+                               day of the month, use the Last weekOfMonth
+                               parameter with the Day dayOfWeek parameter.
+  -wm, --week-of-month TEXT    Week of the month that tasks should run. Use
+                               with dayOfWeek to specify the day and week of
+                               the month that tasks should run. For example,
+                               the First Day or the Last Wednesday of the
+                               month. Use one of the following options:   -
+                               First   - Second   - Third   - Fourth   - Last
+                               Use with the Monthly interval only.
+  -dw, --day-of-week TEXT
+  -sun, --sunday BOOLEAN       Runs tasks on Sunday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -mon, --monday BOOLEAN       Runs tasks on Monday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -tue, --tuesday BOOLEAN      Runs tasks on Tuesday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -wed, --wednesday BOOLEAN    Runs tasks on Wednesday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -thu, --thursday BOOLEAN     Runs tasks on Thursday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -fri, --friday BOOLEAN       Runs tasks on Friday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -sat, --saturday BOOLEAN     Runs tasks on Saturday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -D, --debug                  If true, will print the API request details to
+                               console.
+  -P, --pretty                 If true, will pretty print the returned JSON.
+  --help                       Show this message and exit.
+</code></pre>
+<h3 id="delete_7">delete</h3>
+<p>Deletes a schedule</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc schedules delete [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    ID of the schedule to be deleted. Use this option or the
+                   name option.
+  -n, --name TEXT  Name of the schedule to be deleted. Use this option or the
+                   id option.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h3 id="disable">disable</h3>
+<p>Disables a schedule</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc schedules disable [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    ID of the schedule to be disabled. Use this option or the
+                   name option.
+  -n, --name TEXT  Name of the schedule to be disabled. Use this option or the
+                   id option.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h3 id="enable">enable</h3>
+<p>Enables a schedule</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc schedules enable [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    ID of the schedule to be enabled. Use this option or the
+                   name option.
+  -n, --name TEXT  Name of the schedule to be enabled. Use this option or the
+                   id option.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h3 id="get_10">get</h3>
+<p>Gets schedules details</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc schedules get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT        Filter the response by schedule id.
+  -n, --name TEXT      Filter the response by schedule name.
+  -s, --status TEXT    Filter by schedule status.
+  -I, --interval TEXT  Filter by schedule interval. Valid values include
+                       Minutely, Hourly, Daily, Weekly, Biweekly, and Monthly.
+  -f, --from TEXT      Filter by schedule updated since.
+  -t, --to TEXT        Filter by schedule updated up until.
+  -D, --debug          If true, will print the API request details to console.
+  -P, --pretty         If true, will pretty print the returned JSON.
+  --help               Show this message and exit.
+</code></pre>
+<h3 id="update_5">update</h3>
+<p>Updates a schedule</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc schedules update [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT                ID of the schedule to be updated. If not
+                               included then the name option must be included.
+  -n, --name TEXT              Schedule name.
+  -d, --description TEXT       Description of the schedule.
+  -s, --status TEXT            Status of the schedule. Can be 'enabled' or
+                               'disabled'.
+  -S, --start-time TEXT        Date and time when the schedule starts running,
+                               in UTC format.
+  -e, --end-time TEXT          Date and time when the schedule stops running.
+                               If you do not use this parameter, the schedule
+                               runs indefinitely.
+  -I, --interval TEXT          Interval or repeat frequency at which the
+                               schedule runs tasks. Use one of the following
+                               options: None, Minutely, Hourly, Daily, Weekly,
+                               Biweekly or Monthly.
+  -f, --frequency INTEGER      Repeat frequency for tasks. Use one of the
+                               following values:   - For Minutely intervals,
+                               use one of the following options: 5, 10, 15,
+                               20, 30, 45. Default is 5.   - For Hourly
+                               intervals, use one of the following options: 1,
+                               2, 3, 4, 6, 8, 12. Default is 1.    - For Daily
+                               intervals, use number of days between 1 -30.
+                               Default is 1. Use with Minutely, Hourly, and
+                               Daily intervals only.
+  -rs, --range-start TEXT      The start of the time range within a day that
+                               you want tasks to run. Enter a date and time
+                               using standard date/time format. Only the time
+                               portion is used. Use with Minutely, Hourly, and
+                               Daily intervals only.
+  -re, --range-end TEXT        The end of the time range within a day that you
+                               want tasks to run. Enter a date and time using
+                               standard date/time format. Only the time
+                               portion is used. Use with Minutely, Hourly, and
+                               Daily intervals only.
+  -t, --timezone TEXT          Time zone that the schedule uses for the
+                               dayOfMonth, weekOfMonth, and dayOfWeek fields.
+                               Default is UTC.
+  -w, --weekday TEXT           Flag to indicate that tasks run on weekdays.
+                               Use with the Daily interval only.
+  -dm, --day-of-month INTEGER  Date of the month that tasks should run. Use a
+                               date between 1-28. Use with the Monthly
+                               interval only. Tip: To run tasks on the last
+                               day of the month, use the Last weekOfMonth
+                               parameter with the Day dayOfWeek parameter.
+  -wm, --week-of-month TEXT    Week of the month that tasks should run. Use
+                               with dayOfWeek to specify the day and week of
+                               the month that tasks should run. For example,
+                               the First Day or the Last Wednesday of the
+                               month. Use one of the following options:   -
+                               First   - Second   - Third   - Fourth   - Last
+                               Use with the Monthly interval only.
+  -dw, --day-of-week TEXT
+  -sun, --sunday BOOLEAN       Runs tasks on Sunday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -mon, --monday BOOLEAN       Runs tasks on Monday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -tue, --tuesday BOOLEAN      Runs tasks on Tuesday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -wed, --wednesday BOOLEAN    Runs tasks on Wednesday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -thu, --thursday BOOLEAN     Runs tasks on Thursday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -fri, --friday BOOLEAN       Runs tasks on Friday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -sat, --saturday BOOLEAN     Runs tasks on Saturday at the configured time.
+                               You can use the sun - sat parameters to run
+                               tasks on several days of the week.
+  -D, --debug                  If true, will print the API request details to
+                               console.
+  -P, --pretty                 If true, will pretty print the returned JSON.
+  --help                       Show this message and exit.
+</code></pre>
+<h2 id="source-control">source-control</h2>
+<p>Source control management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>check-in</em>: Checks in one or more objects</li>
+<li><em>check-out</em>: Checks out one or more objects</li>
+<li><em>commit-details</em>: Gets the details for a commit</li>
+<li><em>commit-history</em>: Gets the commit history for an asset</li>
+<li><em>compare-versions</em>: Used to compare two versions of an asset.</li>
+<li><em>pull</em>: Pulls one or more objects</li>
+<li><em>pull-commit-hash</em>: Pulls all objects in a commit hash</li>
+<li><em>repo-details</em>: Gets the source control repository details</li>
+<li><em>status</em>: Gets the status of a source control action</li>
+<li><em>undo-check-out</em>: Undo check out for one or more objects</li>
+</ul>
+<h3 id="check-in">check-in</h3>
+<p>Checks in one or more objects</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control check-in [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -s, --summary TEXT       The summary that should be included in the git
+                           commit.  [required]
+  -d, --description TEXT   The description that should be included in the git
+                           commit.
+  -i, --id TEXT            Global unique identifier for the object. Required
+                           if object path and type not included.
+  -p, --path TEXT          Full path of the object including project, folder,
+                           and object name. Required with type if object ID
+                           not included.
+  -t, --type TEXT          Type of object. Required with path if object ID not
+                           included.
+  -b, --body TEXT          If checking in multiple objects, use this property
+                           to include the JSON body. Only use this if not
+                           using --id, --path or --type.
+  -I, --include-container  Whether all objects in a project or folder are
+                           included in the check-in.
+  -D, --debug              If true, will print the API request details to
+                           console.
+  -P, --pretty             If true, will pretty print the returned JSON.
+  --help                   Show this message and exit.
+</code></pre>
+<h3 id="check-out">check-out</h3>
+<p>Checks out one or more objects</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control check-out [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT            Global unique identifier for the object. Required
+                           if object path and type not included.
+  -p, --path TEXT          Full path of the object including project, folder,
+                           and object name. Required with type if object ID
+                           not included.
+  -t, --type TEXT          Type of object. Required with path if object ID not
+                           included.
+  -b, --body TEXT          If checking out multiple objects, use this property
+                           to include the JSON body. Only use this if not
+                           using --id, --path or --type.
+  -I, --include-container  Whether all objects in a project or folder are
+                           included in the check-out.
+  -D, --debug              If true, will print the API request details to
+                           console.
+  -P, --pretty             If true, will pretty print the returned JSON.
+  --help                   Show this message and exit.
+</code></pre>
+<h3 id="commit-details">commit-details</h3>
+<p>Gets the details for a commit</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control commit-details [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -h, --hash TEXT     Commit hash for the details to be returned.  [required]
+  -s, --search-all    Flag whether to search project-level repositories if the
+                      commit hash wasn't found for the global repository.
+  -r, --repo-id TEXT  Connection ID of the project-level repository to search.
+  -D, --debug         If true, will print the API request details to console.
+  -P, --pretty        If true, will pretty print the returned JSON.
+  --help              Show this message and exit.
+</code></pre>
+<h3 id="commit-history">commit-history</h3>
+<p>Gets the commit history for an asset</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control commit-history [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT      ID of the project, folder, or asset.
+  -p, --path TEXT    Project or path where the assets are located. Required if
+                     --id is not specified.
+  -t, --type TEXT    Type of the asset. Required if --id is not specified.
+  -b, --branch TEXT  Repository branch, if different from the branch that's
+                     configured for the organization.
+  -D, --debug        If true, will print the API request details to console.
+  -P, --pretty       If true, will pretty print the returned JSON.
+  --help             Show this message and exit.
+</code></pre>
+<h3 id="compare-versions">compare-versions</h3>
+<p>Used to compare two versions of an asset.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control compare-versions [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT           ID of the project, folder, or asset.
+  -p, --path TEXT         Project or path where the assets are located.
+                          Required if --id is not specified.
+  -t, --type TEXT         Type of the asset. Required if --id is not
+                          specified.
+  -o, --old-version TEXT  The base version of the asset to compare. If the
+                          asset version to compare is checked in to the
+                          repository, use the commit hash for the value. If
+                          the asset version to compare hasn't been checked in,
+                          use the following value: CURRENT-VERSION  [required]
+  -n, --new-version TEXT  The asset version to compare to the base version. If
+                          the asset version to compare is checked in to the
+                          repository, use the commit hash for the value. If
+                          the asset version to compare hasn't been checked in,
+                          use the following value: CURRENT-VERSION  [required]
+  -f, --format TEXT       Response format. Use either JSON or TEXT.
+                          [required]
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h3 id="pull">pull</h3>
+<p>Pulls one or more objects</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control pull [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT           Global unique identifier for the object. Required if
+                          object path and type not included.
+  -p, --path TEXT         Full path of the object including project, folder,
+                          and object name. Required with type if object ID not
+                          included.
+  -t, --type TEXT         Type of object. Required with path if object ID not
+                          included.
+  -h, --hash TEXT         Unique commit hash to pull.  [required]
+  -r, --relax-validation  The objectSpecification objects are ignored if the
+                          sources don't exist in the assets that are included
+                          in the pull.
+  -b, --body TEXT         If checking out multiple objects, use this property
+                          to include the JSON body. Only use this if not using
+                          --id, --path or --type.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h3 id="pull-commit-hash">pull-commit-hash</h3>
+<p>Pulls all objects in a commit hash</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control pull-commit-hash [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -h, --hash TEXT         Unique commit hash to pull.  [required]
+  -s, --search            Flag to search project-level repositories if the
+                          commit hash wasn't found for the global repository.
+  -ri, --repo-id TEXT     Connection ID of the project-level repository to
+                          search. If not specified, the global repository is
+                          searched.
+  -r, --relax-validation  The objectSpecification objects are ignored if the
+                          sources don't exist in the assets that are included
+                          in the pull.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h3 id="repo-details">repo-details</h3>
+<p>Gets the source control repository details</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control repo-details [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --project-ids TEXT    Comma separated list of project id's to return the
+                            repository details for. Required if --project-
+                            names is not used.
+  -n, --project-names TEXT  Comma separated list of project names to return
+                            the repository details for. Required if --project-
+                            ids is not used.
+  -D, --debug               If true, will print the API request details to
+                            console.
+  -P, --pretty              If true, will pretty print the returned JSON.
+  --help                    Show this message and exit.
+</code></pre>
+<h3 id="status_1">status</h3>
+<p>Gets the status of a source control action</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control status [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT  ID of the source control action.  [required]
+  -D, --debug    If true, will print the API request details to console.
+  -P, --pretty   If true, will pretty print the returned JSON.
+  --help         Show this message and exit.
+</code></pre>
+<h3 id="undo-check-out">undo-check-out</h3>
+<p>Undo check out for one or more objects</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc source-control undo-check-out [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT            Global unique identifier for the object. Required
+                           if object path and type not included.
+  -p, --path TEXT          Full path of the object including project, folder,
+                           and object name. Required with type if object ID
+                           not included.
+  -t, --type TEXT          Type of object. Required with path if object ID not
+                           included.
+  -b, --body TEXT          If undoing check out multiple objects, use this
+                           property to include the JSON body. Only use this if
+                           not using --id, --path or --type.
+  -I, --include-container  Whether all objects in a project or folder are
+                           included in the undo check-out.
+  -D, --debug              If true, will print the API request details to
+                           console.
+  -P, --pretty             If true, will pretty print the returned JSON.
+  --help                   Show this message and exit.
+</code></pre>
+<h2 id="user-groups">user-groups</h2>
+<p>User group management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc user-groups [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>add-roles</em>: Adds role assignments to a user group</li>
+<li><em>create</em>: Creates a new user group</li>
+<li><em>delete</em>: Deletes a user group</li>
+<li><em>get</em>: Returns user groups</li>
+</ul>
+<h3 id="add-roles">add-roles</h3>
+<p>Adds role assignments to a user group</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc user-groups add-roles [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT           ID of user group to be updated. Must specify this
+                          option or --group-name.
+  -gn, --group-name TEXT  Name of user group to be updated. Must specify this
+                          option or --id.
+  -ri, --role-ids TEXT    Comma separated list of role ids to be added to
+                          user. Must specify this option or --role-names.
+  -rn, --role-names TEXT  Comma separated list of role names to be added to
+                          user. Must specify this option or --role-ids.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h3 id="create_6">create</h3>
+<p>Creates a new user group</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc user-groups create [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -n, --name TEXT         Name of the new user group.  [required]
+  -d, --description TEXT  Description of the new user group.
+  -ri, --role-ids TEXT    Comma separated list of role ids to be added to the
+                          new user group. Either this or the --role-names
+                          group is required.
+  -rn, --role-names TEXT  Comma separated list of role names to be added to
+                          the new user group. Either this or the --role-ids
+                          group is required.
+  -ui, --user-ids TEXT    Comma separated list of user ids to be added to the
+                          new user group.  Use this option or the --user-names
+                          option.
+  -un, --user-names TEXT  Comma separated list of user names to be added to
+                          the new user group. Use this option or the --user-
+                          ids option.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h3 id="delete_8">delete</h3>
+<p>Deletes a user group</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc user-groups delete [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    User group id to be deleted. Use this option or the --name
+                   option.
+  -n, --name TEXT  User group name to be deleted. Use this option or the --id
+                   option.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h3 id="get_11">get</h3>
+<p>Returns user groups</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc user-groups get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT    Filter by user group id. Use this option or the --username
+                   option.
+  -n, --name TEXT  Filter by user group name. Use this option or the --id
+                   option.
+  -D, --debug      If true, will print the API request details to console.
+  -P, --pretty     If true, will pretty print the returned JSON.
+  --help           Show this message and exit.
+</code></pre>
+<h2 id="users">users</h2>
+<p>User management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>add-groups</em>: Adds group assignments to a user</li>
+<li><em>add-roles</em>: Adds role assignments to a user</li>
+<li><em>create</em>: Used to create new users</li>
+<li><em>delete</em>: Deletes a user</li>
+<li><em>get</em>: Returns users</li>
+<li><em>password</em>: Password management commands.</li>
+<li><em>remove-groups</em>: Removes group assignments from a user</li>
+<li><em>remove-roles</em>: Removes role assignments from a user</li>
+</ul>
+<h3 id="add-groups">add-groups</h3>
+<p>Adds group assignments to a user</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users add-groups [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT            ID of user to be updated. Must specify this option
+                           or --username.
+  -u, --username TEXT      Username to be updated. Must specify this option or
+                           --id.
+  -gi, --group-ids TEXT    Comma separated list of group ids to be added to
+                           user. Must specify this option or --group-names.
+  -gn, --group-names TEXT  Comma separated list of group names to be added to
+                           user. Must specify this option or --group-ids.
+  -D, --debug              If true, will print the API request details to
+                           console.
+  -P, --pretty             If true, will pretty print the returned JSON.
+  --help                   Show this message and exit.
+</code></pre>
+<h3 id="add-roles_1">add-roles</h3>
+<p>Adds role assignments to a user</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users add-roles [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT           ID of user to be updated. Must specify this option
+                          or --username.
+  -u, --username TEXT     ID of user to be updated. Must specify this option
+                          or --id.
+  -ri, --role-ids TEXT    Comma separated list of role ids to be added to
+                          user. Must specify this option or --role-names.
+  -rn, --role-names TEXT  Comma separated list of role names to be added to
+                          user. Must specify this option or --role-ids.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+<h3 id="create_7">create</h3>
+<p>Used to create new users</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users create [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -n, --name TEXT                 Informatica Intelligent Cloud Services user
+                                  name.  [required]
+  -f, --first-name TEXT           First name for the user account.  [required]
+  -l, --last-name TEXT            Last name for the user account.  [required]
+  -p, --password TEXT             Informatica Intelligent Cloud Services
+                                  password. If password is empty, the user
+                                  receives an activation email. Maximum length
+                                  is 255 characters.
+  -d, --description TEXT          Description of the user.
+  -e, --email TEXT                Email address for the user.  [required]
+  -t, --title TEXT                Job title of the user.
+  -ph, --phone TEXT               Phone number for the user.
+  -fp, --force-password-change BOOLEAN
+                                  Determines whether the user must reset the
+                                  password after the user logs in for the
+                                  first time.
+  -ml, --max-login-attempts INTEGER
+                                  Number of times a user can attempt to log in
+                                  before the account is locked.
+  -a, --authentication INTEGER    Determines whether the user accesses
+                                  Informatica Intelligent Cloud Services
+                                  through single sign-in (SAML). Use one of
+                                  the following values: 0 (Native), 1 (SAML).
+  -an, --alias-name TEXT          Required when authentication is not 0. The
+                                  user identifier or user name in the 3rd
+                                  party system.
+  -ri, --role-ids TEXT            Required when no group IDs are included.
+                                  Comma separated list of IDs for the roles to
+                                  assign to the user.
+  -rn, --role-names TEXT          Required when no group IDs are included.
+                                  Comma separated list of Names for the roles
+                                  to assign to the user.
+  -gi, --group-ids TEXT           Required when no role IDs are included.
+                                  Comma separated list of IDs for the user
+                                  groups to assign to the user.
+  -gn, --group-names TEXT         Required when no role IDs are included.
+                                  Comma separated list of Names for the user
+                                  groups to assign to the user.
+  -D, --debug                     If true, will print the API request details
+                                  to console.
+  -P, --pretty                    If true, will pretty print the returned
+                                  JSON.
+  --help                          Show this message and exit.
+</code></pre>
+<h3 id="delete_9">delete</h3>
+<p>Deletes a user</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users delete [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT        User id to be deleted. Use this option or the
+                       --username option.
+  -u, --username TEXT  User name to be deleted. Use this option or the --id
+                       option.
+  -D, --debug          If true, will print the API request details to console.
+  -P, --pretty         If true, will pretty print the returned JSON.
+  --help               Show this message and exit.
+</code></pre>
+<h3 id="get_12">get</h3>
+<p>Returns users</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users get [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT        (Optional) Filter by user id. Use this option or the
+                       --username option.
+  -u, --username TEXT  (Optional) Filter by user name. Use this option or the
+                       --id option.
+  -D, --debug          If true, will print the API request details to console.
+  -P, --pretty         If true, will pretty print the returned JSON.
+  --help               Show this message and exit.
+</code></pre>
+<h3 id="password">password</h3>
+<p>Password management commands.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users password [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  --help  Show this message and exit.
+</code></pre>
+<p><strong>Subcommands</strong></p>
+<ul>
+<li><em>change</em>: Change a users password</li>
+<li><em>reset</em>: Resets a users password using their security answer</li>
+</ul>
+<h4 id="change">change</h4>
+<p>Change a users password</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users password change [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT            User id to be updated. Use this option or the
+                           --username option. This or the --username option is
+                           required if an administrator is changing the
+                           password for another user.
+  -u, --username TEXT      User name to be updated. Use this option or the
+                           --id option. This or the --id option is required if
+                           an administrator is changing the password for
+                           another user.
+  -o, --old-password TEXT  The old password for the user. Required if you are
+                           changing your own password.
+  -n, --new-password TEXT  The new password for the user.  [required]
+  -D, --debug              If true, will print the API request details to
+                           console.
+  -P, --pretty             If true, will pretty print the returned JSON.
+  --help                   Show this message and exit.
+</code></pre>
+<h4 id="reset">reset</h4>
+<p>Resets a users password using their security answer</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users password reset [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT               User id to be updated. Use this option or the
+                              --username option.
+  -u, --username TEXT         User name to be updated. Use this option or the
+                              --id option.
+  -s, --security-answer TEXT  Security answer to the user's security question.
+                              [required]
+  -n, --new-password TEXT     The new password for the user.  [required]
+  -D, --debug                 If true, will print the API request details to
+                              console.
+  -P, --pretty                If true, will pretty print the returned JSON.
+  --help                      Show this message and exit.
+</code></pre>
+<h3 id="remove-groups">remove-groups</h3>
+<p>Removes group assignments from a user</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users remove-groups [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT            ID of user to be updated. Must specify this option
+                           or --username.
+  -u, --username TEXT      Username to be updated. Must specify this option or
+                           --id.
+  -gi, --group-ids TEXT    Comma separated list of group ids to be removed
+                           from the user. Must specify this option or --group-
+                           names.
+  -gn, --group-names TEXT  Comma separated list of group names to be removed
+                           from the user. Must specify this option or --group-
+                           ids.
+  -D, --debug              If true, will print the API request details to
+                           console.
+  -P, --pretty             If true, will pretty print the returned JSON.
+  --help                   Show this message and exit.
+</code></pre>
+<h3 id="remove-roles">remove-roles</h3>
+<p>Removes role assignments from a user</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-text">idmc users remove-roles [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code class="language-text">  -i, --id TEXT           ID of user to be updated. Must specify this option
+                          or --username.
+  -u, --username TEXT     Username to be updated. Must specify this option or
+                          --id.
+  -ri, --role-ids TEXT    Comma separated list of role ids to be added to
+                          user. Must specify this option or --roleNames.
+  -rn, --role-names TEXT  Comma separated list of role names to be added to
+                          user. Must specify this option or --roleIds.
+  -D, --debug             If true, will print the API request details to
+                          console.
+  -P, --pretty            If true, will pretty print the returned JSON.
+  --help                  Show this message and exit.
+</code></pre>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2025-09-23 04:27:12.454609+00:00
+-->
