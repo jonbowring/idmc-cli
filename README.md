@@ -26,6 +26,8 @@ pyinstaller --onefile cli.py -n idmc --add-data 'config/i18n.yaml:config'
 cd src/idmc_cli
 mkdocs serve
 
+Then go to https://codebeautify.org/html-to-markdown and copy the content from index.html to generate the markdown version.
+
 # Known issues
 
 ## JSON string formatting issue
