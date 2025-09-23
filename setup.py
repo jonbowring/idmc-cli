@@ -9,7 +9,8 @@ setup(
         'click',
         'requests',
         'cryptography',
-        'pyyaml'
+        'pyyaml',
+        'shortuuid'
     ],
     entry_points={
         'console_scripts': [
