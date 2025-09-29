@@ -1,17 +1,65 @@
 import click
 import json
+import polars as pl
+from pathlib import Path
 from idmc_cli.config import config
 from idmc_cli.i18n import i18n
 from idmc_cli.api import api
+
+###################################
+# Utility section
+###################################
+
+# Define the allowed output file types
+out_types = ['.csv','.xlsx','.json']
+
+def flatten_resp(resp):
+    
+    if isinstance(resp, list):
+        flat_list = []
+        for row in resp:
+            flat_dict = {}
+            for key, value in row.items():
+                if isinstance(value, dict) or isinstance(value, list):
+                    flat_dict[key] = json.dumps(value)
+                else:
+                    flat_dict[key] = value
+            flat_list.append(flat_dict)
+        return flat_list
+    
+    else:
+        flat_dict = {}
+        for key, value in resp.items():
+            if isinstance(value, dict) or isinstance(value, list):
+                flat_dict[key] = json.dumps(value)
+            else:
+                flat_dict[key] = value
+        return flat_dict
+    
+
+def write_output(output, pretty, result):
+
+    out_path = Path(output)
+    
+    if out_path.suffix == '.csv':
+        result = flatten_resp(result)
+        df = pl.from_dicts(result)
+        df.write_csv(out_path, separator=',', quote_style='always')
+    elif out_path.suffix == '.xlsx':
+        df = pl.from_dicts(result)
+        df.write_excel(workbook=out_path)
+    elif out_path.suffix == '.json':
+        with open(out_path, 'w', encoding='utf-8') as file:
+            json.dump(result, file, ensure_ascii=False, indent=pretty)
+
+###################################
+# Admin commands section
+###################################
 
 @click.group()
 def idmc():
     """Informatica Cloud CLI Utility"""
     pass
-
-###################################
-# Admin commands section
-###################################
 
 @idmc.command('configure')
 def configure():
@@ -49,16 +97,28 @@ def configure():
 @idmc.command('login')
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def login(debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def login(debug, output, pretty=0):
     """Used to login to Informatica Cloud and return the login details."""
-    click.echo(json.dumps(api.login(debug=debug), indent=pretty))
+
+    result = api.login(debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @idmc.command('logout')
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def logout(debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def logout(debug, output, pretty=0):
     """Used to logout from Informatica Cloud."""
-    click.echo(json.dumps(api.logout(debug=debug), indent=pretty))
+
+    result = api.logout(debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 ###################################
 # User commands section
@@ -74,9 +134,18 @@ def users():
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'get', 'username'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getUsers(id, username, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getUsers(id, username, debug, output, pretty=0):
     """Returns users"""
-    click.echo(json.dumps(api.getUsers(id=id, username=username, debug=debug), indent=pretty))
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
+    result = api.getUsers(id=id, username=username, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @users.command('delete')
@@ -84,12 +153,20 @@ def getUsers(id, username, debug, pretty=0):
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'delete', 'username'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def deleteUser(id, username, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def deleteUser(id, username, debug, output, pretty=0):
     """Deletes a user"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and username is None:
         raise click.BadParameter(i18n.getErrorText('users', 'delete', 'id-uname-missing'))
-    
-    click.echo(json.dumps(api.deleteUser(id=id, username=username, debug=debug), indent=pretty))
+
+    result = api.deleteUser(id=id, username=username, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
     
 
 @users.command('create')
@@ -111,12 +188,20 @@ def deleteUser(id, username, debug, pretty=0):
 @click.option('--group-names', '-gn', 'group_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'group_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def createUser(name, first_name, last_name, email, password, description, title, phone, force_password_change, max_login_attempts, authentication, alias_name, role_ids, role_names, group_ids, group_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def createUser(name, first_name, last_name, email, password, description, title, phone, force_password_change, max_login_attempts, authentication, alias_name, role_ids, role_names, group_ids, group_names, debug, output, pretty=0):
     """Used to create new users"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if role_ids is None and role_names is None and group_ids is None and group_names is None:
         raise click.BadParameter(i18n.getErrorText('users', 'create', 'rid-rname-gid-gname-missing'))
-    
-    click.echo(json.dumps(api.createUser(name=name, firstName=first_name, lastName=last_name, email=email, password=password, description=description, title=title, phone=phone, forcePasswordChange=force_password_change, maxLoginAttempts=max_login_attempts, authentication=authentication, aliasName=alias_name, roleIds=role_ids, roleNames=role_names, groupIds=group_ids, groupNames=group_names, debug=debug), indent=pretty))
+
+    result = api.createUser(name=name, firstName=first_name, lastName=last_name, email=email, password=password, description=description, title=title, phone=phone, forcePasswordChange=force_password_change, maxLoginAttempts=max_login_attempts, authentication=authentication, aliasName=alias_name, roleIds=role_ids, roleNames=role_names, groupIds=group_ids, groupNames=group_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
     
 
 @users.command('add-roles')
@@ -126,14 +211,22 @@ def createUser(name, first_name, last_name, email, password, description, title,
 @click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-roles', 'role_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def addUserRoles(id, username, role_ids, role_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def addUserRoles(id, username, role_ids, role_names, debug, output, pretty=0):
     """Adds role assignments to a user"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and username is None:
         raise click.BadParameter(i18n.getErrorText('users', 'add-roles', 'id-uname-missing'))
     elif role_ids is None and role_names is None:
         raise click.BadParameter(i18n.getErrorText('users', 'add-roles', 'rid-rname-missing'))
-    
-    click.echo(json.dumps(api.addUserRoles(id=id, username=username, roleIds=role_ids, roleNames=role_names, debug=debug), indent=pretty))
+
+    result = api.addUserRoles(id=id, username=username, roleIds=role_ids, roleNames=role_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @users.command('remove-roles')
@@ -143,14 +236,22 @@ def addUserRoles(id, username, role_ids, role_names, debug, pretty=0):
 @click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-roles', 'role_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def removeUserRoles(id, username, role_ids, role_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def removeUserRoles(id, username, role_ids, role_names, debug, output, pretty=0):
     """Removes role assignments from a user"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and username is None:
         raise click.BadParameter(i18n.getErrorText('users', 'remove-roles', 'id-uname-missing'))
     elif role_ids is None and role_names is None:
         raise click.BadParameter(i18n.getErrorText('users', 'remove-roles', 'rid-rname-missing'))
-    
-    click.echo(json.dumps(api.removeUserRoles(id=id, username=username, roleIds=role_ids, roleNames=role_names, debug=debug), indent=pretty))
+
+    result = api.removeUserRoles(id=id, username=username, roleIds=role_ids, roleNames=role_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @users.command('add-groups')
@@ -160,14 +261,22 @@ def removeUserRoles(id, username, role_ids, role_names, debug, pretty=0):
 @click.option('--group-names', '-gn', 'group_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-groups', 'group_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def addUserGroups(id, username, group_ids, group_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def addUserGroups(id, username, group_ids, group_names, debug, output, pretty=0):
     """Adds group assignments to a user"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and username is None:
         raise click.BadParameter(i18n.getErrorText('users', 'add-groups', 'id-uname-missing'))
     elif group_ids is None and group_names is None:
         raise click.BadParameter(i18n.getErrorText('users', 'add-groups', 'gid-gname-missing'))
-    
-    click.echo(json.dumps(api.addUserGroups(id=id, username=username, groupIds=group_ids, groupNames=group_names, debug=debug), indent=pretty))
+
+    result = api.addUserGroups(id=id, username=username, groupIds=group_ids, groupNames=group_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @users.command('remove-groups')
@@ -177,14 +286,22 @@ def addUserGroups(id, username, group_ids, group_names, debug, pretty=0):
 @click.option('--group-names', '-gn', 'group_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-groups', 'group_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def removeUserGroups(id, username, group_ids, group_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def removeUserGroups(id, username, group_ids, group_names, debug, output, pretty=0):
     """Removes group assignments from a user"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and username is None:
         raise click.BadParameter(i18n.getErrorText('users', 'remove-groups', 'id-uname-missing'))
     elif group_ids is None and group_names is None:
         raise click.BadParameter(i18n.getErrorText('users', 'remove-groups', 'gid-gname-missing'))
-    
-    click.echo(json.dumps(api.removeUserGroups(id=id, username=username, groupIds=group_ids, groupNames=group_names, debug=debug), indent=pretty))
+
+    result = api.removeUserGroups(id=id, username=username, groupIds=group_ids, groupNames=group_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 ###################################
@@ -203,11 +320,20 @@ def password():
 @click.option('--new-password', '-n', 'new_password', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('password', 'change', 'new_password'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def changePassword(id, username, old_password, new_password, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def changePassword(id, username, old_password, new_password, debug, output, pretty=0):
     """Change a users password"""  
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and username is None:
         raise click.BadParameter(i18n.getErrorText('users', 'remove-groups', 'id-uname-missing'))
-    click.echo(json.dumps(api.changePassword(id=id, username=username, oldPassword=old_password, newPassword=new_password, debug=debug), indent=pretty))
+
+    result = api.changePassword(id=id, username=username, oldPassword=old_password, newPassword=new_password, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @password.command('reset')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'reset', 'id'))
@@ -216,11 +342,20 @@ def changePassword(id, username, old_password, new_password, debug, pretty=0):
 @click.option('--new-password', '-n', 'new_password', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('password', 'reset', 'new_password'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def resetPassword(id, username, security_answer, new_password, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def resetPassword(id, username, security_answer, new_password, debug, output, pretty=0):
     """Resets a users password using their security answer"""  
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and username is None:
         raise click.BadParameter(i18n.getErrorText('users', 'remove-groups', 'id-uname-missing'))
-    click.echo(json.dumps(api.resetPassword(id=id, username=username, securityAnswer=security_answer, newPassword=new_password, debug=debug), indent=pretty))
+
+    result = api.resetPassword(id=id, username=username, securityAnswer=security_answer, newPassword=new_password, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 ###################################
 # User Groups commands section
@@ -236,9 +371,17 @@ def userGroups():
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'get', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getUserGroups(id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getUserGroups(id, name, debug, output, pretty=0):
     """Returns user groups"""
-    click.echo(json.dumps(api.getUserGroups(id=id, name=name, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getUserGroups(id=id, name=name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @userGroups.command('create')
@@ -250,12 +393,20 @@ def getUserGroups(id, name, debug, pretty=0):
 @click.option('--user-names', '-un', 'user_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'create', 'user_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def createUserGroup(name, description, role_ids, role_names, user_ids, user_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def createUserGroup(name, description, role_ids, role_names, user_ids, user_names, debug, output, pretty=0):
     """Creates a new user group"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if role_ids is None and role_names is None:
         raise click.BadParameter(i18n.getErrorText('user-groups', 'create', 'rid-rname-missing'))
-    
-    click.echo(json.dumps(api.createUserGroup(name=name, description=description, roleIds=role_ids, roleNames=role_names, userIds=user_ids, userNames=user_names, debug=debug), indent=pretty))
+
+    result = api.createUserGroup(name=name, description=description, roleIds=role_ids, roleNames=role_names, userIds=user_ids, userNames=user_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @userGroups.command('add-roles')
@@ -265,14 +416,22 @@ def createUserGroup(name, description, role_ids, role_names, user_ids, user_name
 @click.option('--role-names', '-rn', 'role_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'add-roles', 'role_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def addUserGroupRoles(id, group_name, role_ids, role_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def addUserGroupRoles(id, group_name, role_ids, role_names, debug, output, pretty=0):
     """Adds role assignments to a user group"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and group_name is None:
         raise click.BadParameter(i18n.getErrorText('user-groups', 'add-roles', 'id-gname-missing'))
     elif role_ids is None and role_names is None:
         raise click.BadParameter(i18n.getErrorText('user-groups', 'add-roles', 'rid-rname-missing'))
-    
-    click.echo(json.dumps(api.addUserGroupRoles(id=id, groupname=group_name, roleIds=role_ids, roleNames=role_names, debug=debug), indent=pretty))
+
+    result = api.addUserGroupRoles(id=id, groupname=group_name, roleIds=role_ids, roleNames=role_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @userGroups.command('delete')
@@ -280,12 +439,20 @@ def addUserGroupRoles(id, group_name, role_ids, role_names, debug, pretty=0):
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'delete', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def deleteUserGroup(id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def deleteUserGroup(id, name, debug, output, pretty=0):
     """Deletes a user group"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.deleteUserGroup(id=id, name=name, debug=debug), indent=pretty))
+
+    result = api.deleteUserGroup(id=id, name=name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
     
 
 ###################################
@@ -303,9 +470,17 @@ def roles():
 @click.option('--expand', '-e', 'expand', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('roles', 'get', 'expand'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getRoles(id, name, expand, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getRoles(id, name, expand, debug, output, pretty=0):
     """Returns roles"""
-    click.echo(json.dumps(api.getRoles(id=id, name=name, expand=expand, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getRoles(id=id, name=name, expand=expand, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @roles.command('create')
 @click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('roles', 'create', 'name'))
@@ -314,12 +489,20 @@ def getRoles(id, name, expand, debug, pretty=0):
 @click.option('--privilege-names', '-pn', 'privilege_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'create', 'privilege_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def createRole(name, description, privilege_ids, privilege_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def createRole(name, description, privilege_ids, privilege_names, debug, output, pretty=0):
     """Creates a new role"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if privilege_ids is None and privilege_names is None:
         raise click.BadParameter(i18n.getErrorText('roles', 'add-privileges', 'pid-pname-missing'))
-    
-    click.echo(json.dumps(api.createRole(name=name, description=description, privilegeIds=privilege_ids, privilegeNames=privilege_names, debug=debug), indent=pretty))
+
+    result = api.createRole(name=name, description=description, privilegeIds=privilege_ids, privilegeNames=privilege_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @roles.command('add-privileges')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'add-privileges', 'id'))
@@ -328,14 +511,22 @@ def createRole(name, description, privilege_ids, privilege_names, debug, pretty=
 @click.option('--privilege-names', '-pn', 'privilege_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'add-privileges', 'privilege_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def addRolePrivileges(id, name, privilege_ids, privilege_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def addRolePrivileges(id, name, privilege_ids, privilege_names, debug, output, pretty=0):
     """Adds privilege assignments to a role"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
     elif privilege_ids is None and privilege_names is None:
         raise click.BadParameter(i18n.getErrorText('roles', 'add-privileges', 'pid-pname-missing'))
-    
-    click.echo(json.dumps(api.addRolePrivileges(id=id, name=name, privilegeIds=privilege_ids, privilegeNames=privilege_names, debug=debug), indent=pretty))
+
+    result = api.addRolePrivileges(id=id, name=name, privilegeIds=privilege_ids, privilegeNames=privilege_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @roles.command('remove-privileges')
@@ -345,14 +536,22 @@ def addRolePrivileges(id, name, privilege_ids, privilege_names, debug, pretty=0)
 @click.option('--privilege-names', '-pn', 'privilege_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'remove-privileges', 'privilege_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def removeRolePrivileges(id, name, privilege_ids, privilege_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def removeRolePrivileges(id, name, privilege_ids, privilege_names, debug, output, pretty=0):
     """Remove privilege assignments from a role"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
     elif privilege_ids is None and privilege_names is None:
         raise click.BadParameter(i18n.getErrorText('roles', 'remove-privileges', 'pid-pname-missing'))
-    
-    click.echo(json.dumps(api.removeRolePrivileges(id=id, name=name, privilegeIds=privilege_ids, privilegeNames=privilege_names, debug=debug), indent=pretty))
+
+    result = api.removeRolePrivileges(id=id, name=name, privilegeIds=privilege_ids, privilegeNames=privilege_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @roles.command('delete')
@@ -360,12 +559,20 @@ def removeRolePrivileges(id, name, privilege_ids, privilege_names, debug, pretty
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'delete', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def deleteRole(id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def deleteRole(id, name, debug, output, pretty=0):
     """Deletes a role"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.deleteRole(id=id, name=name, debug=debug), indent=pretty))
+
+    result = api.deleteRole(id=id, name=name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 
@@ -382,9 +589,17 @@ def privileges():
 @click.option('--all', 'all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('privileges', 'get', 'all'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getPrivileges(all, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getPrivileges(all, debug, output, pretty=0):
     """Returns privileges"""
-    click.echo(json.dumps(api.getPrivileges(all=all, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getPrivileges(all=all, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 ###################################
 # Lookup commands section
@@ -401,22 +616,38 @@ def lookup():
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('lookup', 'object', 'type'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def lookupObject(id, path, type, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def lookupObject(id, path, type, debug, output, pretty=0):
     """Lookup a single object"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('lookup', 'object', 'id-path-type-missing'))
     elif id is None and ( path is None or type is None ):
         raise click.BadParameter(i18n.getErrorText('lookup', 'object', 'path-type-missing'))
     
-    click.echo(json.dumps(api.lookupObject(id=id, path=path, type=type, debug=debug), indent=pretty))
+    result = api.lookupObject(id=id, path=path, type=type, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @lookup.command('objects')
 @click.option('--body', '-b', 'body', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('lookup', 'objects', 'body'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def lookupObjects(body, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def lookupObjects(body, debug, output, pretty=0):
     """Lookup multiple objects"""
-    click.echo(json.dumps(api.lookupObjects(body=body, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.lookupObjects(body=body, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 ###################################
 # Object commands section
@@ -434,9 +665,17 @@ def objects():
 @click.option('--location', '-l', 'location', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'location'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getObjects(id, name, type, location, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getObjects(id, name, type, location, debug, output, pretty=0):
     """Used to get objects"""
-    click.echo(json.dumps(api.getObjects(id=id, name=name, type=type, location=location, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getObjects(id=id, name=name, type=type, location=location, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @objects.command('query')
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'type'))
@@ -459,9 +698,17 @@ def getObjects(id, name, type, location, debug, pretty=0):
 
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def queryObjects(type, location, tag, checked_out_by, checked_out_since, checked_out_until, checked_in_by, checked_in_since, checked_in_until, source_cntrld, hash, published_by, published_since, published_until, updated_by, updated_since, updated_until, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def queryObjects(type, location, tag, checked_out_by, checked_out_since, checked_out_until, checked_in_by, checked_in_since, checked_in_until, source_cntrld, hash, published_by, published_since, published_until, updated_by, updated_since, updated_until, debug, output, pretty=0):
     """Used to query objects"""
-    click.echo(json.dumps(api.queryObjects(type=type, location=location, tag=tag, hash=hash, checkedOutBy=checked_out_by, checkedOutSince=checked_out_since, checkedOutUntil=checked_out_until, checkedInBy=checked_in_by, checkedInSince=checked_in_since, checkedInUntil=checked_in_until, sourceCtrld=source_cntrld, publishedBy=published_by, publishedSince=published_since, publishedUntil=published_until, updatedBy=updated_by, updatedSince=updated_since, updatedUntil=updated_until, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.queryObjects(type=type, location=location, tag=tag, hash=hash, checkedOutBy=checked_out_by, checkedOutSince=checked_out_since, checkedOutUntil=checked_out_until, checkedInBy=checked_in_by, checkedInSince=checked_in_since, checkedInUntil=checked_in_until, sourceCtrld=source_cntrld, publishedBy=published_by, publishedSince=published_since, publishedUntil=published_until, updatedBy=updated_by, updatedSince=updated_since, updatedUntil=updated_until, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @objects.command('dependencies')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'id'))
@@ -470,12 +717,20 @@ def queryObjects(type, location, tag, checked_out_by, checked_out_since, checked
 @click.option('--ref-type', '-r', 'ref_type', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'ref_type'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getDependencies(id, path, type, ref_type, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getDependencies(id, path, type, ref_type, debug, output, pretty=0):
     """Returns dependencies for an object"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and ( path is None or type is None ):
         raise click.BadParameter(i18n.getErrorText('common', None, 'path-type-missing'))
-    
-    click.echo(json.dumps(api.getDependencies(id=id, path=path, type=type, refType=ref_type, debug=debug), indent=pretty))
+
+    result = api.getDependencies(id=id, path=path, type=type, refType=ref_type, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @objects.command('add-tags')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'id'))
@@ -485,17 +740,26 @@ def getDependencies(id, path, type, ref_type, debug, pretty=0):
 @click.option('--tags', '-T', 'tags', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'tags'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def tagObject(id, path, type, body, tags, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def tagObject(id, path, type, body, tags, debug, output, pretty=0):
     """Adds one or more tags to an object"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if body is None and id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('objects', 'add-tags', 'body-id-path-type-missing'))
     elif body is None and id is None and ( path is None or type is None ):
         raise click.BadParameter(i18n.getErrorText('objects', 'add-tags', 'path-type-missing'))
     
     if body:
-        click.echo(json.dumps(api.tagObjects(body=body, debug=debug), indent=pretty))
+         result = api.tagObjects(body=body, debug=debug)
     else:
-        click.echo(json.dumps(api.tagObject(id=id, path=path, type=type, tags=tags, debug=debug), indent=pretty))
+        result = api.tagObject(id=id, path=path, type=type, tags=tags, debug=debug)
+
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @objects.command('remove-tags')
@@ -506,17 +770,26 @@ def tagObject(id, path, type, body, tags, debug, pretty=0):
 @click.option('--tags', '-T', 'tags', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'tags'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def tagObject(id, path, type, body, tags, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def tagObject(id, path, type, body, tags, debug, output, pretty=0):
     """Removes one or more tags from an object"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if body is None and id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('objects', 'remove-tags', 'body-id-path-type-missing'))
     elif body is None and id is None and ( path is None or type is None ):
         raise click.BadParameter(i18n.getErrorText('objects', 'remove-tags', 'path-type-missing'))
     
     if body:
-        click.echo(json.dumps(api.untagObjects(body=body, debug=debug), indent=pretty))
+        result = api.untagObjects(body=body, debug=debug)
     else:
-        click.echo(json.dumps(api.untagObject(id=id, path=path, type=type, tags=tags, debug=debug), indent=pretty))
+        result = api.untagObject(id=id, path=path, type=type, tags=tags, debug=debug)
+
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @objects.group('permissions')
 def permissions():
@@ -532,14 +805,22 @@ def permissions():
 @click.option('--check-type', '-ct', 'check_type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'get', 'check_type'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getPermissions(id, acl, path, type, check_access, check_type, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getPermissions(id, acl, path, type, check_access, check_type, debug, output, pretty=0):
     """Gets permission ACL's for an object"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
     if check_type is not None and check_access == False:
         check_access = True
-    
-    click.echo(json.dumps(api.getPermissions(id=id, acl=acl, path=path, type=type, checkAccess=check_access, checkType=check_type, debug=debug), indent=pretty))
+
+    result = api.getPermissions(id=id, acl=acl, path=path, type=type, checkAccess=check_access, checkType=check_type, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @permissions.command('create')
@@ -555,12 +836,20 @@ def getPermissions(id, acl, path, type, check_access, check_type, debug, pretty=
 @click.option('--change', '-c', 'change', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'create', 'change'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def createPermission(id, path, type, ptype, pname, read, update, delete, execute, change, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def createPermission(id, path, type, ptype, pname, read, update, delete, execute, change, debug, output, pretty=0):
     """Creates a permission ACL for an object"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
-    
-    click.echo(json.dumps(api.createPermission(id=id, path=path, type=type, ptype=ptype, pname=pname, read=read, update=update, delete=delete, execute=execute, change=change, debug=debug), indent=pretty))
+
+    result = api.createPermission(id=id, path=path, type=type, ptype=ptype, pname=pname, read=read, update=update, delete=delete, execute=execute, change=change, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @permissions.command('update')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'update', 'id'))
@@ -576,12 +865,20 @@ def createPermission(id, path, type, ptype, pname, read, update, delete, execute
 @click.option('--change', '-c', 'change', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('permissions', 'update', 'change'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def updatePermission(id, acl, path, type, ptype, pname, read, update, delete, execute, change, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def updatePermission(id, acl, path, type, ptype, pname, read, update, delete, execute, change, debug, output, pretty=0):
     """Updates a permission ACL for an object"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
-    
-    click.echo(json.dumps(api.updatePermission(id=id, acl=acl, path=path, type=type, ptype=ptype, pname=pname, read=read, update=update, delete=delete, execute=execute, change=change, debug=debug), indent=pretty))
+
+    result = api.updatePermission(id=id, acl=acl, path=path, type=type, ptype=ptype, pname=pname, read=read, update=update, delete=delete, execute=execute, change=change, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 @permissions.command('delete')
@@ -591,12 +888,20 @@ def updatePermission(id, acl, path, type, ptype, pname, read, update, delete, ex
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'delete', 'type'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def deletePermissions(id, acl, path, type, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def deletePermissions(id, acl, path, type, debug, output, pretty=0):
     """Deletes permission ACL's for an object"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
-    
-    click.echo(json.dumps(api.deletePermissions(id=id, acl=acl, path=path, type=type, debug=debug), indent=pretty))
+
+    result = api.deletePermissions(id=id, acl=acl, path=path, type=type, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 ###################################
@@ -613,9 +918,17 @@ def projects():
 @click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'create', 'description'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def createProject(name, description, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def createProject(name, description, debug, output, pretty=0):
     """Creates a project"""
-    click.echo(json.dumps(api.createProject(name=name, description=description, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.createProject(name=name, description=description, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @projects.command('update')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'update', 'id'))
@@ -624,29 +937,46 @@ def createProject(name, description, debug, pretty=0):
 @click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'update', 'description'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def updateProject(id, name, path, description, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def updateProject(id, name, path, description, debug, output, pretty=0):
     """Updates a project"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-missing'))
-    click.echo(json.dumps(api.updateProject(id=id, path=path, name=name, description=description, debug=debug), indent=pretty))
+
+    result = api.updateProject(id=id, path=path, name=name, description=description, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @projects.command('delete')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'delete', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'delete', 'path'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def deleteProject(id, path, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def deleteProject(id, path, debug, output, pretty=0):
     """Deletes a project"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-missing'))
-    
-    click.echo(json.dumps(api.deleteProject(id=id, path=path, debug=debug), indent=pretty))
+
+    result = api.deleteProject(id=id, path=path, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 ###################################
 # Folder commands section
 ###################################
 
-@idmc.group('folders')
+@projects.group('folders')
 def folders():
     """Folder management commands."""
     pass
@@ -658,12 +988,20 @@ def folders():
 @click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'create', 'description'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def createFolder(project_id, project_name, name, description, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def createFolder(project_id, project_name, name, description, debug, output, pretty=0):
     """Creates a folder"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if project_id is None and project_name is None:
         raise click.BadParameter(i18n.getErrorText('folders', 'create', 'pid-pname-missing'))
-    
-    click.echo(json.dumps(api.createFolder(projectId=project_id, projectName=project_name, name=name, description=description, debug=debug), indent=pretty))
+
+    result = api.createFolder(projectId=project_id, projectName=project_name, name=name, description=description, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @folders.command('update')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'update', 'id'))
@@ -672,24 +1010,40 @@ def createFolder(project_id, project_name, name, description, debug, pretty=0):
 @click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'update', 'description'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def createProject(id, name, path, description, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def createProject(id, name, path, description, debug, output, pretty=0):
     """Updates a folder"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None:
         raise click.BadParameter(i18n.getErrorText('folders', 'update', 'id-path-missing'))
-    
-    click.echo(json.dumps(api.updateFolder(id=id, path=path, name=name, description=description, debug=debug), indent=pretty))
+
+    result = api.updateFolder(id=id, path=path, name=name, description=description, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @folders.command('delete')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'delete', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'delete', 'path'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def deleteFolder(id, path, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def deleteFolder(id, path, debug, output, pretty=0):
     """Deletes a folder"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None:
         raise click.BadParameter(i18n.getErrorText('folders', 'delete', 'id-path-missing'))
-    
-    click.echo(json.dumps(api.deleteFolder(id=id, path=path, debug=debug), indent=pretty))
+
+    result = api.deleteFolder(id=id, path=path, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 ###################################
@@ -711,17 +1065,26 @@ def sourceControl():
 @click.option('--include-container', '-I', 'include_container', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('source-control', 'check-in', 'include_container'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def checkInObject(summary, description, id, path, type, include_container, body, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def checkInObject(summary, description, id, path, type, include_container, body, debug, output, pretty=0):
     """Checks in one or more objects"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if body is None and id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'body-id-path-type-missing'))
     elif body is None and id is None and ( path is None or type is None ):
         raise click.BadParameter(i18n.getErrorText('common', None, 'path-type-missing'))
     
     if body:
-        click.echo(json.dumps(api.checkInObjects(summary=summary, description=description, body=body, debug=debug), indent=pretty))
+        result = api.checkInObjects(summary=summary, description=description, body=body, debug=debug)
     else:
-        click.echo(json.dumps(api.checkInObject(summary=summary, description=description, id=id, path=path, type=type, includeContainer=include_container, debug=debug), indent=pretty))
+        result = api.checkInObject(summary=summary, description=description, id=id, path=path, type=type, includeContainer=include_container, debug=debug)
+
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @sourceControl.command('check-out')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-out', 'id'))
@@ -731,17 +1094,26 @@ def checkInObject(summary, description, id, path, type, include_container, body,
 @click.option('--include-container', '-I', 'include_container', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('source-control', 'check-out', 'include_container'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def checkOutObject(id, path, type, include_container, body, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def checkOutObject(id, path, type, include_container, body, debug, output, pretty=0):
     """Checks out one or more objects"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if body is None and id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'body-id-path-type-missing'))
     elif body is None and id is None and ( path is None or type is None ):
         raise click.BadParameter(i18n.getErrorText('common', None, 'path-type-missing'))
     
     if body:
-        click.echo(json.dumps(api.checkOutObjects(body=body, debug=debug), indent=pretty))
+        result = api.checkOutObjects(body=body, debug=debug)
     else:
-        click.echo(json.dumps(api.checkOutObject(id=id, path=path, type=type, includeContainer=include_container, debug=debug), indent=pretty))
+        result = api.checkOutObject(id=id, path=path, type=type, includeContainer=include_container, debug=debug)
+
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @sourceControl.command('undo-check-out')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'undo-check-out', 'id'))
@@ -751,17 +1123,26 @@ def checkOutObject(id, path, type, include_container, body, debug, pretty=0):
 @click.option('--include-container', '-I', 'include_container', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('source-control', 'undo-check-out', 'include_container'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def undoCheckOutObject(id, path, type, include_container, body, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def undoCheckOutObject(id, path, type, include_container, body, debug, output, pretty=0):
     """Undo check out for one or more objects"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if body is None and id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'body-id-path-type-missing'))
     elif body is None and id is None and ( path is None or type is None ):
         raise click.BadParameter(i18n.getErrorText('common', None, 'path-type-missing'))
     
     if body:
-        click.echo(json.dumps(api.undoCheckOutObjects(body=body, debug=debug), indent=pretty))
+        result = api.undoCheckOutObjects(body=body, debug=debug)
     else:
-        click.echo(json.dumps(api.undoCheckOutObject(id=id, path=path, type=type, includeContainer=include_container, debug=debug), indent=pretty))
+        result = api.undoCheckOutObject(id=id, path=path, type=type, includeContainer=include_container, debug=debug)
+
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @sourceControl.command('pull')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'id'))
@@ -772,17 +1153,26 @@ def undoCheckOutObject(id, path, type, include_container, body, debug, pretty=0)
 @click.option('--body', '-b', 'body', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'body'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def pullObjects(id, path, type, hash, relax_validation, body, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def pullObjects(id, path, type, hash, relax_validation, body, debug, output, pretty=0):
     """Pulls one or more objects"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if body is None and id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'body-id-path-type-missing'))
     elif body is None and id is None and ( path is None or type is None ):
         raise click.BadParameter(i18n.getErrorText('common', None, 'path-type-missing'))
     
     if body:
-        click.echo(json.dumps(api.pullObjects(body=body, hash=hash, relaxValidation=relax_validation, debug=debug), indent=pretty))
+        result = api.pullObjects(body=body, hash=hash, relaxValidation=relax_validation, debug=debug)
     else:
-        click.echo(json.dumps(api.pullObject(id=id, path=path, type=type, hash=hash, relaxValidation=relax_validation, debug=debug), indent=pretty))
+        result = api.pullObject(id=id, path=path, type=type, hash=hash, relaxValidation=relax_validation, debug=debug)
+
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @sourceControl.command('pull-commit-hash')
 @click.option('--hash', '-h', 'hash', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull-commit-hash', 'hash'))
@@ -791,29 +1181,52 @@ def pullObjects(id, path, type, hash, relax_validation, body, debug, pretty=0):
 @click.option('--relax-validation', '-r', 'relax_validation', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('source-control', 'pull-commit-hash', 'relax_validation'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def checkOutObject(hash, search, repo_id, relax_validation, debug, pretty=0):
+def checkOutObject(hash, search, repo_id, relax_validation, debug, output, pretty=0):
     """Pulls all objects in a commit hash"""
-    click.echo(json.dumps(api.pullByCommitHash(hash=hash, search=search, repoId=repo_id, relaxValidation=relax_validation, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.pullByCommitHash(hash=hash, search=search, repoId=repo_id, relaxValidation=relax_validation, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @sourceControl.command('status')
 @click.option('--id', '-i', 'id', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('source-control', 'status', 'id'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getSourceStatus(id, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getSourceStatus(id, debug, output, pretty=0):
     """Gets the status of a source control action"""
-    click.echo(json.dumps(api.getSourceStatus(id=id, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getSourceStatus(id=id, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @sourceControl.command('repo-details')
 @click.option('--project-ids', '-i', 'project_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'repo-details', 'project_ids'))
 @click.option('--project-names', '-n', 'project_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'repo-details', 'project_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getSourceStatus(project_ids, project_names, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getSourceStatus(project_ids, project_names, debug, output, pretty=0):
     """Gets the source control repository details"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if project_ids is None and project_names is None:
         raise click.BadParameter(i18n.getErrorText('source-control', 'repo-details', 'pid-pname-missing'))
-    
-    click.echo(json.dumps(api.getRepoConnection(projectIds=project_ids, projectNames=project_names, debug=debug), indent=pretty))
+
+    result = api.getRepoConnection(projectIds=project_ids, projectNames=project_names, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @sourceControl.command('commit-history')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'id'))
@@ -822,14 +1235,22 @@ def getSourceStatus(project_ids, project_names, debug, pretty=0):
 @click.option('--branch', '-b', 'branch', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'branch'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getCommitHistory(id, path, type, branch, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getCommitHistory(id, path, type, branch, debug, output, pretty=0):
     """Gets the commit history for an asset"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
     elif id is None and ( path is None or type is None ):
         raise click.BadParameter(i18n.getErrorText('common', None, 'path-type-missing'))
-    
-    click.echo(json.dumps(api.getCommitHistory(id=id, path=path, type=type, branch=branch, debug=debug), indent=pretty))
+
+    result = api.getCommitHistory(id=id, path=path, type=type, branch=branch, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @sourceControl.command('commit-details')
 @click.option('--hash', '-h', 'hash', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-details', 'hash'))
@@ -837,9 +1258,17 @@ def getCommitHistory(id, path, type, branch, debug, pretty=0):
 @click.option('--repo-id', '-r', 'repo_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-details', 'repo_id'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getCommitDetails(hash, search_all, repo_id, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getCommitDetails(hash, search_all, repo_id, debug, output, pretty=0):
     """Gets the details for a commit"""
-    click.echo(json.dumps(api.getCommitDetails(hash=hash, searchAllRepos=search_all, repoId=repo_id, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getCommitDetails(hash=hash, searchAllRepos=search_all, repoId=repo_id, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @sourceControl.command('compare-versions')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'id'))
@@ -850,17 +1279,24 @@ def getCommitDetails(hash, search_all, repo_id, debug, pretty=0):
 @click.option('--format', '-f', 'format', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('source-control', 'compare-versions', 'format'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def compareVersions(id, path, type, old_version, new_version, format, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def compareVersions(id, path, type, old_version, new_version, format, debug, output, pretty=0):
     """Used to compare two versions of an asset."""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and path is None and type is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-path-type-missing'))
     elif id is None and ( path is None or type is None ):
         raise click.BadParameter(i18n.getErrorText('common', None, 'path-type-missing'))
-    
-    if format == 'JSON':
-        click.echo(json.dumps(api.compareVersions(id=id, path=path, type=type, oldVersion=old_version, newVersion=new_version, format=format, debug=debug), indent=pretty))
+
+    result = api.compareVersions(id=id, path=path, type=type, oldVersion=old_version, newVersion=new_version, format=format, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    elif format == 'JSON':
+        click.echo(json.dumps(result, indent=pretty))
     else:
-        click.echo(api.compareVersions(id=id, path=path, type=type, oldVersion=old_version, newVersion=new_version, format=format, debug=debug))
+        click.echo(result)
 
 ###################################
 # Log commands section
@@ -879,9 +1315,17 @@ def logs():
 @click.option('--to', '-t', 'time_to', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'security', 'time_to'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getSecurityLogs(category, actor, name, time_from, time_to, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getSecurityLogs(category, actor, name, time_from, time_to, debug, output, pretty=0):
     """Gets the security logs"""
-    click.echo(json.dumps(api.getSecurityLogs(category=category, actor=actor, name=name, time_from=time_from, time_to=time_to, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getSecurityLogs(category=category, actor=actor, name=name, time_from=time_from, time_to=time_to, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @logs.group('activity')
 def logsActivity():
@@ -895,13 +1339,21 @@ def logsActivity():
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getCompletedActivityJobs(id, run_id, task_id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getCompletedActivityJobs(id, run_id, task_id, name, debug, output, pretty=0):
     """Gets the completed activity logs"""
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
     
     if run_id and task_id is None:
         raise click.BadParameter(i18n.getErrorText('logs', 'completed-activity', 'task-id-missing'))
-    
-    click.echo(json.dumps(api.getCompletedActivityJobs(id=id, runId=run_id, taskId=task_id, taskName=name, debug=debug), indent=pretty))
+
+    result = api.getCompletedActivityJobs(id=id, runId=run_id, taskId=task_id, taskName=name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @logsActivity.command('running')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'running-activity', 'id'))
@@ -910,13 +1362,21 @@ def getCompletedActivityJobs(id, run_id, task_id, name, debug, pretty=0):
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'running-activity', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getRunningActivityJobs(id, run_id, task_id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getRunningActivityJobs(id, run_id, task_id, name, debug, output, pretty=0):
     """Gets the running activity logs"""
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
     
     if run_id and task_id is None:
         raise click.BadParameter(i18n.getErrorText('logs', 'running-activity', 'task-id-missing'))
-    
-    click.echo(json.dumps(api.getRunningActivityJobs(id=id, runId=run_id, taskId=task_id, taskName=name, debug=debug), indent=pretty))
+
+    result = api.getRunningActivityJobs(id=id, runId=run_id, taskId=task_id, taskName=name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 ###################################
 # Secure agent commands section
@@ -933,9 +1393,17 @@ def agents():
 @click.option('--unassigned', '-u', 'unassigned', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agents', 'get', 'unassigned'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getAgents(id, name, unassigned, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getAgents(id, name, unassigned, debug, output, pretty=0):
     """Gets Secure Agents"""
-    click.echo(json.dumps(api.getAgents(id=id, name=name, unassigned=unassigned, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getAgents(id=id, name=name, unassigned=unassigned, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @agents.command('delete')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'delete', 'id'))
@@ -943,21 +1411,35 @@ def getAgents(id, name, unassigned, debug, pretty=0):
 @click.option('--unassigned', '-u', 'unassigned', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agents', 'delete', 'unassigned'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def deleteAgent(id, name, unassigned, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def deleteAgent(id, name, unassigned, debug, output, pretty=0):
     """Deletes a secure agent"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.deleteAgent(id=id, name=name, unassigned=unassigned, debug=debug), indent=pretty))
+
+    result = api.deleteAgent(id=id, name=name, unassigned=unassigned, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @agents.command('status')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'status', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'status', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getAgentStatus(id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getAgentStatus(id, name, debug, output, pretty=0):
     """Gets Secure Agent Status"""
-    click.echo(json.dumps(api.getAgentStatus(id=id, name=name, debug=debug), indent=pretty))
+
+    result = api.getAgentStatus(id=id, name=name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @agents.group('service')
 def service():
@@ -970,12 +1452,20 @@ def service():
 @click.option('--service', '-s', 'service', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('services', 'stop', 'service'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def stopService(id, name, service, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def stopService(id, name, service, debug, output, pretty=0):
     """Stops a service on a secure agent"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.execAgentService(id=id, name=name, service=service, action='stop', debug=debug), indent=pretty))
+
+    result = api.execAgentService(id=id, name=name, service=service, action='stop', debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @service.command('start')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('services', 'start', 'id'))
@@ -983,12 +1473,20 @@ def stopService(id, name, service, debug, pretty=0):
 @click.option('--service', '-s', 'service', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('services', 'start', 'service'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def startService(id, name, service, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def startService(id, name, service, debug, output, pretty=0):
     """Starts a service on a secure agent"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.execAgentService(id=id, name=name, service=service, action='start', debug=debug), indent=pretty))
+
+    result = api.execAgentService(id=id, name=name, service=service, action='start', debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 ###################################
 # Secure agent group commands section
@@ -1004,18 +1502,34 @@ def agentGroup():
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'get', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getAgentGroups(id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getAgentGroups(id, name, debug, output, pretty=0):
     """Gets Secure Agent Groups"""
-    click.echo(json.dumps(api.getAgentGroups(id=id, name=name, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getAgentGroups(id=id, name=name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @agentGroup.command('create')
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'create', 'name'))
 @click.option('--shared', '-s', 'shared', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'create', 'shared'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def createAgentGroup(name, shared, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def createAgentGroup(name, shared, debug, output, pretty=0):
     """Creates a secure agent group"""
-    click.echo(json.dumps(api.createAgentGroup(name=name, shared=shared, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.createAgentGroup(name=name, shared=shared, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @agentGroup.command('add-agent')
 @click.option('--group-id', '-gi', 'group_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'add', 'group_id'))
@@ -1024,26 +1538,42 @@ def createAgentGroup(name, shared, debug, pretty=0):
 @click.option('--agent-name', '-an', 'agent_name', multiple=True, default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'add', 'agent_name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def addAgent(group_id, group_name, agent_id, agent_name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def addAgent(group_id, group_name, agent_id, agent_name, debug, output, pretty=0):
     """Add one or more agents to a secure agent group"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if group_id is None and group_name is None:
         raise click.BadParameter(i18n.getErrorText('agentGroup', 'add', 'groupid-groupname-missing'))
     if len(agent_id) == 0 and len(agent_name) == 0:
         raise click.BadParameter(i18n.getErrorText('agentGroup', 'add', 'agentid-agentname-missing'))
-    
-    click.echo(json.dumps(api.addAgent(groupId=group_id, groupName=group_name, agentId=agent_id, agentName=agent_name, debug=debug), indent=pretty))   
+
+    result = api.addAgent(groupId=group_id, groupName=group_name, agentId=agent_id, agentName=agent_name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @agentGroup.command('delete')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def deleteAgentGroup(id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def deleteAgentGroup(id, name, debug, output, pretty=0):
     """Deletes a secure agent group"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.deleteAgentGroup(id=id, name=name, debug=debug), indent=pretty))
+
+    result = api.deleteAgentGroup(id=id, name=name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @agentGroup.group('components')
 def components():
@@ -1056,12 +1586,20 @@ def components():
 @click.option('--include-all', '-a', 'include_all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'list-components', 'include_all'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getAgentGroupComponents(id, name, include_all, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getAgentGroupComponents(id, name, include_all, debug, output, pretty=0):
     """Gets Secure Agent Group components"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.getAgentGroupComponents(id=id, name=name, includeAll=include_all, debug=debug), indent=pretty))
+
+    result = api.getAgentGroupComponents(id=id, name=name, includeAll=include_all, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @components.command('update')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-components', 'id'))
@@ -1073,8 +1611,12 @@ def getAgentGroupComponents(id, name, include_all, debug, pretty=0):
 @click.option('--additional', '-a', 'additional', multiple=True, default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-components', 'additional'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def updateAgentGroupComponents(id, name, enable, disable, services, connectors, additional, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def updateAgentGroupComponents(id, name, enable, disable, services, connectors, additional, debug, output, pretty=0):
     """Can be used to enable or disable Secure Agent Group components"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
     
@@ -1088,7 +1630,12 @@ def updateAgentGroupComponents(id, name, enable, disable, services, connectors, 
         enable=disable
     
     try:
-        click.echo(json.dumps(api.updateAgentGroupComponents(id=id, name=name, enable=enable, services=services, connectors=connectors, additional=additional, debug=debug), indent=pretty))
+
+        result = api.updateAgentGroupComponents(id=id, name=name, enable=enable, services=services, connectors=connectors, additional=additional, debug=debug)
+        if output:
+            write_output(output, pretty, result)
+        else:
+            click.echo(json.dumps(result, indent=pretty))
     except Exception as e:
         raise click.ClickException(e)
 
@@ -1107,12 +1654,20 @@ def properties():
 @click.option('--platform', '-p', 'platform', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'platform'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getAgentGroupProps(id, name, overridden, platform, service, type, property, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getAgentGroupProps(id, name, overridden, platform, service, type, property, debug, output, pretty=0):
     """Gets Secure Agent Group properties"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.getAgentGroupProps(id=id, name=name, overridden=overridden, platform=platform, service=service, type=type, property=property, debug=debug), indent=pretty))
+
+    result = api.getAgentGroupProps(id=id, name=name, overridden=overridden, platform=platform, service=service, type=type, property=property, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @properties.command('update')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'id'))
@@ -1126,24 +1681,40 @@ def getAgentGroupProps(id, name, overridden, platform, service, type, property, 
 @click.option('--sensitive', '-S', 'sensitive', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'update-prop', 'sensitive'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def updateAgentGroupProps(id, name, service, type, property, value, platform, custom, sensitive, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def updateAgentGroupProps(id, name, service, type, property, value, platform, custom, sensitive, debug, output, pretty=0):
     """Updates Secure Agent Group properties"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.updateAgentGroupProps(id=id, name=name, service=service, type=type, property=property, value=value, platform=platform, custom=custom, sensitive=sensitive, debug=debug), indent=pretty))
+
+    result = api.updateAgentGroupProps(id=id, name=name, service=service, type=type, property=property, value=value, platform=platform, custom=custom, sensitive=sensitive, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @properties.command('delete')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete-props', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete-props', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def deleteAgentGroupProps(id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def deleteAgentGroupProps(id, name, debug, output, pretty=0):
     """Deletes Secure Agent Group properties"""
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+    
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.deleteAgentGroupProps(id=id, name=name, debug=debug), indent=pretty))
+
+    result = api.deleteAgentGroupProps(id=id, name=name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 ###################################
 # Schedules commands section
@@ -1163,9 +1734,17 @@ def schedules():
 @click.option('--to', '-t', 'time_to', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'get', 'time_to'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getSchedules(id, name, status, interval, time_from, time_to, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getSchedules(id, name, status, interval, time_from, time_to, debug, output, pretty=0):
     """Gets schedules details"""  
-    click.echo(json.dumps(api.getSchedules(id=id, name=name, status=status, interval=interval, time_from=time_from, time_to=time_to, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getSchedules(id=id, name=name, status=status, interval=interval, time_from=time_from, time_to=time_to, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @schedules.command('create')
 @click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'name'))
@@ -1191,8 +1770,12 @@ def getSchedules(id, name, status, interval, time_from, time_to, debug, pretty=0
 @click.option('--saturday', '-sat', 'sat', default=None, required=False, type=click.BOOL, help=i18n.getHelpOption('schedules', 'create', 'sat'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def createSchedule(name, description, status, start_time, end_time, interval, frequency, range_start, range_end, timezone, weekday, day_of_month, week_of_month, day_of_week, sun, mon, tue, wed, thu, fri, sat, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def createSchedule(name, description, status, start_time, end_time, interval, frequency, range_start, range_end, timezone, weekday, day_of_month, week_of_month, day_of_week, sun, mon, tue, wed, thu, fri, sat, debug, output, pretty=0):
     """Creates a schedule"""
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
     
     # Validate the options
     if ( sun is not None or mon is not None or tue is not None or wed is not None or thu is not None or fri is not None or sat is not None ) and interval not in ['Minutely', 'Hourly', 'Weekly', 'Biweekly']:
@@ -1209,8 +1792,12 @@ def createSchedule(name, description, status, start_time, end_time, interval, fr
         raise click.BadParameter(i18n.getErrorText('schedules', 'create', 'range-end-incorrect'))
     if timezone is not None and day_of_month is None and week_of_month is None and day_of_week is None:
         raise click.BadParameter(i18n.getErrorText('schedules', 'create', 'timezone-incorrect'))
-    
-    click.echo(json.dumps(api.createSchedule(name=name, description=description, status=status, startTime=start_time, endTime=end_time, interval=interval, frequency=frequency, rangeStart=range_start, rangeEnd=range_end, timezone=timezone, weekday=weekday, dayOfMonth=day_of_month, weekOfMonth=week_of_month, dayOfWeek=day_of_week, sun=sun, mon=mon, tue=tue, wed=wed, thu=thu, fri=fri, sat=sat, debug=debug), indent=pretty))
+
+    result = api.createSchedule(name=name, description=description, status=status, startTime=start_time, endTime=end_time, interval=interval, frequency=frequency, rangeStart=range_start, rangeEnd=range_end, timezone=timezone, weekday=weekday, dayOfMonth=day_of_month, weekOfMonth=week_of_month, dayOfWeek=day_of_week, sun=sun, mon=mon, tue=tue, wed=wed, thu=thu, fri=fri, sat=sat, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @schedules.command('update')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'id'))
@@ -1237,8 +1824,12 @@ def createSchedule(name, description, status, start_time, end_time, interval, fr
 @click.option('--saturday', '-sat', 'sat', default=None, required=False, type=click.BOOL, help=i18n.getHelpOption('schedules', 'update', 'sat'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def updateSchedule(id, name, description, status, start_time, end_time, interval, frequency, range_start, range_end, timezone, weekday, day_of_month, week_of_month, day_of_week, sun, mon, tue, wed, thu, fri, sat, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def updateSchedule(id, name, description, status, start_time, end_time, interval, frequency, range_start, range_end, timezone, weekday, day_of_month, week_of_month, day_of_week, sun, mon, tue, wed, thu, fri, sat, debug, output, pretty=0):
     """Updates a schedule"""
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
     
     # Validate the options
     if id is None and name is None:
@@ -1257,50 +1848,78 @@ def updateSchedule(id, name, description, status, start_time, end_time, interval
         raise click.BadParameter(i18n.getErrorText('schedules', 'update', 'range-end-incorrect'))
     if timezone is not None and day_of_month is None and week_of_month is None and day_of_week is None:
         raise click.BadParameter(i18n.getErrorText('schedules', 'update', 'timezone-incorrect'))
-    
-    click.echo(json.dumps(api.updateSchedule(id=id, name=name, description=description, status=status, startTime=start_time, endTime=end_time, interval=interval, frequency=frequency, rangeStart=range_start, rangeEnd=range_end, timezone=timezone, weekday=weekday, dayOfMonth=day_of_month, weekOfMonth=week_of_month, dayOfWeek=day_of_week, sun=sun, mon=mon, tue=tue, wed=wed, thu=thu, fri=fri, sat=sat, debug=debug), indent=pretty))
+
+    result = api.updateSchedule(id=id, name=name, description=description, status=status, startTime=start_time, endTime=end_time, interval=interval, frequency=frequency, rangeStart=range_start, rangeEnd=range_end, timezone=timezone, weekday=weekday, dayOfMonth=day_of_month, weekOfMonth=week_of_month, dayOfWeek=day_of_week, sun=sun, mon=mon, tue=tue, wed=wed, thu=thu, fri=fri, sat=sat, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @schedules.command('delete')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'delete', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'delete', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def deleteSchedule(id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def deleteSchedule(id, name, debug, output, pretty=0):
     """Deletes a schedule"""
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
     
     # Validate the options
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.deleteSchedule(id=id, name=name, debug=debug), indent=pretty))
+
+    result = api.deleteSchedule(id=id, name=name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @schedules.command('enable')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'enable', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'enable', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def enableSchedule(id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def enableSchedule(id, name, debug, output, pretty=0):
     """Enables a schedule"""
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
     
     # Validate the options
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.updateSchedule(id=id, name=name, status='enabled', debug=debug), indent=pretty))
+
+    result = api.updateSchedule(id=id, name=name, status='enabled', debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @schedules.command('disable')
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'disable', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'disable', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def disableSchedule(id, name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def disableSchedule(id, name, debug, output, pretty=0):
     """Disables a schedule"""
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
     
     # Validate the options
     if id is None and name is None:
         raise click.BadParameter(i18n.getErrorText('common', None, 'id-name-missing'))
-    
-    click.echo(json.dumps(api.updateSchedule(id=id, name=name, status='disabled', debug=debug), indent=pretty))
+
+    result = api.updateSchedule(id=id, name=name, status='disabled', debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 
 ###################################
@@ -1331,9 +1950,17 @@ def jobsExp():
 @click.option('--end-until', '-eu', 'end_until', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'end-until'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getJobs(name, start_since, start_until, end_since, end_until, status, type, order_by, error_msg, location, runtime, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getJobs(name, start_since, start_until, end_since, end_until, status, type, order_by, error_msg, location, runtime, debug, output, pretty=0):
     """Get job details from the monitor"""
-    click.echo(json.dumps(api.getMonitorJobs(type=type, name=name, status=status, errorMsg=error_msg, location=location, startSince=start_since, startUntil=start_until, endSince=end_since, endUntil=end_until, runtime=runtime, orderBy=order_by, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getMonitorJobs(type=type, name=name, status=status, errorMsg=error_msg, location=location, startSince=start_since, startUntil=start_until, endSince=end_since, endUntil=end_until, runtime=runtime, orderBy=order_by, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 @jobs.command('start')
 @click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'ids'))
@@ -1347,8 +1974,12 @@ def getJobs(name, start_since, start_until, end_since, end_until, status, type, 
 @click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('jobs', 'start', 'poll-delay'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def startJobs(ids, paths, type, callback_url, param_file, param_dir, api_names, wait, poll_delay, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def startJobs(ids, paths, type, callback_url, param_file, param_dir, api_names, wait, poll_delay, debug, output, pretty=0):
     """Starts a job"""
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
     
     # Validate the options
     if ids is None and paths is None and type != 'TASKFLOW':
@@ -1359,7 +1990,12 @@ def startJobs(ids, paths, type, callback_url, param_file, param_dir, api_names, 
         raise click.BadParameter(i18n.getErrorText('jobs', 'start', 'api-name-missing'))
     
     if type in ['DMASK', 'DRS', 'DSS', 'MTT', 'PCS', 'WORKFLOW', 'TASKFLOW']:
-        click.echo(json.dumps(api.startCdiJobs(ids=ids, paths=paths, type=type, callbackUrl=callback_url, paramFile=param_file, paramDir=param_dir, apiNames=api_names, wait=wait, pollDelay=poll_delay, debug=debug), indent=pretty))
+
+        result = api.startCdiJobs(ids=ids, paths=paths, type=type, callbackUrl=callback_url, paramFile=param_file, paramDir=param_dir, apiNames=api_names, wait=wait, pollDelay=poll_delay, debug=debug)
+        if output:
+            write_output(output, pretty, result)
+        else:
+            click.echo(json.dumps(result, indent=pretty))
 
 @jobs.command('stop')
 @click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'ids'))
@@ -1369,9 +2005,17 @@ def startJobs(ids, paths, type, callback_url, param_file, param_dir, api_names, 
 @click.option('--clean', '-c', 'clean', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('jobs', 'stop', 'clean'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def stopJobs(ids, names, locations, types, clean, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def stopJobs(ids, names, locations, types, clean, debug, output, pretty=0):
     """Stops running jobs"""
-    click.echo(json.dumps(api.stopCdiJobs(ids=ids, names=names, locations=locations, types=types, clean=clean, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.stopCdiJobs(ids=ids, names=names, locations=locations, types=types, clean=clean, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 ###################################
 # Organisations commands section
@@ -1387,10 +2031,18 @@ def orgs():
 @click.option('--suborg-name', '-n', 'sub_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('orgs', 'get', 'sub-name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-def getOrgs(sub_id, sub_name, debug, pretty=0):
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getOrgs(sub_id, sub_name, debug, output, pretty=0):
     """Get organisation and sub-organisation details"""
     
-    click.echo(json.dumps(api.getOrg(subId=sub_id, subName=sub_name, debug=debug), indent=pretty))
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.getOrg(subId=sub_id, subName=sub_name, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 if __name__ == '__main__':
     idmc()
