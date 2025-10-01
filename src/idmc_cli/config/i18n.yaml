@@ -689,8 +689,16 @@ english:
           api-name-missing: If specifying the TASKFLOW type you must also include the api-name option.
       stop:
         options:
-          ids: Comma separated list of global unique identifiers for the running jobs.
+          ids: Comma separated list of global unique identifiers for the jobs to be stopped.
           names: Comma separated list of names of jobs to be stopped.
           locations: Comma separated list of locations of jobs to be stopped.
           types: "Comma separated list of types of jobs to be stopped. Valid values include: DMASK, DRS, DSS, MTT, PCS, WORKFLOW, TASKFLOW. The taskflow must be first published."
           clean: Flag to indicate a clean stop of the job should be executed. Not applicable for TASKFLOW types.
+
+    export:
+      options:
+        name: Used to provide a name for the export job.
+        ids: Comma separated list of global unique identifiers to be exported.
+        paths: Comma separated list of paths to the objects to be exported. Supports the '*' (matches everything) and '?' (matches any single character) wildcard characters.
+        types: "Comma separated list of object types to be exported. Supports the '*' (matches everything) and '?' (matches any single character) wildcard characters. Example types can include: DTEMPLATE, MTT, DSS, DMASK, DRS, DMAPPLET, MAPPLET, BSERVICE, HSCHEMA, PCS, FWCONFIG, CUSTOMSOURCE, MI_TASK, WORKFLOW, TASKFLOW, UDF, PROJECT, FOLDER, PROCESS, GUIDE, AI_CONNECTION, AI_SERVICE_CONNECTOR, PROCESS_OBJECT, B2BGW_MONITOR, B2BGW_CUSTOMER, B2BGW_SUPPLIER, MDM_BUSINESS_ENTITY, MDM_REFERENCE_ENTITY, MDM_HIERARCHY, MDM_RELATIONSHIP, MDM_JOB_DEFINITION, MDM_AUTHORIZATION, MDM_BUSINESS_EVENT, MDM_REPORT_SET, MDM_REPORT, MDM_DYNAMIC_POOL, MDM_APPLICATION, MDM_SRC_SYSTEM, MDM_APP_COMPONENT, MDM_APP_PAGE, CLEANSE, DEDUPLICATE, DICTIONARY, EXCEPTION, LABELER, PARSE, RULE_SPECIFICATION, VERIFIER."
+        dependencies: Flag to indicate if dependent objects should be included in the export.

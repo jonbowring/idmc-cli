@@ -2044,5 +2044,35 @@ def getOrgs(sub_id, sub_name, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
+###################################
+# Export / Import commands section
+###################################
+
+@idmc.command('export')
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('export', None, 'name'))
+@click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('export', None, 'ids'))
+@click.option('--paths', '-p', 'paths', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('export', None, 'paths'))
+@click.option('--types', '-t', 'types', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('export', None, 'types'))
+@click.option('--include-dependencies', '-d', 'dependencies', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('export', None, 'dependencies'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getOrgs(name, ids, paths, types, dependencies, debug, output, pretty=0):
+    """Used to export IDMC objects to a zip file"""
+    
+    if output and Path(output).suffix != '.zip':
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    #result = api.startExport(ids=ids, name=name, paths=paths, types=types, dependencies=dependencies, debug=debug)
+    # TODO running status = IN_PROGRESS
+    #result = api.getExportStatus(id=ids, expand=True, debug=debug)
+    result = api.downloadExport(id=ids, output=output, debug=debug)
+    if output:
+        #write_output(output, pretty, result)
+        with open(output, 'wb') as file:
+            file.write(result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
+
 if __name__ == '__main__':
     idmc()
