@@ -5927,7 +5927,7 @@ class InformaticaCloudAPI:
         return resp
     
 
-    def downloadExport(self, id=None, output=None, debug=False):
+    def downloadExport(self, id=None, debug=False):
         """This function downloads an export file"""
         
         # Check if cli has been configured
@@ -5970,6 +5970,34 @@ class InformaticaCloudAPI:
                 resp = r.content
                 break
         
+        return resp
+
+    def runExport(self, ids=None, name=None, paths=None, types=None, dependencies=False, pollDelay=3, debug=False):
+        """This function orchestrates an export of objects"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Start the export running
+        resp = self.startExport(ids=ids, name=name, paths=paths, types=types, dependencies=dependencies, debug=debug)
+        id = resp['id']
+
+        while True:
+
+            # Get the export status
+            status = self.getExportStatus(id=id, expand=False, debug=debug)
+
+            if status['status']['state'] == 'IN_PROGRESS':
+                time.sleep(pollDelay)
+                continue
+            elif status['status']['state'] == 'SUCCESSFUL':
+                resp = self.downloadExport(id=id, debug=debug)
+                break
+            else:
+                resp = status
+                break
+
         return resp
 
 # Expose the class as a variable
