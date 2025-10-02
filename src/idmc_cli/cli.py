@@ -2082,7 +2082,7 @@ def getOrgs(name, ids, paths, types, dependencies, poll_delay, debug, output, pr
 def getOrgs(name, path, poll_delay, debug, output, pretty=0):
     """Used to import objects to IDMC"""
     
-    if output and Path(output).suffix != '.zip':
+    if output and Path(output).suffix not in out_types:
         raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
 
     result = api.runImport(path=path, name=name, pollDelay=poll_delay, debug=debug)
