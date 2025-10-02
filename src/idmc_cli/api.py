@@ -4,6 +4,7 @@ import fnmatch
 import time
 import re
 import shortuuid
+from pathlib import Path
 from datetime import datetime, timezone, timedelta
 from urllib.parse import quote
 from idmc_cli.config import config
@@ -5769,6 +5770,235 @@ class InformaticaCloudAPI:
         
         return result
     
+
+    #############################
+    # Export / Import section
+    #############################
+    
+    def startExport(self, ids=None, name=None, paths=None, types=None, dependencies=False, debug=False):
+        """This function starts and export job"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Parse the comma separated values
+        objects = []
+        if ids:
+            ids = ids.split(',')
+            for id in ids:
+                obj = {
+                    'id': id,
+                    'includeDependencies': dependencies
+                }
+                objects.append(obj)
+    
+        # Get a list of all objects to support a wildcard search if needed
+        
+        
+        if paths:
+            # Loop through the paths, search for matching objects and execute the jobs
+            paths = paths.split(',')
+            for path in paths:
+                location = Path(path).parent
+                lookup = self.getObjects(location=location, debug=debug)
+                
+                if '*' in path or '?' in path:
+                    filtered = [item for item in lookup if fnmatch.fnmatch(item['path'], path) ]
+                    for fil in filtered:
+                        obj = {
+                            'id': fil['id'],
+                            'includeDependencies': dependencies
+                        }
+                        objects.append(obj)
+                else:
+                    filtered = [item for item in lookup if item['path'] == path ][0]
+                    obj = {
+                        'id': filtered['id'],
+                        'includeDependencies': dependencies
+                    }
+                    objects.append(obj)
+
+        if types:
+            # Loop through the types, search for matching objects and execute the jobs
+            types = types.split(',')
+            for type in types:
+                lookup = self.getObjects(type=type, debug=debug)
+                filtered = [item for item in lookup if item['type'] == type ]
+                for fil in filtered:
+                    obj = {
+                        'id': fil['id'],
+                        'includeDependencies': dependencies
+                    }
+                    objects.append(obj)
+                
+        
+        attempts = 0
+        resp = ''
+
+        while True:
+        
+            data = {}
+            if name:
+                data['name'] = name
+            data['objects'] = objects
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/export'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.post(url, headers=headers, json=data)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def getExportStatus(self, id=None, expand=None, debug=False):
+        """This function gets the status of an export job"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        resp = ''
+
+        while True:
+            
+            params = {}
+            if expand:
+                params['expand'] = 'objects'
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/export/{ quote(id) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.get(url, headers=headers, params=params)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def downloadExport(self, id=None, debug=False):
+        """This function downloads an export file"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        resp = ''
+
+        while True:
+
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/export/{ quote(id) }/package'
+            headers = { 'Content-Type': 'application/zip', 'INFA-SESSION-ID': self.session_id }
+            r = requests.get(url, headers=headers)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.content
+                break
+        
+        return resp
+
+    def runExport(self, ids=None, name=None, paths=None, types=None, dependencies=False, pollDelay=3, debug=False):
+        """This function orchestrates an export of objects"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Start the export running
+        resp = self.startExport(ids=ids, name=name, paths=paths, types=types, dependencies=dependencies, debug=debug)
+        id = resp['id']
+
+        while True:
+
+            # Get the export status
+            status = self.getExportStatus(id=id, expand=False, debug=debug)
+
+            if status['status']['state'] == 'IN_PROGRESS':
+                time.sleep(pollDelay)
+                continue
+            elif status['status']['state'] == 'SUCCESSFUL':
+                resp = self.downloadExport(id=id, debug=debug)
+                break
+            else:
+                resp = status
+                break
+
+        return resp
 
 # Expose the class as a variable
 api = InformaticaCloudAPI()
