@@ -5941,7 +5941,7 @@ class InformaticaCloudAPI:
 
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/export/{ quote(id) }/package'
-            headers = { 'Content-Type': 'application/zip', 'INFA-SESSION-ID': self.session_id }
+            headers = { 'Accept': 'application/zip', 'INFA-SESSION-ID': self.session_id }
             r = requests.get(url, headers=headers)
             
             if debug:
@@ -5993,6 +5993,182 @@ class InformaticaCloudAPI:
                 continue
             elif status['status']['state'] == 'SUCCESSFUL':
                 resp = self.downloadExport(id=id, debug=debug)
+                break
+            else:
+                resp = status
+                break
+
+        return resp
+    
+    def uploadImport(self, filePath=None, debug=False):
+        """This function is used to upload an import package to IDMC"""
+
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        resp = ''
+
+        while True:
+
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/import/package'
+            filePath = Path(filePath)
+            files = {'package': (filePath.name, open(filePath, 'rb'), 'application/zip')}
+            headers = { 'INFA-SESSION-ID': self.session_id }
+            r = requests.post(url, headers=headers, files=files)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+    def startImport(self, id=None, name=None, debug=False):
+        """This function starts an import job"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        resp = ''
+
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/import/{ quote(id) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            data = {
+                'name' : name + '-' + shortuuid.uuid()[:8],
+                'importSpecification' : {
+                    'defaultConflictResolution' : 'REUSE'
+                }
+            }
+            r = requests.post(url, headers=headers, json=data)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+    def getImportStatus(self, id=None, expand=None, debug=False):
+        """This function gets the status of an import job"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        resp = ''
+
+        while True:
+            
+            params = {}
+            if expand:
+                params['expand'] = 'objects'
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/import/{ quote(id) }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.get(url, headers=headers, params=params)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+    def runImport(self, path=None, name=None, pollDelay=3, debug=False):
+        """This function orchestrates an import of objects"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Upload and start the import
+        resp = self.uploadImport(filePath=path, debug=debug)
+        id = resp['jobId']
+        resp = self.startImport(id=id, name=name, debug=debug)
+
+        while True:
+
+            # Get the import status
+            status = self.getImportStatus(id=id, expand=False, debug=debug)
+
+            if status['status']['state'] == 'IN_PROGRESS':
+                time.sleep(pollDelay)
+                continue
+            elif status['status']['state'] == 'SUCCESSFUL':
+                resp = status
                 break
             else:
                 resp = status

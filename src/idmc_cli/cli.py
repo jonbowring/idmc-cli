@@ -2057,7 +2057,7 @@ def getOrgs(sub_id, sub_name, debug, output, pretty=0):
 @click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('export', None, 'poll-delay'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+@click.option('--output', '-O', 'output', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
 def getOrgs(name, ids, paths, types, dependencies, poll_delay, debug, output, pretty=0):
     """Used to export IDMC objects to a zip file"""
     
@@ -2071,6 +2071,25 @@ def getOrgs(name, ids, paths, types, dependencies, poll_delay, debug, output, pr
             file.write(result)
     else:
         click.echo(result)
+
+@idmc.command('import')
+@click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('import', None, 'name'))
+@click.option('--path', '-p', 'path', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('import', None, 'path'))
+@click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('import', None, 'poll-delay'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getOrgs(name, path, poll_delay, debug, output, pretty=0):
+    """Used to import objects to IDMC"""
+    
+    if output and Path(output).suffix != '.zip':
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    result = api.runImport(path=path, name=name, pollDelay=poll_delay, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
 
 if __name__ == '__main__':
     idmc()
