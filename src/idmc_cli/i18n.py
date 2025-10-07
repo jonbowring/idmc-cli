@@ -2,6 +2,7 @@ import yaml
 import sys
 from pathlib import Path
 
+CLASS_PATH = Path(__file__)
 I18N_PATH = 'config/i18n.yaml'
 
 class I18n:
@@ -11,12 +12,11 @@ class I18n:
             # Running from a onefile PyInstaller bundle
             relative_path = Path(I18N_PATH)
             base_path = Path(sys._MEIPASS)
+            self.i18n_path = base_path / relative_path
         else:
-            # Running from source or a onedir PyInstaller bundle
-            relative_path = Path(I18N_PATH)
-            base_path = '.'
+            # Running from source
+            self.i18n_path = CLASS_PATH.parent / I18N_PATH
 
-        self.i18n_path = base_path / relative_path
         self.data = {}
         self.load()
 
