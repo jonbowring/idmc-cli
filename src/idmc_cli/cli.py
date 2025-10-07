@@ -2091,5 +2091,36 @@ def getOrgs(name, path, poll_delay, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
+###################################
+# Metering commands section
+###################################
+
+@idmc.group('metering')
+def metering():
+    """Metering commands."""
+    pass
+
+@metering.command('summary')
+@click.option('--start', '-s', 'start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', 'summary', 'start'))
+@click.option('--end', '-e', 'end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', 'summary', 'end'))
+@click.option('--linked', '-l', 'linked', flag_value='TRUE', required=False, type=click.STRING, is_flag=True, help=i18n.getHelpOption('metering', 'summary', 'linked'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+def getMeteringSummary(start, end, linked, debug, output, pretty=0):
+    """Used to get a metering summary report"""
+    
+    if output and Path(output).suffix not in out_types:
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    if not linked:
+        linked = 'FALSE'
+    
+    result = api.startMeteringSummary(startDate=start, endDate=end, linked=linked, debug=debug)
+    if output:
+        write_output(output, pretty, result)
+    else:
+        click.echo(json.dumps(result, indent=pretty))
+
 if __name__ == '__main__':
     idmc()

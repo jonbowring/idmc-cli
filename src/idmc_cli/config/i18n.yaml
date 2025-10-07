@@ -659,6 +659,13 @@ english:
           sub-id: ID of sub-organisation to be returned.
           sub-name: Name of sub-organisation to be returned.
     
+    metering:
+      summary:
+        options:
+          start: Start of the date range in ISO 8601 format. For example, "2022-08-12T00:00:00Z".
+          end: End of the date range in ISO 8601 format. For example, "2022-08-12T00:00:00Z".
+          linked: Indicates whether to return usage information from the parent organization and all its linked organizations.
+    
     jobs:
       get:
         options:
