@@ -84,12 +84,12 @@ def configure():
 
     # Get and set the pod
     pod = config.get("pod")
-    pod = input(f"Pod [{ pod }]: ") or pod
+    pod = input(f"Pod (e.g. 'na1') [{ pod }]: ") or pod
     config.set("pod", pod)
 
     # Get and set the region
     region = config.get("region")
-    region = input(f"Region [{ region }]: ") or region
+    region = input(f"Region (e.g. 'dm-us') [{ region }]: ") or region
     config.set("region", region)
 
 
@@ -2057,7 +2057,7 @@ def getOrgs(sub_id, sub_name, debug, output, pretty=0):
 @click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('export', None, 'poll-delay'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
-@click.option('--output', '-O', 'output', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('common', None, 'output'))
+@click.option('--output', '-O', 'output', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('export', None, 'output'))
 def getOrgs(name, ids, paths, types, dependencies, poll_delay, debug, output, pretty=0):
     """Used to export IDMC objects to a zip file"""
     
@@ -2066,7 +2066,6 @@ def getOrgs(name, ids, paths, types, dependencies, poll_delay, debug, output, pr
 
     result = api.runExport(ids=ids, name=name, paths=paths, types=types, dependencies=dependencies, pollDelay=poll_delay, debug=debug)
     if output:
-        #write_output(output, pretty, result)
         with open(output, 'wb') as file:
             file.write(result)
     else:
@@ -2090,6 +2089,111 @@ def getOrgs(name, path, poll_delay, debug, output, pretty=0):
         write_output(output, pretty, result)
     else:
         click.echo(json.dumps(result, indent=pretty))
+
+###################################
+# Metering commands section
+###################################
+
+@idmc.group('metering')
+def metering():
+    """Metering commands."""
+    pass
+
+@metering.command('summary')
+@click.option('--start', '-s', 'start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'start'))
+@click.option('--end', '-e', 'end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'end'))
+@click.option('--linked', '-l', 'linked', flag_value='TRUE', required=False, type=click.STRING, is_flag=True, help=i18n.getHelpOption('metering', None, 'linked'))
+@click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('metering', None, 'poll-delay'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'output'))
+def getMeteringSummary(start, end, linked, poll_delay, debug, output, pretty=0):
+    """Used to get a metering summary report"""
+    
+    if output and Path(output).suffix != '.zip':
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    if not linked:
+        linked = 'FALSE'
+    
+    result = api.runMetering(type='SUMMARY', startDate=start, endDate=end, linked=linked, pollDelay=poll_delay, debug=debug)
+    if output:
+        with open(output, 'wb') as file:
+            file.write(result)
+    else:
+        click.echo(result)
+
+@metering.command('project')
+@click.option('--start', '-s', 'start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'start'))
+@click.option('--end', '-e', 'end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'end'))
+@click.option('--linked', '-l', 'linked', flag_value='TRUE', required=False, type=click.STRING, is_flag=True, help=i18n.getHelpOption('metering', None, 'linked'))
+@click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('metering', None, 'poll-delay'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'output'))
+def getMeteringProject(start, end, linked, poll_delay, debug, output, pretty=0):
+    """Used to get a metering project report"""
+    
+    if output and Path(output).suffix != '.zip':
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    if not linked:
+        linked = 'FALSE'
+    
+    result = api.runMetering(type='PROJECT_FOLDER', startDate=start, endDate=end, linked=linked, pollDelay=poll_delay, debug=debug)
+    if output:
+        with open(output, 'wb') as file:
+            file.write(result)
+    else:
+        click.echo(result)
+
+@metering.command('asset')
+@click.option('--start', '-s', 'start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'start'))
+@click.option('--end', '-e', 'end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'end'))
+@click.option('--linked', '-l', 'linked', flag_value='TRUE', required=False, type=click.STRING, is_flag=True, help=i18n.getHelpOption('metering', None, 'linked'))
+@click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('metering', None, 'poll-delay'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'output'))
+def getMeteringProject(start, end, linked, poll_delay, debug, output, pretty=0):
+    """Used to get a metering asset report"""
+    
+    if output and Path(output).suffix != '.zip':
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    if not linked:
+        linked = 'FALSE'
+    
+    result = api.runMetering(type='ASSET', startDate=start, endDate=end, linked=linked, pollDelay=poll_delay, debug=debug)
+    if output:
+        with open(output, 'wb') as file:
+            file.write(result)
+    else:
+        click.echo(result)
+
+@metering.command('job')
+@click.option('--start', '-s', 'start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'start'))
+@click.option('--end', '-e', 'end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'end'))
+@click.option('--linked', '-l', 'linked', flag_value='TRUE', required=False, type=click.STRING, is_flag=True, help=i18n.getHelpOption('metering', None, 'linked'))
+@click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('metering', None, 'poll-delay'))
+@click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
+@click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
+@click.option('--output', '-O', 'output', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'output'))
+def getMeteringProject(start, end, linked, poll_delay, debug, output, pretty=0):
+    """Used to get a metering job level report"""
+    
+    if output and Path(output).suffix != '.zip':
+        raise click.BadParameter(i18n.getErrorText('common', None, 'bad-file-type'))
+
+    if not linked:
+        linked = 'FALSE'
+    
+    result = api.runMetering(type='JOB', startDate=start, endDate=end, linked=linked, pollDelay=poll_delay, debug=debug)
+    if output:
+        with open(output, 'wb') as file:
+            file.write(result)
+    else:
+        click.echo(result)
 
 if __name__ == '__main__':
     idmc()
