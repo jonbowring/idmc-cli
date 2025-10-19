@@ -5344,7 +5344,7 @@ class InformaticaCloudAPI:
         while True:
         
             # Execute the API call
-            url = f"https://usw1.dmp-us.informaticacloud.com/jls-di/api/v1/Orgs('{ orgId }')/JobLogEntries"
+            url = f"https://{ self.pod }.{ self.region }.informaticacloud.com/jls-di/api/v1/Orgs('{ orgId }')/JobLogEntries"
             xsrf = shortuuid.uuid()
             headers = { 'Accept': 'application/json', 'XSRF_TOKEN': xsrf, 'Cookie': f'USER_SESSION={ self.session_id }; XSRF_TOKEN={ xsrf }' }
             params = { '$top': self.page_size, '$skip': skip }
@@ -6180,8 +6180,8 @@ class InformaticaCloudAPI:
     # Metering section
     #############################
 
-    def startMeteringSummary(self, startDate=None, endDate=None, linked='FALSE', debug=False, combined='FALSE',):
-        """This function starts a metering summary job"""
+    def startMeteringJob(self, type=None, startDate=None, endDate=None, linked='FALSE', debug=False, combined='FALSE'):
+        """This function starts a metering job"""
         
         # Check if cli has been configured
         if not self.username:
@@ -6200,15 +6200,24 @@ class InformaticaCloudAPI:
         while True:
             
             # Execute the API call
-            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/license/metering/ExportMeteringData'
-            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            data = {
-                'startDate': startDate,
-                'endDate': endDate,
-                'jobType': 'SUMMARY',
-                'combinedMeterUsage': combined,
-                'allLinkedOrgs': linked
+            if type == 'JOB':
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/license/metering/ExportServiceJobLevelMeteringData'
+                data = {
+                    'startDate': startDate,
+                    'endDate': endDate,
+                    'allMeters': True
                 }
+            else:
+                url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/license/metering/ExportMeteringData'
+                data = {
+                    'startDate': startDate,
+                    'endDate': endDate,
+                    'jobType': type,
+                    'allLinkedOrgs': linked
+                }
+                if type in ['SUMMARY', 'PROJECT']:
+                    data['combinedMeterUsage'] = combined
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
             r = requests.post(url, headers=headers, json=data)
             
             if debug:
@@ -6237,6 +6246,131 @@ class InformaticaCloudAPI:
                 resp = r.json()
                 break
         
+        return resp
+    
+
+    def getMeteringStatus(self, id=None, debug=False):
+        """This function gets the status for a metering job"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        resp = ''
+
+        while True:
+            
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/license/metering/ExportMeteringData/{ id }'
+            headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
+            r = requests.get(url, headers=headers)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.json()
+                break
+        
+        return resp
+    
+
+    def downloadMetering(self, id=None, debug=False):
+        """This function downloads a metering file"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        attempts = 0
+        resp = ''
+
+        while True:
+
+            # Execute the API call
+            url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/license/metering/ExportMeteringData/{ id }/download'
+            headers = { 'INFA-SESSION-ID': self.session_id }
+            r = requests.get(url, headers=headers)
+            
+            if debug:
+                self.debugRequest(r, attempts)
+            
+            # Check for expired session token
+            if r.status_code == 401 and attempts <= self.max_attempts:
+                self.login()
+                attempts = attempts + 1
+                continue
+            # Abort after the maximum number of attempts
+            elif attempts > self.max_attempts:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            # Else if there is an unexpected error return a failure
+            elif r.status_code < 200 or r.status_code > 299:
+                resp = {
+                    'status': r.status_code,
+                    'text': r.text
+                }
+                break
+            else:
+                resp = r.content
+                break
+        
+        return resp
+    
+
+    def runMetering(self, type=None, startDate=None, endDate=None, linked=None, pollDelay=3, debug=False):
+        """This function orchestrates an metering report"""
+        
+        # Check if cli has been configured
+        if not self.username:
+            return 'CLI needs to be configured. Run the command "idmc configure"'
+        
+        # Start the metering job
+        resp = self.startMeteringJob(type=type, startDate=startDate, endDate=endDate, linked=linked, combined='TRUE', debug=debug)
+        
+        id = resp['jobId']
+        running = ['CREATED', 'PROCESSING']
+        print('Waiting for metering job to complete. This can take a few minutes..')
+
+        while True:
+
+            # Get the export status
+            status = self.getMeteringStatus(id=id, debug=debug)
+
+            if status['status'] in running:
+                time.sleep(pollDelay)
+                continue
+            elif status['status'] == 'SUCCESS':
+                resp = self.downloadMetering(id=id, debug=debug)
+                break
+            else:
+                resp = status
+                break
+        
+        print('Done!')
         return resp
 
 
