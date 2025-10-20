@@ -46,7 +46,7 @@ class InformaticaCloudAPI:
         url = f'https://{ self.region }.informaticacloud.com/saas/public/core/v3/login'
         headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
         data = { 'username': self.username, 'password': self.password }
-        r = requests.post(url, json=data, headers=headers)
+        r = requests.post(url, json=data, headers=headers, allow_redirects=False)
 
         if debug:
             self.debugRequest(r)
@@ -76,7 +76,7 @@ class InformaticaCloudAPI:
         # Execute the API call
         url = f'https://{ self.region }.informaticacloud.com/saas/public/core/v3/logout'
         headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-        r = requests.post(url, headers=headers)
+        r = requests.post(url, headers=headers, allow_redirects=False)
 
         if debug:
             self.debugRequest(r)
@@ -119,7 +119,7 @@ class InformaticaCloudAPI:
                 params['q'] = f'userId=="{ id }"'
             elif username:
                 params['q'] = f'userName=="{ username }"'
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -186,7 +186,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users/{ quote(id) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.delete(url, headers=headers)
+            r = requests.delete(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -299,7 +299,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -379,7 +379,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users/{ quote( id ) }/addRoles'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -461,7 +461,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users/{ quote( id ) }/removeRoles'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -543,7 +543,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users/{ quote( id ) }/addGroups'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -626,7 +626,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/users/{ quote( id ) }/removeGroups'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -686,7 +686,7 @@ class InformaticaCloudAPI:
                 params['q'] = f'roleName=="{ name }"'
             if expand:
                 params['expand'] = f'privileges'
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -761,7 +761,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/roles'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -840,7 +840,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/roles/{ quote( id ) }/addPrivileges'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -922,7 +922,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/roles/{ quote( id ) }/removePrivileges'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -981,7 +981,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/roles/{ quote(id) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.delete(url, headers=headers)
+            r = requests.delete(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1037,7 +1037,7 @@ class InformaticaCloudAPI:
             params = {}
             if all:
                 params['q'] = f'status==All'
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1093,7 +1093,7 @@ class InformaticaCloudAPI:
                 params['q'] = f'userGroupId=="{ id }"'
             elif name:
                 params['q'] = f'userGroupName=="{ name }"'
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1197,7 +1197,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/userGroups'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1276,7 +1276,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/userGroups/{ quote( id ) }/addRoles'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -1335,7 +1335,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/userGroups/{ quote(id) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.delete(url, headers=headers)
+            r = requests.delete(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1441,7 +1441,7 @@ class InformaticaCloudAPI:
             if len(qargs) > 0:
                 params['q'] = ' and '.join(qargs)
 
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1511,7 +1511,7 @@ class InformaticaCloudAPI:
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
             params = { 'limit': 50, 'skip': skip, 'refType': refType }
 
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1578,7 +1578,7 @@ class InformaticaCloudAPI:
                 obj['path'] = path
             data['objects'].append(obj)
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1625,7 +1625,7 @@ class InformaticaCloudAPI:
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
             data = json.loads(body)
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1692,7 +1692,7 @@ class InformaticaCloudAPI:
             }
             data.append(obj)
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1772,7 +1772,7 @@ class InformaticaCloudAPI:
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/TagObjects'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1838,7 +1838,7 @@ class InformaticaCloudAPI:
             }
             data.append(obj)
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1918,7 +1918,7 @@ class InformaticaCloudAPI:
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/UntagObjects'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -1980,7 +1980,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/projects'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -2044,7 +2044,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/projects/{ quote( id ) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.patch(url, headers=headers, json=data)
+            r = requests.patch(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -2104,7 +2104,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/projects/{ quote( id ) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.delete(url, headers=headers)
+            r = requests.delete(url, headers=headers, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -2176,7 +2176,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/projects/{ projectId }/folders'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -2242,7 +2242,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/folders/{ quote( id ) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.patch(url, headers=headers, json=data)
+            r = requests.patch(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -2303,7 +2303,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/folders/{ quote( id ) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.delete(url, headers=headers)
+            r = requests.delete(url, headers=headers, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -2382,7 +2382,7 @@ class InformaticaCloudAPI:
             if includeContainer:
                 data['objects'][0]['includeContainerAssets'] = includeContainer
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -2469,7 +2469,7 @@ class InformaticaCloudAPI:
             if description:
                 data['description'] = description
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -2540,7 +2540,7 @@ class InformaticaCloudAPI:
             if includeContainer:
                 data['objects'][0]['includeContainerAssets'] = includeContainer
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -2622,7 +2622,7 @@ class InformaticaCloudAPI:
                 'objects': objects
             }
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -2694,7 +2694,7 @@ class InformaticaCloudAPI:
             if relaxValidation:
                 data['relaxObjectSpecificationValidation'] = relaxValidation
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -2777,7 +2777,7 @@ class InformaticaCloudAPI:
             if relaxValidation:
                 data['relaxObjectSpecificationValidation'] = relaxValidation
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -2837,7 +2837,7 @@ class InformaticaCloudAPI:
             if relaxValidation:
                 data['relaxObjectSpecificationValidation'] = relaxValidation
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -2908,7 +2908,7 @@ class InformaticaCloudAPI:
             if includeContainer:
                 data['objects'][0]['includeContainerAssets'] = includeContainer
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -2990,7 +2990,7 @@ class InformaticaCloudAPI:
                 'objects': objects
             }
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3035,7 +3035,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/sourceControlAction/{ quote(id) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3089,7 +3089,7 @@ class InformaticaCloudAPI:
             if projectNames:
                 params['projectNames'] = projectNames
 
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3154,7 +3154,7 @@ class InformaticaCloudAPI:
             if branch:
                 params['q'] += f' and branch=="{ branch }"'
 
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3219,7 +3219,7 @@ class InformaticaCloudAPI:
             if repoId:
                 params['repoConnectionId'] = repoId
 
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3284,7 +3284,7 @@ class InformaticaCloudAPI:
                 'outputFormat': format
             }
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3355,7 +3355,7 @@ class InformaticaCloudAPI:
             if name:
                 params['q'] += f';objectName=="{ name }"'
 
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3413,7 +3413,7 @@ class InformaticaCloudAPI:
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/activity/activityMonitor'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
             params = { 'details': 'true' }
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3481,7 +3481,7 @@ class InformaticaCloudAPI:
                 params['taskId'] = taskId
             if runId:
                 params['runId'] = runId
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3570,7 +3570,7 @@ class InformaticaCloudAPI:
             else:
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/agent'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3630,7 +3630,7 @@ class InformaticaCloudAPI:
             else:
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/agent/details'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3687,7 +3687,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/agent/{ quote(id) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.delete(url, headers=headers)
+            r = requests.delete(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3750,7 +3750,7 @@ class InformaticaCloudAPI:
             else:
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3804,7 +3804,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3927,7 +3927,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(groupId) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -3985,7 +3985,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.delete(url, headers=headers)
+            r = requests.delete(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4049,7 +4049,7 @@ class InformaticaCloudAPI:
             else:
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/selections'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4168,7 +4168,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/selections'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4238,7 +4238,7 @@ class InformaticaCloudAPI:
             else:
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/configs/details{ platform }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4341,7 +4341,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/configs{ platform }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4402,7 +4402,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/runtimeEnvironment/{ quote(id) }/configs'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.delete(url, headers=headers)
+            r = requests.delete(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4470,7 +4470,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/agent/service'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4544,7 +4544,7 @@ class InformaticaCloudAPI:
             if time_to:
                 params['q'] += f';updateTime<="{ time_to }"'
 
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4637,7 +4637,7 @@ class InformaticaCloudAPI:
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
 
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4759,7 +4759,7 @@ class InformaticaCloudAPI:
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule/{ quote( id ) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
 
-            r = requests.patch(url, headers=headers, json=data)
+            r = requests.patch(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4817,7 +4817,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/schedule/{ quote( id ) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.delete(url, headers=headers)
+            r = requests.delete(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -4888,7 +4888,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/Users/ChangePassword'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -4952,7 +4952,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/Users/ResetPassword'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -5025,7 +5025,7 @@ class InformaticaCloudAPI:
             else:
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -5096,7 +5096,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -5168,7 +5168,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions/{ quote( acl ) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -5231,7 +5231,7 @@ class InformaticaCloudAPI:
             else:
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/objects/{ quote( id ) }/permissions'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.delete(url, headers=headers)
+            r = requests.delete(url, headers=headers, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -5287,7 +5287,7 @@ class InformaticaCloudAPI:
             else:
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/org'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -5344,7 +5344,6 @@ class InformaticaCloudAPI:
         while True:
         
             # Execute the API call
-            url = f"https://{ self.pod }.{ self.region }.informaticacloud.com/jls-di/api/v1/Orgs('{ orgId }')/JobLogEntries"
             xsrf = shortuuid.uuid()
             headers = { 'Accept': 'application/json', 'XSRF_TOKEN': xsrf, 'Cookie': f'USER_SESSION={ self.session_id }; XSRF_TOKEN={ xsrf }' }
             params = { '$top': self.page_size, '$skip': skip }
@@ -5357,30 +5356,32 @@ class InformaticaCloudAPI:
                 statuses = status.split(',')
                 statuses = [f"status eq '{ item }'" for item in statuses]
                 statuses = ' or '.join(statuses)
-                filters.append(f"({ statuses })")
+                filters.append(quote(f"({ statuses })"))
             if name:
-                filters.append(f"(contains(assetName,'{ name }'))")
+                filters.append(quote(f"(contains(assetName,'{ name }'))"))
             if type:
-                filters.append(f"(assetType eq '{ type }')")
+                filters.append(quote(f"(assetType eq '{ type }')"))
             if errorMsg:
-                filters.append(f"(contains(errorMessage,'{ errorMsg }'))")
+                filters.append(quote(f"(contains(errorMessage,'{ errorMsg }'))"))
             if location:
-                filters.append(f"(contains(location,'{ location }'))")
+                filters.append(quote(f"(contains(location,'{ location }'))"))
             if startSince:
-                filters.append(f"(startTime ge { startSince })")
+                filters.append(quote(f"(startTime ge { startSince })"))
             if startUntil:
-                filters.append(f"(startTime le { startUntil })")
+                filters.append(quote(f"(startTime le { startUntil })"))
             if endSince:
-                filters.append(f"(startTime ge { endSince })")
+                filters.append(quote(f"(startTime ge { endSince })"))
             if endUntil:
-                filters.append(f"(startTime le { endUntil })")
+                filters.append(quote(f"(startTime le { endUntil })"))
             if runtime:
-                filters.append(f"(contains(runtimeEnvName,'{ runtime }'))")
+                filters.append(quote(f"(contains(runtimeEnvName,'{ runtime }'))"))
             
             if len(filters) > 0:
-                params['$filter'] = ' and '.join(filters)
-            
-            r = requests.get(url, headers=headers, params=params)
+                #params['$filter'] = ' and '.join(filters)
+                url = f"https://{ self.pod }.{ self.region }.informaticacloud.com/jls-di/api/v1/Orgs('{ orgId }')/JobLogEntries?%24filter={ ' and '.join(filters) }"
+            else:
+                url = f"https://{ self.pod }.{ self.region }.informaticacloud.com/jls-di/api/v1/Orgs('{ orgId }')/JobLogEntries"
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -5444,7 +5445,7 @@ class InformaticaCloudAPI:
                     while True:
                         url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/active-bpel/services/tf/status/{ quote(job['RunId']) }'
                         headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-                        r = requests.get(url, headers=headers, auth=(self.username, self.password))
+                        r = requests.get(url, headers=headers, auth=(self.username, self.password), allow_redirects=False)
 
                         if debug:
                             self.debugRequest(r, attempts)
@@ -5495,7 +5496,7 @@ class InformaticaCloudAPI:
                             'runId': job['runId']
                         }
                         headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-                        r = requests.get(url, headers=headers, params=params)
+                        r = requests.get(url, headers=headers, params=params, allow_redirects=False)
 
                         if debug:
                             self.debugRequest(r, attempts)
@@ -5604,7 +5605,7 @@ class InformaticaCloudAPI:
             if type == 'TASKFLOW':
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/active-bpel/rt/{ apiName }'
                 headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-                r = requests.get(url, headers=headers, auth=(self.username, self.password))
+                r = requests.get(url, headers=headers, auth=(self.username, self.password), allow_redirects=False)
             else:
                 data = {
                     '@type': 'job',
@@ -5621,7 +5622,7 @@ class InformaticaCloudAPI:
                 # Execute the API call
                 url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/job'
                 headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-                r = requests.post(url, headers=headers, json=data)
+                r = requests.post(url, headers=headers, json=data, allow_redirects=False)
 
             if debug:
                 self.debugRequest(r, attempts)
@@ -5716,7 +5717,7 @@ class InformaticaCloudAPI:
                     url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/active-bpel/restadmin/processes/{ quote(job['cli_job_id']) }/terminate?isManual=true'
                     xsrf = shortuuid.uuid()
                     headers = { 'Accept': 'application/json', 'XSRF_TOKEN': xsrf, 'Cookie': f'USER_SESSION={ self.session_id }; XSRF_TOKEN={ xsrf }', 'Content-Type': 'application/json' }
-                    r = requests.put(url, headers=headers)
+                    r = requests.put(url, headers=headers, allow_redirects=False)
                 else:
                     data = {
                         '@type': 'job',
@@ -5731,7 +5732,7 @@ class InformaticaCloudAPI:
                     # Execute the API call
                     url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/api/v2/job/stop'
                     headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'icSessionId': self.session_id }
-                    r = requests.post(url, headers=headers, json=data, params=params)
+                    r = requests.post(url, headers=headers, json=data, params=params, allow_redirects=False)
 
                 if debug:
                     self.debugRequest(r, attempts)
@@ -5846,7 +5847,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/export'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -5896,7 +5897,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/export/{ quote(id) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -5942,7 +5943,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/export/{ quote(id) }/package'
             headers = { 'Accept': 'application/zip', 'INFA-SESSION-ID': self.session_id }
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -6017,7 +6018,7 @@ class InformaticaCloudAPI:
             filePath = Path(filePath)
             files = {'package': (filePath.name, open(filePath, 'rb'), 'application/zip')}
             headers = { 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, files=files)
+            r = requests.post(url, headers=headers, files=files, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -6068,7 +6069,7 @@ class InformaticaCloudAPI:
                     'defaultConflictResolution' : 'REUSE'
                 }
             }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -6117,7 +6118,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/import/{ quote(id) }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.get(url, headers=headers, params=params)
+            r = requests.get(url, headers=headers, params=params, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -6218,7 +6219,7 @@ class InformaticaCloudAPI:
                 if type in ['SUMMARY', 'PROJECT']:
                     data['combinedMeterUsage'] = combined
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -6264,7 +6265,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/license/metering/ExportMeteringData/{ id }'
             headers = { 'Accept': 'application/json', 'Content-Type': 'application/json', 'INFA-SESSION-ID': self.session_id }
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
@@ -6310,7 +6311,7 @@ class InformaticaCloudAPI:
             # Execute the API call
             url = f'https://{ self.pod }.{ self.region }.informaticacloud.com/saas/public/core/v3/license/metering/ExportMeteringData/{ id }/download'
             headers = { 'INFA-SESSION-ID': self.session_id }
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, allow_redirects=False)
             
             if debug:
                 self.debugRequest(r, attempts)
