@@ -129,7 +129,7 @@ def users():
     """User management commands."""
     pass
 
-@users.command('get')
+@users.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'get', 'id'))
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'get', 'username'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -148,7 +148,7 @@ def getUsers(id, username, debug, output, pretty=0):
         click.echo(json.dumps(result, indent=pretty))
 
 
-@users.command('delete')
+@users.command('delete', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'delete', 'id'))
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'delete', 'username'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -169,7 +169,7 @@ def deleteUser(id, username, debug, output, pretty=0):
         click.echo(json.dumps(result, indent=pretty))
     
 
-@users.command('create')
+@users.command('create', epilog=i18n.getHelpExample('common', None))
 @click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'name'))
 @click.option('--first-name', '-f', 'first_name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'first_name'))
 @click.option('--last-name', '-l', 'last_name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('users', 'create', 'last_name'))
@@ -204,7 +204,7 @@ def createUser(name, first_name, last_name, email, password, description, title,
         click.echo(json.dumps(result, indent=pretty))
     
 
-@users.command('add-roles')
+@users.command('add-roles', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-roles', 'id'))
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-roles', 'username'))
 @click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-roles', 'role_ids'))
@@ -229,7 +229,7 @@ def addUserRoles(id, username, role_ids, role_names, debug, output, pretty=0):
         click.echo(json.dumps(result, indent=pretty))
 
 
-@users.command('remove-roles')
+@users.command('remove-roles', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-roles', 'id'))
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-roles', 'username'))
 @click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-roles', 'role_ids'))
@@ -254,7 +254,7 @@ def removeUserRoles(id, username, role_ids, role_names, debug, output, pretty=0)
         click.echo(json.dumps(result, indent=pretty))
 
 
-@users.command('add-groups')
+@users.command('add-groups', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-groups', 'id'))
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-groups', 'username'))
 @click.option('--group-ids', '-gi', 'group_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'add-groups', 'group_ids'))
@@ -279,7 +279,7 @@ def addUserGroups(id, username, group_ids, group_names, debug, output, pretty=0)
         click.echo(json.dumps(result, indent=pretty))
 
 
-@users.command('remove-groups')
+@users.command('remove-groups', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-groups', 'id'))
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-groups', 'username'))
 @click.option('--group-ids', '-gi', 'group_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('users', 'remove-groups', 'group_ids'))
@@ -313,7 +313,7 @@ def password():
     """Password management commands."""
     pass
 
-@password.command('change')
+@password.command('change', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'change', 'id'))
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'change', 'username'))
 @click.option('--old-password', '-o', 'old_password', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'change', 'old_password'))
@@ -335,7 +335,7 @@ def changePassword(id, username, old_password, new_password, debug, output, pret
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@password.command('reset')
+@password.command('reset', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'reset', 'id'))
 @click.option('--username', '-u', 'username', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('password', 'reset', 'username'))
 @click.option('--security-answer', '-s', 'security_answer', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('password', 'reset', 'security_answer'))
@@ -366,7 +366,7 @@ def userGroups():
     """User group management commands."""
     pass
 
-@userGroups.command('get')
+@userGroups.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'get', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'get', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -384,7 +384,7 @@ def getUserGroups(id, name, debug, output, pretty=0):
         click.echo(json.dumps(result, indent=pretty))
 
 
-@userGroups.command('create')
+@userGroups.command('create', epilog=i18n.getHelpExample('common', None))
 @click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('user-groups', 'create', 'name'))
 @click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'create', 'description'))
 @click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'create', 'role_ids'))
@@ -409,7 +409,7 @@ def createUserGroup(name, description, role_ids, role_names, user_ids, user_name
         click.echo(json.dumps(result, indent=pretty))
 
 
-@userGroups.command('add-roles')
+@userGroups.command('add-roles', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'add-roles', 'id'))
 @click.option('--group-name', '-gn', 'group_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'add-roles', 'group_name'))
 @click.option('--role-ids', '-ri', 'role_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'add-roles', 'role_ids'))
@@ -434,7 +434,7 @@ def addUserGroupRoles(id, group_name, role_ids, role_names, debug, output, prett
         click.echo(json.dumps(result, indent=pretty))
 
 
-@userGroups.command('delete')
+@userGroups.command('delete', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'delete', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('user-groups', 'delete', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -464,7 +464,7 @@ def roles():
     """Role management commands."""
     pass
 
-@roles.command('get')
+@roles.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'get', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'get', 'name'))
 @click.option('--expand', '-e', 'expand', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('roles', 'get', 'expand'))
@@ -482,7 +482,7 @@ def getRoles(id, name, expand, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@roles.command('create')
+@roles.command('create', epilog=i18n.getHelpExample('common', None))
 @click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('roles', 'create', 'name'))
 @click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'create', 'description'))
 @click.option('--privilege-ids', '-pi', 'privilege_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'create', 'privilege_ids'))
@@ -504,7 +504,7 @@ def createRole(name, description, privilege_ids, privilege_names, debug, output,
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@roles.command('add-privileges')
+@roles.command('add-privileges', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'add-privileges', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'add-privileges', 'name'))
 @click.option('--privilege-ids', '-pi', 'privilege_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'add-privileges', 'privilege_ids'))
@@ -529,7 +529,7 @@ def addRolePrivileges(id, name, privilege_ids, privilege_names, debug, output, p
         click.echo(json.dumps(result, indent=pretty))
 
 
-@roles.command('remove-privileges')
+@roles.command('remove-privileges', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'remove-privileges', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'remove-privileges', 'name'))
 @click.option('--privilege-ids', '-pi', 'privilege_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'remove-privileges', 'privilege_ids'))
@@ -554,7 +554,7 @@ def removeRolePrivileges(id, name, privilege_ids, privilege_names, debug, output
         click.echo(json.dumps(result, indent=pretty))
 
 
-@roles.command('delete')
+@roles.command('delete', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'delete', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('roles', 'delete', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -585,7 +585,7 @@ def privileges():
     """Privilege management commands."""
     pass
 
-@privileges.command('get')
+@privileges.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--all', 'all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('privileges', 'get', 'all'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
@@ -610,7 +610,7 @@ def lookup():
     """Lookup objects."""
     pass
 
-@lookup.command('object')
+@lookup.command('object', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('lookup', 'object', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('lookup', 'object', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('lookup', 'object', 'type'))
@@ -633,7 +633,7 @@ def lookupObject(id, path, type, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@lookup.command('objects')
+@lookup.command('objects', epilog=i18n.getHelpExample('common', None))
 @click.option('--body', '-b', 'body', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('lookup', 'objects', 'body'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
@@ -658,7 +658,7 @@ def objects():
     """Object management commands."""
     pass
 
-@objects.command('get')
+@objects.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'get', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'get', 'name'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'get', 'type'))
@@ -677,7 +677,7 @@ def getObjects(id, name, type, location, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@objects.command('query')
+@objects.command('query', epilog=i18n.getHelpExample('common', None))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'type'))
 @click.option('--location', '-l', 'location', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'location'))
 @click.option('--tag', '-T', 'tag', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'query', 'tag'))
@@ -710,7 +710,7 @@ def queryObjects(type, location, tag, checked_out_by, checked_out_since, checked
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@objects.command('dependencies')
+@objects.command('dependencies', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'dependencies', 'type'))
@@ -732,7 +732,7 @@ def getDependencies(id, path, type, ref_type, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@objects.command('add-tags')
+@objects.command('add-tags', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'add-tags', 'type'))
@@ -762,7 +762,7 @@ def tagObject(id, path, type, body, tags, debug, output, pretty=0):
         click.echo(json.dumps(result, indent=pretty))
 
 
-@objects.command('remove-tags')
+@objects.command('remove-tags', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('objects', 'remove-tags', 'type'))
@@ -796,7 +796,7 @@ def permissions():
     """Permission management commands."""
     pass
 
-@permissions.command('get')
+@permissions.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'get', 'id'))
 @click.option('--acl', '-a', 'acl', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'get', 'acl'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'get', 'path'))
@@ -823,7 +823,7 @@ def getPermissions(id, acl, path, type, check_access, check_type, debug, output,
         click.echo(json.dumps(result, indent=pretty))
 
 
-@permissions.command('create')
+@permissions.command('create', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'create', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'create', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'create', 'type'))
@@ -851,7 +851,7 @@ def createPermission(id, path, type, ptype, pname, read, update, delete, execute
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@permissions.command('update')
+@permissions.command('update', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'update', 'id'))
 @click.option('--acl', '-a', 'acl', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'update', 'acl'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'update', 'path'))
@@ -881,7 +881,7 @@ def updatePermission(id, acl, path, type, ptype, pname, read, update, delete, ex
         click.echo(json.dumps(result, indent=pretty))
 
 
-@permissions.command('delete')
+@permissions.command('delete', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'delete', 'id'))
 @click.option('--acl', '-a', 'acl', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'delete', 'acl'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('permissions', 'delete', 'path'))
@@ -913,7 +913,7 @@ def projects():
     """Project management commands."""
     pass
 
-@projects.command('create')
+@projects.command('create', epilog=i18n.getHelpExample('common', None))
 @click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('projects', 'create', 'name'))
 @click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'create', 'description'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -930,7 +930,7 @@ def createProject(name, description, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@projects.command('update')
+@projects.command('update', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'update', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'update', 'path'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'update', 'name'))
@@ -952,7 +952,7 @@ def updateProject(id, name, path, description, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@projects.command('delete')
+@projects.command('delete', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'delete', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('projects', 'delete', 'path'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -981,7 +981,7 @@ def folders():
     """Folder management commands."""
     pass
 
-@folders.command('create')
+@folders.command('create', epilog=i18n.getHelpExample('common', None))
 @click.option('--project-id', '-pi', 'project_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'create', 'project_id'))
 @click.option('--project-name', '-pn', 'project_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'create', 'project_name'))
 @click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('folders', 'create', 'name'))
@@ -1003,7 +1003,7 @@ def createFolder(project_id, project_name, name, description, debug, output, pre
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@folders.command('update')
+@folders.command('update', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'update', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'update', 'path'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'update', 'name'))
@@ -1025,7 +1025,7 @@ def createProject(id, name, path, description, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@folders.command('delete')
+@folders.command('delete', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'delete', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('folders', 'delete', 'path'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -1055,7 +1055,7 @@ def sourceControl():
     """Source control management commands."""
     pass
 
-@sourceControl.command('check-in')
+@sourceControl.command('check-in', epilog=i18n.getHelpExample('common', None))
 @click.option('--summary', '-s', 'summary', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-in', 'summary'))
 @click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-in', 'description'))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-in', 'id'))
@@ -1086,7 +1086,7 @@ def checkInObject(summary, description, id, path, type, include_container, body,
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@sourceControl.command('check-out')
+@sourceControl.command('check-out', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-out', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-out', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'check-out', 'type'))
@@ -1115,7 +1115,7 @@ def checkOutObject(id, path, type, include_container, body, debug, output, prett
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@sourceControl.command('undo-check-out')
+@sourceControl.command('undo-check-out', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'undo-check-out', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'undo-check-out', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'undo-check-out', 'type'))
@@ -1144,7 +1144,7 @@ def undoCheckOutObject(id, path, type, include_container, body, debug, output, p
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@sourceControl.command('pull')
+@sourceControl.command('pull', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull', 'type'))
@@ -1174,7 +1174,7 @@ def pullObjects(id, path, type, hash, relax_validation, body, debug, output, pre
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@sourceControl.command('pull-commit-hash')
+@sourceControl.command('pull-commit-hash', epilog=i18n.getHelpExample('common', None))
 @click.option('--hash', '-h', 'hash', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull-commit-hash', 'hash'))
 @click.option('--search', '-s', 'search', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('source-control', 'pull-commit-hash', 'search'))
 @click.option('--repo-id', '-ri', 'repo_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'pull-commit-hash', 'repo_id'))
@@ -1192,7 +1192,7 @@ def checkOutObject(hash, search, repo_id, relax_validation, debug, output, prett
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@sourceControl.command('status')
+@sourceControl.command('status', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('source-control', 'status', 'id'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
 @click.option('--pretty', '-P', 'pretty', flag_value=4, required=False, type=click.INT, is_flag=True, help=i18n.getHelpOption('common', None, 'pretty'))
@@ -1208,7 +1208,7 @@ def getSourceStatus(id, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@sourceControl.command('repo-details')
+@sourceControl.command('repo-details', epilog=i18n.getHelpExample('common', None))
 @click.option('--project-ids', '-i', 'project_ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'repo-details', 'project_ids'))
 @click.option('--project-names', '-n', 'project_names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'repo-details', 'project_names'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -1228,7 +1228,7 @@ def getSourceStatus(project_ids, project_names, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@sourceControl.command('commit-history')
+@sourceControl.command('commit-history', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'type'))
@@ -1252,7 +1252,7 @@ def getCommitHistory(id, path, type, branch, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@sourceControl.command('commit-details')
+@sourceControl.command('commit-details', epilog=i18n.getHelpExample('common', None))
 @click.option('--hash', '-h', 'hash', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-details', 'hash'))
 @click.option('--search-all', '-s', 'search_all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('source-control', 'commit-details', 'search_all'))
 @click.option('--repo-id', '-r', 'repo_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-details', 'repo_id'))
@@ -1270,7 +1270,7 @@ def getCommitDetails(hash, search_all, repo_id, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@sourceControl.command('compare-versions')
+@sourceControl.command('compare-versions', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'commit-history', 'id'))
 @click.option('--path', '-p', 'path', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'compare-versions', 'path'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('source-control', 'compare-versions', 'type'))
@@ -1307,7 +1307,7 @@ def logs():
     """Log commands."""
     pass
 
-@logs.command('security')
+@logs.command('security', epilog=i18n.getHelpExample('common', None))
 @click.option('--category', '-c', 'category', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'security', 'category'))
 @click.option('--actor', '-a', 'actor', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'security', 'actor'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'security', 'name'))
@@ -1332,7 +1332,7 @@ def logsActivity():
     """Activity log commands."""
     pass
 
-@logsActivity.command('completed')
+@logsActivity.command('completed', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'id'))
 @click.option('--run-id', '-r', 'run_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'run-id'))
 @click.option('--task-id', '-t', 'task_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'completed-activity', 'task-id'))
@@ -1355,7 +1355,7 @@ def getCompletedActivityJobs(id, run_id, task_id, name, debug, output, pretty=0)
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@logsActivity.command('running')
+@logsActivity.command('running', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'running-activity', 'id'))
 @click.option('--run-id', '-r', 'run_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'running-activity', 'run-id'))
 @click.option('--task-id', '-t', 'task_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('logs', 'running-activity', 'task-id'))
@@ -1387,7 +1387,7 @@ def agents():
     """Secure Agent management commands."""
     pass
 
-@agents.command('get')
+@agents.command('get', epilog=i18n.getHelpExample('agents', 'get'))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'get', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'get', 'name'))
 @click.option('--unassigned', '-u', 'unassigned', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agents', 'get', 'unassigned'))
@@ -1405,7 +1405,7 @@ def getAgents(id, name, unassigned, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@agents.command('delete')
+@agents.command('delete', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'delete', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'delete', 'name'))
 @click.option('--unassigned', '-u', 'unassigned', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agents', 'delete', 'unassigned'))
@@ -1426,7 +1426,7 @@ def deleteAgent(id, name, unassigned, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@agents.command('status')
+@agents.command('status', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'status', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agents', 'status', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -1446,7 +1446,7 @@ def service():
     """Secure Agent service management commands."""
     pass
 
-@service.command('stop')
+@service.command('stop', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('services', 'stop', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('services', 'stop', 'name'))
 @click.option('--service', '-s', 'service', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('services', 'stop', 'service'))
@@ -1467,7 +1467,7 @@ def stopService(id, name, service, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@service.command('start')
+@service.command('start', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('services', 'start', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('services', 'start', 'name'))
 @click.option('--service', '-s', 'service', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('services', 'start', 'service'))
@@ -1497,7 +1497,7 @@ def agentGroup():
     """Secure Agent Group service management commands."""
     pass
 
-@agentGroup.command('get')
+@agentGroup.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'get', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'get', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -1514,7 +1514,7 @@ def getAgentGroups(id, name, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@agentGroup.command('create')
+@agentGroup.command('create', epilog=i18n.getHelpExample('common', None))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'create', 'name'))
 @click.option('--shared', '-s', 'shared', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'create', 'shared'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -1531,7 +1531,7 @@ def createAgentGroup(name, shared, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@agentGroup.command('add-agent')
+@agentGroup.command('add-agent', epilog=i18n.getHelpExample('common', None))
 @click.option('--group-id', '-gi', 'group_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'add', 'group_id'))
 @click.option('--group-name', '-gn', 'group_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'add', 'group_name'))
 @click.option('--agent-id', '-ai', 'agent_id', multiple=True, default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'add', 'agent_id'))
@@ -1555,7 +1555,7 @@ def addAgent(group_id, group_name, agent_id, agent_name, debug, output, pretty=0
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@agentGroup.command('delete')
+@agentGroup.command('delete', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -1580,7 +1580,7 @@ def components():
     """Secure Agent Group component management commands."""
     pass
 
-@components.command('get')
+@components.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-components', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-components', 'name'))
 @click.option('--include-all', '-a', 'include_all', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'list-components', 'include_all'))
@@ -1601,7 +1601,7 @@ def getAgentGroupComponents(id, name, include_all, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@components.command('update')
+@components.command('update', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-components', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-components', 'name'))
 @click.option('--enable', '-e', 'enable', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('agentGroup', 'update-components', 'enable'))
@@ -1644,7 +1644,7 @@ def properties():
     """Secure Agent Group property management commands."""
     pass
 
-@properties.command('get')
+@properties.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'name'))
 @click.option('--service', '-s', 'service', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'list-props', 'service'))
@@ -1669,7 +1669,7 @@ def getAgentGroupProps(id, name, overridden, platform, service, type, property, 
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@properties.command('update')
+@properties.command('update', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'name'))
 @click.option('--service', '-s', 'service', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'update-prop', 'service'))
@@ -1696,7 +1696,7 @@ def updateAgentGroupProps(id, name, service, type, property, value, platform, cu
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@properties.command('delete')
+@properties.command('delete', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete-props', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('agentGroup', 'delete-props', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -1725,7 +1725,7 @@ def schedules():
     """Schedule management commands."""
     pass
 
-@schedules.command('get')
+@schedules.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'get', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'get', 'name'))
 @click.option('--status', '-s', 'status', default='enabled', required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'get', 'status'))
@@ -1746,7 +1746,7 @@ def getSchedules(id, name, status, interval, time_from, time_to, debug, output, 
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@schedules.command('create')
+@schedules.command('create', epilog=i18n.getHelpExample('common', None))
 @click.option('--name', '-n', 'name', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'name'))
 @click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'description'))
 @click.option('--status', '-s', 'status', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'create', 'status'))
@@ -1799,7 +1799,7 @@ def createSchedule(name, description, status, start_time, end_time, interval, fr
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@schedules.command('update')
+@schedules.command('update', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'name'))
 @click.option('--description', '-d', 'description', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'update', 'description'))
@@ -1855,7 +1855,7 @@ def updateSchedule(id, name, description, status, start_time, end_time, interval
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@schedules.command('delete')
+@schedules.command('delete', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'delete', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'delete', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -1877,7 +1877,7 @@ def deleteSchedule(id, name, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@schedules.command('enable')
+@schedules.command('enable', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'enable', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'enable', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -1899,7 +1899,7 @@ def enableSchedule(id, name, debug, output, pretty=0):
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@schedules.command('disable')
+@schedules.command('disable', epilog=i18n.getHelpExample('common', None))
 @click.option('--id', '-i', 'id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'disable', 'id'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('schedules', 'disable', 'name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -1936,7 +1936,7 @@ def jobsExp():
     """WARNING: Experimental unsupported job management commands."""
     pass
 
-@jobsExp.command('get')
+@jobsExp.command('get', epilog=i18n.getHelpExample('jobs', 'get'))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'name'))
 @click.option('--status', '-s', 'status', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'status'))
 @click.option('--type', '-t', 'type', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'get', 'type'))
@@ -1962,7 +1962,7 @@ def getJobs(name, start_since, start_until, end_since, end_until, status, type, 
     else:
         click.echo(json.dumps(result, indent=pretty))
 
-@jobs.command('start')
+@jobs.command('start', epilog=i18n.getHelpExample('jobs', 'start'))
 @click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'ids'))
 @click.option('--paths', '-p', 'paths', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'paths'))
 @click.option('--type', '-t', 'type', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('jobs', 'start', 'type'))
@@ -1997,7 +1997,7 @@ def startJobs(ids, paths, type, callback_url, param_file, param_dir, api_names, 
         else:
             click.echo(json.dumps(result, indent=pretty))
 
-@jobs.command('stop')
+@jobs.command('stop', epilog=i18n.getHelpExample('jobs', 'stop'))
 @click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'ids'))
 @click.option('--names', '-n', 'names', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'names'))
 @click.option('--locations', '-l', 'locations', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('jobs', 'stop', 'locations'))
@@ -2026,7 +2026,7 @@ def orgs():
     """Organisation management commands."""
     pass
 
-@orgs.command('get')
+@orgs.command('get', epilog=i18n.getHelpExample('common', None))
 @click.option('--suborg-id', '-i', 'sub_id', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('orgs', 'get', 'sub-id'))
 @click.option('--suborg-name', '-n', 'sub_name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('orgs', 'get', 'sub-name'))
 @click.option('--debug', '-D', 'debug', flag_value=True, required=False, type=click.BOOL, is_flag=True, help=i18n.getHelpOption('common', None, 'debug'))
@@ -2048,7 +2048,7 @@ def getOrgs(sub_id, sub_name, debug, output, pretty=0):
 # Export / Import commands section
 ###################################
 
-@idmc.command('export')
+@idmc.command('export', epilog=i18n.getHelpExample('common', None))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('export', None, 'name'))
 @click.option('--ids', '-i', 'ids', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('export', None, 'ids'))
 @click.option('--paths', '-p', 'paths', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('export', None, 'paths'))
@@ -2071,7 +2071,7 @@ def getOrgs(name, ids, paths, types, dependencies, poll_delay, debug, output, pr
     else:
         click.echo(result)
 
-@idmc.command('import')
+@idmc.command('import', epilog=i18n.getHelpExample('common', None))
 @click.option('--name', '-n', 'name', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('import', None, 'name'))
 @click.option('--path', '-p', 'path', default=None, required=True, type=click.STRING, help=i18n.getHelpOption('import', None, 'path'))
 @click.option('--poll-delay', '-pd', 'poll_delay', default=3, required=False, type=click.INT, help=i18n.getHelpOption('import', None, 'poll-delay'))
@@ -2099,7 +2099,7 @@ def metering():
     """Metering commands."""
     pass
 
-@metering.command('summary')
+@metering.command('summary', epilog=i18n.getHelpExample('common', None))
 @click.option('--start', '-s', 'start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'start'))
 @click.option('--end', '-e', 'end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'end'))
 @click.option('--linked', '-l', 'linked', flag_value='TRUE', required=False, type=click.STRING, is_flag=True, help=i18n.getHelpOption('metering', None, 'linked'))
@@ -2123,7 +2123,7 @@ def getMeteringSummary(start, end, linked, poll_delay, debug, output, pretty=0):
     else:
         click.echo(result)
 
-@metering.command('project')
+@metering.command('project', epilog=i18n.getHelpExample('common', None))
 @click.option('--start', '-s', 'start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'start'))
 @click.option('--end', '-e', 'end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'end'))
 @click.option('--linked', '-l', 'linked', flag_value='TRUE', required=False, type=click.STRING, is_flag=True, help=i18n.getHelpOption('metering', None, 'linked'))
@@ -2147,7 +2147,7 @@ def getMeteringProject(start, end, linked, poll_delay, debug, output, pretty=0):
     else:
         click.echo(result)
 
-@metering.command('asset')
+@metering.command('asset', epilog=i18n.getHelpExample('common', None))
 @click.option('--start', '-s', 'start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'start'))
 @click.option('--end', '-e', 'end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'end'))
 @click.option('--linked', '-l', 'linked', flag_value='TRUE', required=False, type=click.STRING, is_flag=True, help=i18n.getHelpOption('metering', None, 'linked'))
@@ -2171,7 +2171,7 @@ def getMeteringProject(start, end, linked, poll_delay, debug, output, pretty=0):
     else:
         click.echo(result)
 
-@metering.command('job')
+@metering.command('job', epilog=i18n.getHelpExample('common', None))
 @click.option('--start', '-s', 'start', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'start'))
 @click.option('--end', '-e', 'end', default=None, required=False, type=click.STRING, help=i18n.getHelpOption('metering', None, 'end'))
 @click.option('--linked', '-l', 'linked', flag_value='TRUE', required=False, type=click.STRING, is_flag=True, help=i18n.getHelpOption('metering', None, 'linked'))

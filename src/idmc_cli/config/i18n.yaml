@@ -12,6 +12,7 @@ english:
           body-id-path-type-missing: Either the body, id, or both the path and type need to be provided.
           path-type-missing: Both path and type must be included when not searching by id.
           bad-file-type: Invalid output file extension specified.
+      examples:
     
     users:
       get:
@@ -440,6 +441,15 @@ english:
           id: Secure Agent ID. If searching for a specific agent, either this option or the name option must be included.
           name: Secure Agent Name. If searching for a specific agent, either this option or the id option must be included.
           unassigned: Flag to include a list of all the Secure Agents that are currently not assigned to any group.
+        examples: "
+              Examples:\n\n   
+              \tGet all agents:\n\n  
+              \t\tidmc agents get --pretty\n\n
+              \tGet an agent by name:\n\n
+              \t\tidmc agents get --name 'cdipcenablementapj' --pretty\n\n
+              \tGet an agent by ID:\n\n
+              \t\tidmc agents get --id '010SU10800000000000M' --pretty
+              "
 
       delete:
         options:
@@ -681,6 +691,15 @@ english:
           error-msg: Filter the jobs by error messages that contain this value.
           location: Filter the jobs by project/folder location.
           runtime: Filter the jobs by the name of the runtime environment.
+        examples: "
+              Examples:   
+              \n\n\tGet all jobs:  
+              \n\n\t\tidmc jobs exp get --pretty
+              \n\n\tGet a job by name:
+              \n\n\t\tidmc jobs exp get --name mtt_Jobs_Test --pretty
+              \n\n\tGet a job by status:
+              \n\n\t\tidmc jobs exp get --status RUNNING --pretty
+              "
       start:
         options:
           ids: Comma separated list of global unique identifier for the task to start. Must be used if path is not included.
@@ -692,6 +711,15 @@ english:
           api-names: Comma separated list of API names for the taskflows to be executed.
           wait: Flag to wait for all jobs to finish.
           poll-delay: Time in seconds to wait between job status polling when waiting for them to finish.
+        examples: "
+              Examples:   
+              \n\n\tStart all mapping tasks within a project:  
+              \n\n\t\tidmc jobs start --paths 'cli/*' --type MTT --pretty
+              \n\n\tStart a mapping task by id:
+              \n\n\t\tidmc jobs start --ids '6p7kY77vy8mjBKRIb1HIO1' --type MTT --pretty
+              \n\n\tStart a mapping task for multiple ids:
+              \n\n\t\tidmc jobs start --ids '6p7kY77vy8mjBKRIb1HIO1,0oDpdqovMZHdY76xYWedaG' --type MTT --pretty
+              "
         errors:
           param-file-dir-missing: If specifying a parameter file then both the param-file and param-dir options must be included.
           api-name-missing: If specifying the TASKFLOW type you must also include the api-name option.
@@ -702,6 +730,13 @@ english:
           locations: Comma separated list of locations of jobs to be stopped.
           types: "Comma separated list of types of jobs to be stopped. Valid values include: DMASK, DRS, DSS, MTT, PCS, WORKFLOW, TASKFLOW. The taskflow must be first published."
           clean: Flag to indicate a clean stop of the job should be executed. Not applicable for TASKFLOW types.
+        examples: "
+              Examples:   
+              \n\n\tClean stop all mapping tasks within a projects:  
+              \n\n\t\tidmc jobs stop --locations 'cli' --types MTT --clean --pretty
+              \n\n\tClean stop mapping tasks by name:  
+              \n\n\t\tidmc jobs stop --names mtt_Jobs_Test --types MTT --clean --pretty
+              "
 
     export:
       options:

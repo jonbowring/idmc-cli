@@ -36,6 +36,14 @@ class I18n:
         
         return option
     
+    def getHelpExample(self, command, sub_command):
+        if sub_command:
+            example = self.data['english']['help'][command][sub_command]['examples']
+        else:
+            example = self.data['english']['help'][command]['examples']
+        
+        return example
+    
     def getErrorText(self, command, sub_command, error):
         if sub_command:
             error = self.data['english']['help'][command][sub_command]['errors'][error]
